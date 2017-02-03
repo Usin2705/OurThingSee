@@ -3,16 +3,20 @@ package metro.ourthingsee;
 import android.app.DownloadManager;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -97,16 +101,31 @@ public class QueryUtils {
         HttpURLConnection urlConnection = null;
         InputStream inputStream = null;
 
+        String userCredentials = "nhan.phan@metropolia.fi:metropolia2016";
+        byte[] encodedBytes = Base64.encode(userCredentials.getBytes(), 0);
+        String basicAuth = "Basic " + new String(encodedBytes);
         try {
-            // TODO FIX THE REQUEST ERROR
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setDoInput(true);
             urlConnection.setDoOutput(true);
             urlConnection.setReadTimeout(READ_TIME_OUT);
             urlConnection.setConnectTimeout(CONNECT_TIME_OUT);
             urlConnection.setRequestMethod("POST");
-            urlConnection.setRequestProperty("headers", "Content-Type: application/x-www-form-urlencoded");
-            urlConnection.setRequestProperty("payload", "email=nhan.phan@metropolia.fi&password=metropolia2016");
+            urlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+
+            Uri.Builder builder = new Uri.Builder()
+                    .appendQueryParameter("email", "nhan.phan@metropolia.fi")
+                    .appendQueryParameter("password", "metropolia2016");
+            String query = builder.build().getEncodedQuery();
+
+            OutputStream os = urlConnection.getOutputStream();
+            BufferedWriter writer = new BufferedWriter(
+                    new OutputStreamWriter(os, "UTF-8"));
+            writer.write(query);
+            writer.flush();
+            writer.close();
+            os.close();
+
 
             Log.e(LOG_TAG, "REQUEST URL ARE: " + url.toString());
 
