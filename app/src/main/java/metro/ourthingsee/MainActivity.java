@@ -32,8 +32,6 @@ public class MainActivity extends AppCompatActivity
 
     private static final String THINGSEE_URL = "http://api.thingsee.com/v2/accounts/login";
     private static final int NEWS_LOADER_ID = 1;
-    RequestQueue mRequestQueue;
-
 
     TextView txtTextView;
 
@@ -47,56 +45,6 @@ public class MainActivity extends AppCompatActivity
         btnButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Instantiate the cache
-                Cache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024); // 1MB cap
-
-                // Set up the network to use HttpURLConnection as the HTTP client.
-                Network network = new BasicNetwork(new HurlStack());
-
-                // Instantiate the RequestQueue with the cache and network.
-                mRequestQueue = new RequestQueue(cache, network);
-
-                // Start the queue
-                mRequestQueue.start();
-
-                StringRequest stringRequest = new StringRequest(Request.Method.POST, THINGSEE_URL, new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        txtTextView.setText(response);
-                        Log.e("accessToken:", response);
-                    }
-                },
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError volleyError) {
-                                Log.e("error:", volleyError.toString());
-
-                            }
-                        }) {
-
-
-                    @Override
-                    protected Map<String, String> getParams() throws AuthFailureError {
-                        Map<String, String> params = new HashMap<String, String>();
-                        params.put("email", "nhan.phan@metropolia.fi");
-                        params.put("password", "metropolia2016");
-                        return params;
-
-                    }
-
-                    @Override
-                    public Map<String, String> getHeaders() throws AuthFailureError {
-                        Map<String, String> headers = new HashMap<String, String>();
-                        headers.put("Content-Type", "application/x-www-form-urlencoded");
-                        return headers;
-                    }
-
-                };
-
-                // Add the request to the RequestQueue.
-                mRequestQueue.add(stringRequest);
-
-
                 ConnectivityManager connMgr = (ConnectivityManager)
                         getSystemService(Context.CONNECTIVITY_SERVICE);
                 NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
