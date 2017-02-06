@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">OurThingSee</string>
+
+    <!-- Toast for login activity if succeeded [CHAR LIMIT=NONE] -->
+    <string name="login_toast_login_succeeded">Login succeeded</string>
+
+    <!-- Toast for login activity if failed [CHAR LIMIT=NONE] -->
+    <string name="login_toast_login_failed">Login failed, please check your internet, email and/or password!</string>
 </resources>
