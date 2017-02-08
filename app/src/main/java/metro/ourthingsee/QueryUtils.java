@@ -1,5 +1,6 @@
 package metro.ourthingsee;
 
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
@@ -185,6 +186,12 @@ public class QueryUtils {
                 case OurContract.LOADER_ID_REGISTER:
                     jsonResponse = makeHttpRequest(url, email, password);
                     return extractThingSeeData(jsonResponse);
+
+                /** Extract auth fields from the JSON response and return it as a String*/
+                case OurContract.LOADER_ID_DATALOADER:
+                    jsonResponse = makeHttpRequest(url, null, null);
+                    return extractThingSeeData(jsonResponse);
+
                 default:
                     /** Return the list of {@link News}s*/
                     return null;

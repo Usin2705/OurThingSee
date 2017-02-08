@@ -31,7 +31,17 @@ public class OurContract {
     public static final String URL_REGISTER = "http://api.thingsee.com/v2/accounts/login";
 
     /**
+     * The register url for register your account with ThingSee cloud
+     */
+    public static final String URL_LOAD_DATA = "http://api.thingsee.com/v2//events/";
+
+    /**
      * The register ID for loader. Used when register new account with ThingSee cloud
      */
     public static final int LOADER_ID_REGISTER = 1;
+
+    /**
+     * The Load dât ID for loader. Load data from cloud to database to screen. Used when resisted
+     */
+    public static final int LOADER_ID_DATALOADER = 2;
 }

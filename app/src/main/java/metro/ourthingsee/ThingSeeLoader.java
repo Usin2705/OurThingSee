@@ -32,10 +32,9 @@ public class ThingSeeLoader extends AsyncTaskLoader<String> {
     /**
      * Constructs a new {@link ThingSeeLoader}.
      *
-     * @param context   of the activity
-     * @param url       to load data from
-     * @param loaderID  the id to differentiate the task
-     *
+     * @param context  of the activity
+     * @param url      to load data from
+     * @param loaderID the id to differentiate the task
      */
     public ThingSeeLoader(Context context, String url, int loaderID) {
         super(context);
@@ -46,11 +45,11 @@ public class ThingSeeLoader extends AsyncTaskLoader<String> {
     /**
      * Constructs a new {@link ThingSeeLoader}.
      *
-     * @param context   of the activity
-     * @param url       to load data from
-     * @param loaderID  the id to differentiate the task
-     * @param email     Email of the user, used for login
-     * @param password  Password of the user, used for login
+     * @param context  of the activity
+     * @param url      to load data from
+     * @param loaderID the id to differentiate the task
+     * @param email    Email of the user, used for login
+     * @param password Password of the user, used for login
      */
     public ThingSeeLoader(Context context, String url, int loaderID,
                           String email, String password) {
@@ -78,9 +77,15 @@ public class ThingSeeLoader extends AsyncTaskLoader<String> {
             case OurContract.LOADER_ID_REGISTER:
                 String data = QueryUtils.fetchThingSeeData(mUrl, mLoaderID, mEmail, mPassword);
                 return data;
+
+            case OurContract.LOADER_ID_DATALOADER:
+                // Perform the network request, parse the response, and extract a list of News
+                ThingSee thingSee = QueryUtils.fetchThingSeeData(mUrl, mLoaderID, null, null);
+                return thingSee;
+
+            default:
+                return null;
+
         }
-        // Perform the network request, parse the response, and extract a list of News.
-        String data = QueryUtils.fetchThingSeeData(mUrl, mLoaderID, null, null);
-        return data;
     }
 }
