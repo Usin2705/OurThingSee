@@ -126,7 +126,6 @@ public class QueryUtils {
             writer.close();
             os.close();
 
-
             Log.e(LOG_TAG, "REQUEST URL ARE: " + url.toString());
 
             urlConnection.connect();
