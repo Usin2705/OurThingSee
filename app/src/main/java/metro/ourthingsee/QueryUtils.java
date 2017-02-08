@@ -1,9 +1,7 @@
 package metro.ourthingsee;
 
-import android.app.DownloadManager;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -11,7 +9,6 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,7 +17,6 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.Charset;
 
 /**
@@ -29,7 +25,7 @@ import java.nio.charset.Charset;
 public class QueryUtils {
     static final int READ_TIME_OUT = 10000; //milliseconds
     static final int CONNECT_TIME_OUT = 15000; //milliseconds
-    private static final String LOG_TAG = QueryUtils.class.getName();
+    private static final String LOG_TAG = QueryUtils.class.getSimpleName();
 
     /**
      * Create a private constructor because no one should ever create a {@link QueryUtils} object.
@@ -49,7 +45,7 @@ public class QueryUtils {
             return null;
         }
 
-        // Create an empty ArrayList that we can start adding data to
+        // Create an empty String that we can start adding data to
         String thingSeeData = "";
 
         // Try to parse the JSON string. If there's a problem with the way the JSON
@@ -59,8 +55,7 @@ public class QueryUtils {
             // Parse the response given by the JSON string and
             // build up a list of News objects with the corresponding data.
             JSONObject jsonRootObject = new JSONObject(json);
-            JSONObject jsonResponseObject = jsonRootObject.getJSONObject("accountAuthUuid");
-            thingSeeData = jsonResponseObject.toString();
+            thingSeeData = jsonRootObject.getString("accountAuthToken");
 
         } catch (JSONException e) {
             // If an error is thrown when executing any of the above statements in the "try" block,
@@ -89,8 +84,14 @@ public class QueryUtils {
 
     /**
      * Make an HTTP request to the given URL and return a String as the response.
+     * If email & password is included, then only extract the auth data
+     *
+     * @param url      The url for the request
+     * @param email    The email of user, used for login.
+     * @param password The password of the user, used for login.
      */
-    private static String makeHttpRequest(URL url) throws IOException {
+    private static String makeHttpRequest(URL url, String email, String password)
+            throws IOException {
         String jsonResponse = "";
 
         // If the URL is null, then return early.
@@ -101,9 +102,6 @@ public class QueryUtils {
         HttpURLConnection urlConnection = null;
         InputStream inputStream = null;
 
-        String userCredentials = "nhan.phan@metropolia.fi:metropolia2016";
-        byte[] encodedBytes = Base64.encode(userCredentials.getBytes(), 0);
-        String basicAuth = "Basic " + new String(encodedBytes);
         try {
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setDoInput(true);
@@ -114,8 +112,8 @@ public class QueryUtils {
             urlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
             Uri.Builder builder = new Uri.Builder()
-                    .appendQueryParameter("email", "nhan.phan@metropolia.fi")
-                    .appendQueryParameter("password", "metropolia2016");
+                    .appendQueryParameter("email", email)
+                    .appendQueryParameter("password", password);
             String query = builder.build().getEncodedQuery();
 
             OutputStream os = urlConnection.getOutputStream();
@@ -125,8 +123,6 @@ public class QueryUtils {
             writer.flush();
             writer.close();
             os.close();
-
-            Log.e(LOG_TAG, "REQUEST URL ARE: " + url.toString());
 
             urlConnection.connect();
 
@@ -176,27 +172,26 @@ public class QueryUtils {
     /**
      * Query the dataset and return a list of {@link String} objects.
      */
-    public static String fetchThingSeeData(String requestUrl) {
+    public static String fetchThingSeeData(String requestUrl,
+                                           int loaderID, String email, String password) {
         // Create URL object
         URL url = createUrl(requestUrl);
 
         // Perform HTTP request to the URL and receive a JSON response back
         String jsonResponse = null;
         try {
-            URLConnection urlConnection = new URLConnection(url) {
-                @Override
-                public void connect() throws IOException {
-
-                }
-            };
-            jsonResponse = makeHttpRequest(url);
+            switch (loaderID) {
+                /** Extract auth fields from the JSON response and return it as a String*/
+                case OurContract.LOADER_ID_REGISTER:
+                    jsonResponse = makeHttpRequest(url, email, password);
+                    return extractThingSeeData(jsonResponse);
+                default:
+                    /** Return the list of {@link News}s*/
+                    return null;
+            }
         } catch (IOException e) {
             Log.e(LOG_TAG, "Problem making the HTTP request.", e);
+            return null;
         }
-
-        /** Extract relevant fields from the JSON response and create a list of {@link News}s*/
-        String news = extractThingSeeData(jsonResponse);
-        /** Return the list of {@link News}s*/
-        return news;
     }
 }

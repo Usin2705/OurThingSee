@@ -2,35 +2,21 @@ package metro.ourthingsee;
 
 import android.app.LoaderManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Cache;
-import com.android.volley.Network;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.BasicNetwork;
-import com.android.volley.toolbox.DiskBasedCache;
-import com.android.volley.toolbox.HurlStack;
-import com.android.volley.toolbox.StringRequest;
-
-import java.util.HashMap;
-import java.util.Map;
-
 public class MainActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<String> {
+    SharedPreferences prefs;
 
-    private static final String THINGSEE_URL = "http://api.thingsee.com/v2/accounts/login";
     private static final int NEWS_LOADER_ID = 1;
 
     TextView txtTextView;
@@ -39,8 +25,19 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        prefs = getSharedPreferences(OurContract.SHARED_PREF, Context.MODE_PRIVATE);
+
         Button btnButton = (Button) findViewById(R.id.btnButton);
         final TextView txtTextView = (TextView) findViewById(R.id.txtTextView);
+
+        if (prefs.getString(OurContract.PREF_AUTH_TOKEN_NAME, "").isEmpty()) {
+            Intent intent = new Intent (this, LoginActivity.class);
+            startActivity(intent);
+        } else {
+            txtTextView.setText(prefs.getString(OurContract.PREF_AUTH_TOKEN_NAME,""));
+        }
+
+
 
         btnButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,7 +64,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public Loader<String> onCreateLoader(int id, Bundle args) {
-        return new ThingSeeLoader(this, THINGSEE_URL);
+        return null;
+        //return new ThingSeeLoader(this, THINGSEE_URL);
     }
 
     @Override
