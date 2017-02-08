@@ -18,7 +18,12 @@
         android:id="@+id/btnButton"/>
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:text="Hello World!"
         android:id="@+id/txtTextView"/>
+
+    <ListView
+        android:id="@+id/listView_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 </LinearLayout>
