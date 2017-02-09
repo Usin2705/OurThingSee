@@ -21,6 +21,12 @@ public class OurContract {
     public static final String PREF_AUTH_PASSWORD = "pref_auth_password";
 
     /**
+     * User's auth id name to stored in shared pref
+     */
+    public static final String PREF_AUTH_ID_NAME = "pref_auth_ID";
+
+
+    /**
      * User's auth token name to stored in shared pref
      */
     public static final String PREF_AUTH_TOKEN_NAME = "pref_auth_token";

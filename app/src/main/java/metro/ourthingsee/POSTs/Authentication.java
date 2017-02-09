@@ -10,7 +10,7 @@ import com.google.gson.annotations.SerializedName;
 public class Authentication {
     @SerializedName("timestamp")
     @Expose
-    private Integer timestamp;
+    private Long timestamp;
     @SerializedName("accountAuthUuid")
     @Expose
     private String accountAuthUuid;
@@ -18,11 +18,11 @@ public class Authentication {
     @Expose
     private String accountAuthToken;
 
-    public Integer getTimestamp() {
+    public Long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Integer timestamp) {
+    public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
     }
 

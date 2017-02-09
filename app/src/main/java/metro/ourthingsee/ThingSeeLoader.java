@@ -80,8 +80,7 @@ public class ThingSeeLoader extends AsyncTaskLoader<String> {
 
             case OurContract.LOADER_ID_DATALOADER:
                 // Perform the network request, parse the response, and extract a list of News
-                ThingSee thingSee = QueryUtils.fetchThingSeeData(mUrl, mLoaderID, null, null);
-                return thingSee;
+                return null;
 
             default:
                 return null;

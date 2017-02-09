@@ -80,8 +80,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public Loader<ThingSee> onCreateLoader(int id, Bundle args) {
-        return new ThingSeeLoader(this, OurContract.URL_LOAD_DATA, OurContract.LOADER_ID_DATALOADER
-                , null, null);
+        return null;
 
 //        // Define a projection that specifies the columns from the table we care about.
 //        String[] projection = {
@@ -101,13 +100,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+    public void onLoadFinished(Loader<ThingSee> loader, ThingSee data) {
         // Update {@link InvCursorAdapter} with this new cursor containing updated inv data
-        mCursorAdapter.swapCursor(data);
+        //mCursorAdapter.swapCursor(data);
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void onLoaderReset(Loader<ThingSee> loader) {
         // Callback called when the data needs to be deleted
         mCursorAdapter.swapCursor(null);
     }
