@@ -3,6 +3,11 @@ package metro.ourthingsee.POSTs;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Arrays;
+import java.util.List;
+
+import metro.ourthingsee.Device;
+
 /**
  * Created by giang on 8.2.2017.
  */
@@ -17,6 +22,17 @@ public class Authentication {
     @SerializedName("accountAuthToken")
     @Expose
     private String accountAuthToken;
+    @SerializedName("devices")
+    @Expose
+    private List<Device> devices = null;
+
+    public List<Device> getDevices() {
+        return devices;
+    }
+
+    public void setDevices(List<Device> devices) {
+        this.devices = devices;
+    }
 
     public Long getTimestamp() {
         return timestamp;
@@ -42,12 +58,12 @@ public class Authentication {
         this.accountAuthToken = accountAuthToken;
     }
 
-    @Override
-    public String toString() {
-        return "Authentication{" +
-                "timestamp=" + timestamp +
-                ", accountAuthUuid='" + accountAuthUuid + '\'' +
-                ", accountAuthToken='" + accountAuthToken + '\'' +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "Authentication{" +
+//                "timestamp=" + timestamp +
+//                ", accountAuthUuid='" + accountAuthUuid + '\'' +
+//                ", accountAuthToken='" + accountAuthToken + '\'' +
+//                '}';
+//    }
 }

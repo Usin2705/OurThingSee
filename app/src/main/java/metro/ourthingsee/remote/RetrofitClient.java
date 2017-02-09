@@ -18,6 +18,8 @@ public class RetrofitClient {
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+
+
 // add your other interceptors …
 
 // add logging as last interceptor

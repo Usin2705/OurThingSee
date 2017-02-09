@@ -1,18 +1,13 @@
 package metro.ourthingsee;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import metro.ourthingsee.POSTs.Authentication;
 import metro.ourthingsee.remote.APIService;
@@ -24,14 +19,13 @@ import retrofit2.Response;
 /**
  * Login activity using retrofit. User must enter email & password.
  * Then accountAuthUuid and accountAuthToken is recorded and store in sharedpref.
- *
  */
 public class LoginActivity extends AppCompatActivity {
     private static final String LOG_TAG = LoginActivity.class.getSimpleName();
-    EditText et_email, et_pw;
-    Button btn_login;
+    EditText edtEmail, edtPassword;
+    Button btnLogin;
     APIService apiService;
-    ProgressDialog progressDialog;
+    SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,124 +36,78 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void addControls() {
-        progressDialog=new ProgressDialog(LoginActivity.this);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Logging in...");
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setCanceledOnTouchOutside(false);
-        et_email = (EditText) findViewById(R.id.et_email);
-        et_pw = (EditText) findViewById(R.id.et_pw);
-        btn_login = (Button) findViewById(R.id.btn_login);
+        edtEmail = (EditText) findViewById(R.id.edtEmail);
+        edtPassword = (EditText) findViewById(R.id.edtPassword);
+        btnLogin = (Button) findViewById(R.id.btnLogin);
         apiService = AppUtils.getAPIService();
     }
 
     private void addEvents() {
-        if (et_email.getText().toString().length() == 0 || et_pw.getText().toString().length() == 0) {
-            btn_login.setEnabled(false);
-            btn_login.setAlpha(0.5f);
-        } else {
-            btn_login.setEnabled(true);
-            btn_login.setAlpha(1f);
-        }
-        et_email.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (et_email.getText().toString().length() == 0 || et_pw.getText().toString().length() == 0) {
-                    btn_login.setEnabled(false);
-                    btn_login.setAlpha(0.5f);
-                } else {
-                    btn_login.setEnabled(true);
-                    btn_login.setAlpha(1f);
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-        et_pw.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (et_email.getText().toString().length() == 0 || et_pw.getText().toString().length() == 0) {
-                    btn_login.setEnabled(false);
-                    btn_login.setAlpha(0.5f);
-                } else {
-                    btn_login.setEnabled(true);
-                    btn_login.setAlpha(1f);
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-        btn_login.setOnClickListener(new View.OnClickListener() {
+        btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hideKeyboard();
-                String email = et_email.getText().toString();
-                String password = et_pw.getText().toString();
-                progressDialog.show();
-                sendPostAuth(email, password);
+                String strEmail = edtEmail.getText().toString();
+                String strPassword = edtPassword.getText().toString();
+                sendPost("nhan.phan@metropolia.fi", "metropolia2016");
             }
         });
     }
 
-    public void sendPostAuth(final String email, String password) {
-        apiService.savePostAuth(email, password).enqueue(new Callback<Authentication>() {
+    public void sendPost(final String email, String password) {
+        apiService.postUserLogin(email, password).enqueue(new Callback<Authentication>() {
             @Override
             public void onResponse(Call<Authentication> call, Response<Authentication> response) {
-                Log.i(LOG_TAG, response.code() + "");
-                progressDialog.dismiss();
-                switch (response.code()) {
-                    case 200:
-                        Toast.makeText(LoginActivity.this, "Succeeded", Toast.LENGTH_SHORT).show();
-                        recordLoginData(response.body());
-                        break;
-                    case 401:
-                        Toast.makeText(LoginActivity.this, "Wrong email or password", Toast.LENGTH_SHORT).show();
-                        break;
+                if (response.isSuccessful()) {
+                    recordLoginData(response.body());
+                    registerDevice();
                 }
             }
 
             @Override
             public void onFailure(Call<Authentication> call, Throwable t) {
-                progressDialog.dismiss();
                 Log.e(LOG_TAG, t.toString());
-                Toast.makeText(LoginActivity.this, "No Internet Connection!", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     public void recordLoginData(Authentication response) {
-        SharedPreferences prefs =
-                getSharedPreferences(OurContract.SHARED_PREF, Context.MODE_PRIVATE);
-        prefs.edit().putString(OurContract.PREF_AUTH_TOKEN_NAME,
+        prefs = getSharedPreferences(OurContract.SHARED_PREF, Context.MODE_PRIVATE);
+        prefs.edit().putString(OurContract.PREF_USER_AUTH_TOKEN_NAME,
                 response.getAccountAuthToken().toString()).apply();
-        prefs.edit().putString(OurContract.PREF_AUTH_ID_NAME,
-                response.getAccountAuthUuid().toString()).apply();
         prefs.edit().putString(OurContract.PREF_AUTH_EMAIL,
-                et_email.getText().toString()).apply();
+                edtEmail.getText().toString()).apply();
         prefs.edit().putString(OurContract.PREF_AUTH_PASSWORD,
-                et_pw.getText().toString()).apply();
-        finish();
+                edtEmail.getText().toString()).apply();
     }
-    private void hideKeyboard() {
-        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+
+
+    private void registerDevice() {
+        String auth = "Bearer ";
+        auth += prefs.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, "");
+
+
+        apiService.registerDevice().enqueue(new Callback<Authentication>() {
+            @Override
+            public void onResponse(Call<Authentication> call, Response<Authentication> response) {
+                if (response.isSuccessful()) {
+                    recordDeviceData(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Authentication> call, Throwable t) {
+                Log.e(LOG_TAG, "AAAAA " + t.toString());
+            }
+        });
     }
+
+    private void recordDeviceData(Authentication response) {
+        String strFirstUuid = response.getDevices().get(0).getUuid();
+        if (!strFirstUuid.isEmpty()) {
+            prefs.edit().putString(OurContract.PREF_DEVICE_AUTH_ID_NAME, strFirstUuid).apply();
+        }
+    }
+
 
 //    @Override
 //    public void onLoadFinished(Loader<String> loader, String data) {

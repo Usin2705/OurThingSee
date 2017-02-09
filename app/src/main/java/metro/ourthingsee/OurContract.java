@@ -21,15 +21,15 @@ public class OurContract {
     public static final String PREF_AUTH_PASSWORD = "pref_auth_password";
 
     /**
-     * User's auth id name to stored in shared pref
+     * Device's auth id name to stored in shared pref
      */
-    public static final String PREF_AUTH_ID_NAME = "pref_auth_ID";
+    public static final String PREF_DEVICE_AUTH_ID_NAME = "pref_device_auth_ID";
 
 
     /**
      * User's auth token name to stored in shared pref
      */
-    public static final String PREF_AUTH_TOKEN_NAME = "pref_auth_token";
+    public static final String PREF_USER_AUTH_TOKEN_NAME = "pref_auth_token";
 
     /**
      * The register url for register your account with ThingSee cloud

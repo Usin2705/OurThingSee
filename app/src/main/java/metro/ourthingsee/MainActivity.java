@@ -2,21 +2,16 @@ package metro.ourthingsee;
 
 import android.app.LoaderManager;
 import android.content.Context;
-import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import metro.ourthingsee.data.TCContract.TCEntry;
 
 public class MainActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<ThingSee> {
@@ -39,11 +34,12 @@ public class MainActivity extends AppCompatActivity
         Button btnButton = (Button) findViewById(R.id.btnButton);
         final TextView txtTextView = (TextView) findViewById(R.id.txtTextView);
 
-        if (prefs.getString(OurContract.PREF_AUTH_TOKEN_NAME, "").isEmpty()) {
+        if (prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, "").isEmpty()) {
             Intent intent = new Intent (this, LoginActivity.class);
             startActivity(intent);
         } else {
-            txtTextView.setText(prefs.getString(OurContract.PREF_AUTH_TOKEN_NAME,""));
+            Log.e(LOG_TAG, prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME,""));
+            Log.e(LOG_TAG, prefs.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME,""));
         }
 
         // Find the ListView which will be populated with the inventory data
@@ -57,23 +53,7 @@ public class MainActivity extends AppCompatActivity
         btnButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ConnectivityManager connMgr = (ConnectivityManager)
-                        getSystemService(Context.CONNECTIVITY_SERVICE);
-                NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
-                // If there is a network connection, fetch data
-                if (networkInfo != null && networkInfo.isConnected()) {
-                    // Get a reference to the LoaderManager, in order to interact with loaders.
-                    LoaderManager loaderManager = getLoaderManager();
-                    loaderManager.destroyLoader(OurContract.LOADER_ID_DATALOADER);
-
-                    // Initialize the loader. Pass in the int ID constant defined above and pass
-                    // in null for the bundle. Pass in this activity for the LoaderCallbacks
-                    // parameter (which is valid because this activity implements the
-                    // LoaderCallbacks interface).
-                    loaderManager.initLoader(OurContract.LOADER_ID_DATALOADER,
-                            null, MainActivity.this);
-                }
             }
         });
     }
