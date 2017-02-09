@@ -41,6 +41,10 @@ public class LoginActivity extends AppCompatActivity {
         addEvents();
     }
 
+    /**
+     * Find all button here. The code look fabulous this way.
+     *
+     */
     private void addControls() {
         progressDialog = new ProgressDialog(LoginActivity.this);
         progressDialog.setIndeterminate(true);
@@ -52,6 +56,11 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin = (Button) findViewById(R.id.btnLogin);
         apiService = AppUtils.getAPIService();
     }
+
+    /**
+     * Do stuff here.
+     *
+     */
 
     private void addEvents() {
         if (edtEmail.getText().toString().length() == 0 ||
@@ -118,6 +127,13 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Send the login data to the ThingSee cloud service
+     * After successfully login, we wil continously get our devices
+     *
+     * @param email     User's email taken from editText
+     * @param password  User's passoword taken from editText
+     */
     public void sendPostAuth(String email, String password) {
         apiService.savePostAuth(email, password).enqueue(new Callback<Authentication>() {
             @Override
@@ -126,12 +142,15 @@ public class LoginActivity extends AppCompatActivity {
                 progressDialog.dismiss();
                 switch (response.code()) {
                     case 200:
-                        Toast.makeText(LoginActivity.this, "Succeeded", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this,
+                                getString(R.string.login_toast_login_succeeded),
+                                Toast.LENGTH_SHORT).show();
                         recordLoginData(response.body());
                         break;
                     case 401:
                         Toast.makeText(LoginActivity.this,
-                                "Wrong email or password", Toast.LENGTH_SHORT).show();
+                                getString(R.string.login_toast_login_failed),
+                                Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
@@ -140,7 +159,9 @@ public class LoginActivity extends AppCompatActivity {
             public void onFailure(Call<Authentication> call, Throwable t) {
                 progressDialog.dismiss();
                 Log.e(LOG_TAG, t.toString());
-                Toast.makeText(LoginActivity.this, "No Internet Connection!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this,
+                        getString(R.string.login_toast_login_failed_nointernet),
+                        Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -153,17 +174,19 @@ public class LoginActivity extends AppCompatActivity {
                 edtEmail.getText().toString()).apply();
         prefs.edit().putString(OurContract.PREF_AUTH_PASSWORD,
                 edtEmail.getText().toString()).apply();
-        registerDevice();
+
+        getUserDevices();
     }
 
-
-    private void registerDevice() {
+    /**
+     * Get all user's devices based on information from user authentication
+     *
+     */
+    private void getUserDevices() {
         String auth = "Bearer ";
         auth += prefs.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, "");
-        // TODO edit @header
 
-
-        apiService.registerDevice().enqueue(new Callback<Authentication>() {
+        apiService.getUserDevices(auth).enqueue(new Callback<Authentication>() {
             @Override
             public void onResponse(Call<Authentication> call, Response<Authentication> response) {
                 if (response.isSuccessful()) {
@@ -178,6 +201,13 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Record all user's {@link Authentication.Device} Auth ID ("uuid") in shareprefs
+     * Now we just do 1
+     *
+     * @param response the response from cloud, including List of {@link Authentication.Device} and
+     *                 a timestamp
+     */
     private void recordDeviceData(Authentication response) {
         String strFirstUuid = response.getDevices().get(0).getUuid();
         if (!strFirstUuid.isEmpty()) {
