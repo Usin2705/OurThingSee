@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import metro.ourthingsee.POSTs.Authentication;
 import metro.ourthingsee.remote.APIService;
@@ -121,14 +122,23 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Authentication> call, Response<Authentication> response) {
                 Log.i(LOG_TAG, response.code() + "");
-                if (response.isSuccessful()) {
-                    recordLoginData(response.body());
+                progressDialog.dismiss();
+                switch (response.code()) {
+                    case 200:
+                        Toast.makeText(LoginActivity.this, "Succeeded", Toast.LENGTH_SHORT).show();
+                        recordLoginData(response.body());
+                        break;
+                    case 401:
+                        Toast.makeText(LoginActivity.this, "Wrong email or password", Toast.LENGTH_SHORT).show();
+                        break;
                 }
             }
 
             @Override
             public void onFailure(Call<Authentication> call, Throwable t) {
+                progressDialog.dismiss();
                 Log.e(LOG_TAG, t.toString());
+                Toast.makeText(LoginActivity.this, "No Internet Connection!", Toast.LENGTH_SHORT).show();
             }
         });
     }
