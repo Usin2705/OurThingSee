@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity
         prefs = getSharedPreferences(OurContract.SHARED_PREF, Context.MODE_PRIVATE);
 
         Button btnButton = (Button) findViewById(R.id.btnButton);
-        final TextView txtTextView = (TextView) findViewById(R.id.txtTextView);
 
         if (prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, "").isEmpty()) {
             Intent intent = new Intent (this, LoginActivity.class);
@@ -53,7 +52,8 @@ public class MainActivity extends AppCompatActivity
         btnButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Log.e(LOG_TAG, prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME,""));
+                Log.e(LOG_TAG, prefs.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME,""));
             }
         });
     }

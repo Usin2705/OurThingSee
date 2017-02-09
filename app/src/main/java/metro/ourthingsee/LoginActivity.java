@@ -1,13 +1,18 @@
 package metro.ourthingsee;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import metro.ourthingsee.POSTs.Authentication;
 import metro.ourthingsee.remote.APIService;
@@ -25,6 +30,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText edtEmail, edtPassword;
     Button btnLogin;
     APIService apiService;
+    ProgressDialog progressDialog;
     SharedPreferences prefs;
 
     @Override
@@ -36,6 +42,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void addControls() {
+        progressDialog = new ProgressDialog(LoginActivity.this);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Logging in...");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCanceledOnTouchOutside(false);
         edtEmail = (EditText) findViewById(R.id.edtEmail);
         edtPassword = (EditText) findViewById(R.id.edtPassword);
         btnLogin = (Button) findViewById(R.id.btnLogin);
@@ -43,29 +54,93 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void addEvents() {
+        if (edtEmail.getText().toString().length() == 0 ||
+                edtPassword.getText().toString().length() == 0) {
+            btnLogin.setEnabled(false);
+            btnLogin.setAlpha(0.5f);
+        } else {
+            btnLogin.setEnabled(true);
+            btnLogin.setAlpha(1f);
+        }
+        edtEmail.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (edtEmail.getText().toString().length() == 0 || edtPassword.getText().toString().length() == 0) {
+                    btnLogin.setEnabled(false);
+                    btnLogin.setAlpha(0.5f);
+                } else {
+                    btnLogin.setEnabled(true);
+                    btnLogin.setAlpha(1f);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        edtEmail.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (edtEmail.getText().toString().length() == 0 || edtEmail.getText().toString().length() == 0) {
+                    btnLogin.setEnabled(false);
+                    btnLogin.setAlpha(0.5f);
+                } else {
+                    btnLogin.setEnabled(true);
+                    btnLogin.setAlpha(1f);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String strEmail = edtEmail.getText().toString();
-                String strPassword = edtPassword.getText().toString();
-                sendPost("nhan.phan@metropolia.fi", "metropolia2016");
+                hideKeyboard();
+                String email = edtEmail.getText().toString();
+                String password = edtPassword.getText().toString();
+                progressDialog.show();
+                sendPostAuth(email, password);
             }
         });
     }
 
-    public void sendPost(final String email, String password) {
-        apiService.postUserLogin(email, password).enqueue(new Callback<Authentication>() {
+    public void sendPostAuth(String email, String password) {
+        apiService.savePostAuth(email, password).enqueue(new Callback<Authentication>() {
             @Override
             public void onResponse(Call<Authentication> call, Response<Authentication> response) {
-                if (response.isSuccessful()) {
-                    recordLoginData(response.body());
-                    registerDevice();
+                Log.i(LOG_TAG, response.code() + "");
+                progressDialog.dismiss();
+                switch (response.code()) {
+                    case 200:
+                        Toast.makeText(LoginActivity.this, "Succeeded", Toast.LENGTH_SHORT).show();
+                        recordLoginData(response.body());
+                        break;
+                    case 401:
+                        Toast.makeText(LoginActivity.this,
+                                "Wrong email or password", Toast.LENGTH_SHORT).show();
+                        break;
                 }
             }
 
             @Override
             public void onFailure(Call<Authentication> call, Throwable t) {
+                progressDialog.dismiss();
                 Log.e(LOG_TAG, t.toString());
+                Toast.makeText(LoginActivity.this, "No Internet Connection!", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -78,12 +153,14 @@ public class LoginActivity extends AppCompatActivity {
                 edtEmail.getText().toString()).apply();
         prefs.edit().putString(OurContract.PREF_AUTH_PASSWORD,
                 edtEmail.getText().toString()).apply();
+        registerDevice();
     }
 
 
     private void registerDevice() {
         String auth = "Bearer ";
         auth += prefs.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, "");
+        // TODO edit @header
 
 
         apiService.registerDevice().enqueue(new Callback<Authentication>() {
@@ -106,32 +183,12 @@ public class LoginActivity extends AppCompatActivity {
         if (!strFirstUuid.isEmpty()) {
             prefs.edit().putString(OurContract.PREF_DEVICE_AUTH_ID_NAME, strFirstUuid).apply();
         }
+        edtPassword.getText().toString();
+        finish();
     }
 
-
-//    @Override
-//    public void onLoadFinished(Loader<String> loader, String data) {
-//        // If there's data then record its in SharedPref
-//        // The date received in this activity is auth token
-//        // Also store user's email & pass for further task
-//        if (data != null && !data.isEmpty()) {
-//            SharedPreferences prefs =
-//                    getSharedPreferences(OurContract.SHARED_PREF, Context.MODE_PRIVATE);
-//            prefs.edit().putString(OurContract.PREF_AUTH_TOKEN_NAME, data).apply();
-//            prefs.edit().putString(OurContract.PREF_AUTH_EMAIL,
-//                    edtEmail.getText().toString()).apply();
-//            prefs.edit().putString(OurContract.PREF_AUTH_PASSWORD,
-//                    edtEmail.getText().toString()).apply();
-//            Toast.makeText(this, R.string.login_toast_login_succeeded, Toast.LENGTH_SHORT).show();
-//            finish();
-//        } else {
-//            Toast.makeText(this, R.string.login_toast_login_failed, Toast.LENGTH_SHORT).show();
-//        }
-//
-//    }
-//
-//    @Override
-//    public void onLoaderReset(Loader<String> loader) {
-//
-//    }
+    private void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+    }
 }
