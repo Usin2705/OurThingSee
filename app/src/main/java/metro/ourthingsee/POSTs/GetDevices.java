@@ -7,6 +7,8 @@ import java.util.Arrays;
 
 /**
  * Created by Usin on 09-Feb-17.
+ * Should work but not know why not work
+ * TODO find out why with Giang
  */
 
 public class GetDevices {

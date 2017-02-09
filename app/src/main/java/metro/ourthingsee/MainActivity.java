@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity
 
         Button btnButton = (Button) findViewById(R.id.btnButton);
 
+        // If user did not login before, open login activity first
         if (prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, "").isEmpty()) {
             Intent intent = new Intent (this, LoginActivity.class);
             startActivity(intent);
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity
                 Log.e(LOG_TAG, prefs.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME,""));
             }
         });
+        // TODO set onlick listenter to display event in dababase
     }
 
     @Override

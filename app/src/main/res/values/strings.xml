@@ -5,5 +5,8 @@
     <string name="login_toast_login_succeeded">Login succeeded</string>
 
     <!-- Toast for login activity if failed [CHAR LIMIT=NONE] -->
-    <string name="login_toast_login_failed">Login failed, please check your internet, email and/or password!</string>
+    <string name="login_toast_login_failed">Login failed, please check your email and/or password!</string>
+
+    <!-- Toast for login activity if failed, blame the internet [CHAR LIMIT=NONE] -->
+    <string name="login_toast_login_failed_nointernet">No Internet Connection!</string>
 </resources>

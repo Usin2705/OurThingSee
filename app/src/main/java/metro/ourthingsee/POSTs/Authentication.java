@@ -6,8 +6,6 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Arrays;
 import java.util.List;
 
-import metro.ourthingsee.Device;
-
 /**
  * Created by giang on 8.2.2017.
  */
@@ -66,4 +64,53 @@ public class Authentication {
 //                ", accountAuthToken='" + accountAuthToken + '\'' +
 //                '}';
 //    }
+
+    /**
+     * Class to store the List of devices taken from devices
+     * The most important one is "uuid", which store the device's unique id. We must use this
+     * id to get the event from devices
+     *
+     * <p>NOTE: there're also a "state" but we did not use it (since it require creating another
+     * class called State
+     *
+     * Most of the class is random generated at this website:
+     * @see <a href="http://www.jsonschema2pojo.org/">Sexy ladies</a>
+     *
+     *
+     *
+     */
+    public class Device {
+        @SerializedName("uuid")
+        @Expose
+        private String uuid;
+        @SerializedName("token")
+        @Expose
+        private String token;
+
+        public String getUuid() {
+            return uuid;
+        }
+
+        public void setUuid(String uuid) {
+            this.uuid = uuid;
+        }
+
+        public String getToken() {
+            return token;
+        }
+
+        public void setToken(String token) {
+            this.token = token;
+        }
+
+//        @SerializedName("state")
+//        @Expose
+//        private State state;
+//        public State getState() {
+//            return state;
+//        }
+//        public void setState(State state) {
+//            this.state = state;
+//        }
+    }
 }

@@ -5,6 +5,7 @@ import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
@@ -20,12 +21,9 @@ public interface APIService {
     Call<Authentication> savePostAuth(@Field("email") String email,
                                       @Field("password") String password);
 
-    // For registerDevice
-    @Headers({
-            "Content-Type: application/x-www-form-urlencoded",
-            "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0cyI6MTQ4NjY3MzI3OTQwMSwidXVpZCI6ImE5MDlmOWMwLWU4ODAtMTFlNi05OGY1LTRiMjg3NDkwYmUzNiIsInNjb3BlIjpbImFsbDphbGwiXSwiaWF0IjoxNDg2NjczMjc5LCJleHAiOjE0ODcyNzgwNzl9.mOyeHqit9pEwYM6sNJy7yBXqRiQEafeHi5tQp7L7VYQ"
-    })
+    // For get User's devices
+    @Headers("Content-Type: application/x-www-form-urlencoded")
     @GET("v2/devices")
-    Call<Authentication> registerDevice();
+    Call<Authentication> getUserDevices(@Header("Authorization") String auth);
 
 }
