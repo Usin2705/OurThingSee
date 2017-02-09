@@ -1,11 +1,15 @@
 package metro.ourthingsee;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -23,9 +27,10 @@ import retrofit2.Response;
  */
 public class LoginActivity extends AppCompatActivity {
     private static final String LOG_TAG = LoginActivity.class.getSimpleName();
-    EditText edtEmail, edtPassword;
-    Button btnLogin;
+    EditText et_email, et_pw;
+    Button btn_login;
     APIService apiService;
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,25 +41,83 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void addControls() {
-        edtEmail = (EditText) findViewById(R.id.edtEmail);
-        edtPassword = (EditText) findViewById(R.id.edtPassword);
-        btnLogin = (Button) findViewById(R.id.btnLogin);
+        progressDialog=new ProgressDialog(LoginActivity.this);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Logging in...");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCanceledOnTouchOutside(false);
+        et_email = (EditText) findViewById(R.id.et_email);
+        et_pw = (EditText) findViewById(R.id.et_pw);
+        btn_login = (Button) findViewById(R.id.btn_login);
         apiService = AppUtils.getAPIService();
     }
 
     private void addEvents() {
-        btnLogin.setOnClickListener(new View.OnClickListener() {
+        if (et_email.getText().toString().length() == 0 || et_pw.getText().toString().length() == 0) {
+            btn_login.setEnabled(false);
+            btn_login.setAlpha(0.5f);
+        } else {
+            btn_login.setEnabled(true);
+            btn_login.setAlpha(1f);
+        }
+        et_email.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (et_email.getText().toString().length() == 0 || et_pw.getText().toString().length() == 0) {
+                    btn_login.setEnabled(false);
+                    btn_login.setAlpha(0.5f);
+                } else {
+                    btn_login.setEnabled(true);
+                    btn_login.setAlpha(1f);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        et_pw.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (et_email.getText().toString().length() == 0 || et_pw.getText().toString().length() == 0) {
+                    btn_login.setEnabled(false);
+                    btn_login.setAlpha(0.5f);
+                } else {
+                    btn_login.setEnabled(true);
+                    btn_login.setAlpha(1f);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String strEmail = edtEmail.getText().toString();
-                String strPassword = edtPassword.getText().toString();
-                sendPost(strEmail, strPassword);
+                hideKeyboard();
+                String email = et_email.getText().toString();
+                String password = et_pw.getText().toString();
+                progressDialog.show();
+                sendPostAuth(email, password);
             }
         });
     }
 
-    public void sendPost(final String email, String password) {
-        apiService.savePost(email, password).enqueue(new Callback<Authentication>() {
+    public void sendPostAuth(final String email, String password) {
+        apiService.savePostAuth(email, password).enqueue(new Callback<Authentication>() {
             @Override
             public void onResponse(Call<Authentication> call, Response<Authentication> response) {
                 Log.i(LOG_TAG, response.code() + "");
@@ -78,12 +141,15 @@ public class LoginActivity extends AppCompatActivity {
         prefs.edit().putString(OurContract.PREF_AUTH_ID_NAME,
                 response.getAccountAuthUuid().toString()).apply();
         prefs.edit().putString(OurContract.PREF_AUTH_EMAIL,
-                edtEmail.getText().toString()).apply();
+                et_email.getText().toString()).apply();
         prefs.edit().putString(OurContract.PREF_AUTH_PASSWORD,
-                edtEmail.getText().toString()).apply();
+                et_pw.getText().toString()).apply();
         finish();
     }
-
+    private void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+    }
 
 //    @Override
 //    public void onLoadFinished(Loader<String> loader, String data) {

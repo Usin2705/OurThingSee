@@ -15,6 +15,6 @@ public interface APIService {
     @Headers("Content-Type: application/x-www-form-urlencoded")
     @FormUrlEncoded
     @POST("v2/accounts/login")
-    Call<Authentication> savePost(@Field("email") String email,
+    Call<Authentication> savePostAuth(@Field("email") String email,
                                   @Field("password") String password);
 }
