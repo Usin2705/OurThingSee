@@ -1,10 +1,7 @@
-package metro.ourthingsee.POSTs;
+package metro.ourthingsee.RESTObjects;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by giang on 8.2.2017.
@@ -20,17 +17,17 @@ public class Authentication {
     @SerializedName("accountAuthToken")
     @Expose
     private String accountAuthToken;
-    @SerializedName("devices")
-    @Expose
-    private List<Device> devices = null;
-
-    public List<Device> getDevices() {
-        return devices;
-    }
-
-    public void setDevices(List<Device> devices) {
-        this.devices = devices;
-    }
+//    @SerializedName("devices")
+//    @Expose
+//    private List<Device> devices = null;
+//
+//    public List<Device> getDevices() {
+//        return devices;
+//    }
+//
+//    public void setDevices(List<Device> devices) {
+//        this.devices = devices;
+//    }
 
     public Long getTimestamp() {
         return timestamp;
@@ -79,29 +76,29 @@ public class Authentication {
      *
      *
      */
-    public class Device {
-        @SerializedName("uuid")
-        @Expose
-        private String uuid;
-        @SerializedName("token")
-        @Expose
-        private String token;
-
-        public String getUuid() {
-            return uuid;
-        }
-
-        public void setUuid(String uuid) {
-            this.uuid = uuid;
-        }
-
-        public String getToken() {
-            return token;
-        }
-
-        public void setToken(String token) {
-            this.token = token;
-        }
+//    public class Device {
+//        @SerializedName("uuid")
+//        @Expose
+//        private String uuid;
+//        @SerializedName("token")
+//        @Expose
+//        private String token;
+//
+//        public String getUuid() {
+//            return uuid;
+//        }
+//
+//        public void setUuid(String uuid) {
+//            this.uuid = uuid;
+//        }
+//
+//        public String getToken() {
+//            return token;
+//        }
+//
+//        public void setToken(String token) {
+//            this.token = token;
+//        }
 
 //        @SerializedName("state")
 //        @Expose
@@ -112,5 +109,5 @@ public class Authentication {
 //        public void setState(State state) {
 //            this.state = state;
 //        }
-    }
+//}
 }
