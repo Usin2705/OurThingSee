@@ -1,6 +1,7 @@
 package metro.ourthingsee.remote;
 
-import metro.ourthingsee.POSTs.Authentication;
+import metro.ourthingsee.RESTObjects.Devices;
+import metro.ourthingsee.RESTObjects.Authentication;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -24,6 +25,6 @@ public interface APIService {
     // For get User's devices
     @Headers("Content-Type: application/x-www-form-urlencoded")
     @GET("v2/devices")
-    Call<Authentication> getUserDevices(@Header("Authorization") String auth);
+    Call<Devices> getUserDevices(@Header("Authorization") String auth);
 
 }

@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<ThingSee> {
@@ -37,6 +36,7 @@ public class MainActivity extends AppCompatActivity
         if (prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, "").isEmpty()) {
             Intent intent = new Intent (this, LoginActivity.class);
             startActivity(intent);
+            finish();
         } else {
             Log.e(LOG_TAG, prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME,""));
             Log.e(LOG_TAG, prefs.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME,""));

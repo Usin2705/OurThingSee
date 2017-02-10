@@ -2,6 +2,7 @@ package metro.ourthingsee;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -14,7 +15,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import metro.ourthingsee.POSTs.Authentication;
+import metro.ourthingsee.RESTObjects.Devices;
+import metro.ourthingsee.RESTObjects.Authentication;
 import metro.ourthingsee.remote.APIService;
 import metro.ourthingsee.remote.AppUtils;
 import retrofit2.Call;
@@ -187,35 +189,38 @@ public class LoginActivity extends AppCompatActivity {
     private void getUserDevices() {
         String auth = "Bearer ";
         auth += prefs.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, "");
-
-        apiService.getUserDevices(auth).enqueue(new Callback<Authentication>() {
+        Log.e(LOG_TAG,auth);
+        apiService.getUserDevices(auth).enqueue(new Callback<Devices>() {
             @Override
-            public void onResponse(Call<Authentication> call, Response<Authentication> response) {
-                if (response.isSuccessful()) {
+            public void onResponse(Call<Devices> call, Response<Devices> response) {
+                Log.e("Giang",response.code()+"");
+                if (response.isSuccessful()){
                     recordDeviceData(response.body());
                 }
             }
 
             @Override
-            public void onFailure(Call<Authentication> call, Throwable t) {
-                Log.e(LOG_TAG, "AAAAA " + t.toString());
+            public void onFailure(Call<Devices> call, Throwable t) {
+                Log.e(LOG_TAG,t.toString());
             }
         });
     }
 
     /**
-     * Record all user's {@link Authentication.Device} Auth ID ("uuid") in shareprefs
+     * Record all user's {@link Devices} Auth ID ("uuid") in shareprefs
      * Now we just do 1
      *
-     * @param response the response from cloud, including List of {@link Authentication.Device} and
+     * @param response the response from cloud, including List of {@link Devices} and
      *                 a timestamp
      */
-    private void recordDeviceData(Authentication response) {
+    private void recordDeviceData(Devices response) {
+        Log.e("Giang","HERE! DAMN YOU!");
         String strFirstUuid = response.getDevices().get(0).getUuid();
         if (!strFirstUuid.isEmpty()) {
             prefs.edit().putString(OurContract.PREF_DEVICE_AUTH_ID_NAME, strFirstUuid).apply();
         }
-        edtPassword.getText().toString();
+        Intent intent = new Intent (this, MainActivity.class);
+        startActivity(intent);
         finish();
     }
 
