@@ -143,12 +143,15 @@ public class LoginActivity extends AppCompatActivity {
                 Log.i(LOG_TAG, response.code() + "");
                 progressDialog.dismiss();
                 switch (response.code()) {
+
+                    //The request was fulfilled.
                     case 200:
                         Toast.makeText(LoginActivity.this,
                                 getString(R.string.login_toast_login_succeeded),
                                 Toast.LENGTH_SHORT).show();
                         recordLoginData(response.body());
                         break;
+                    //Unauthorized 
                     case 401:
                         Toast.makeText(LoginActivity.this,
                                 getString(R.string.login_toast_login_failed),
@@ -168,6 +171,10 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     *
+     * @param response this will show the document when you press Crtl Q
+     */
     public void recordLoginData(Authentication response) {
         prefs = getSharedPreferences(OurContract.SHARED_PREF, Context.MODE_PRIVATE);
         prefs.edit().putString(OurContract.PREF_USER_AUTH_TOKEN_NAME,
@@ -182,7 +189,7 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      * Get all user's devices based on information from user authentication
-     *
+     * Connect Thingsee device with App
      */
     private void getUserDevices() {
         String auth = "Bearer ";
@@ -193,8 +200,9 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(Call<Devices> call, Response<Devices> response) {
                 Log.e("Giang",response.code()+"");
                 if (response.isSuccessful()){
+                    // store pin code of device
                     recordDeviceData(response.body());
-                }
+            }
             }
 
             @Override
