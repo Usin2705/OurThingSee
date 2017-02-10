@@ -41,7 +41,6 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         addControls();
         addEvents();
-        //edit
     }
 
     /**
@@ -58,8 +57,7 @@ public class LoginActivity extends AppCompatActivity {
         edtPassword = (EditText) findViewById(R.id.edtPassword);
         btnLogin = (Button) findViewById(R.id.btnLogin);
         apiService = AppUtils.getAPIService();
-        //
-    }Edit
+    }
 
     /**
      * Do stuff here.
