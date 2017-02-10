@@ -151,7 +151,7 @@ public class LoginActivity extends AppCompatActivity {
                                 Toast.LENGTH_SHORT).show();
                         recordLoginData(response.body());
                         break;
-                    //Unauthorized 
+                    //Unauthorized
                     case 401:
                         Toast.makeText(LoginActivity.this,
                                 getString(R.string.login_toast_login_failed),
@@ -229,7 +229,7 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
-
+// hide keyboard when touch Log in
     private void hideKeyboard() {
         InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
