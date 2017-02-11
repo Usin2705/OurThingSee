@@ -2,11 +2,13 @@
     <string name="app_name">OurThingSee</string>
 
     <!-- Toast for login activity if succeeded [CHAR LIMIT=NONE] -->
-    <string name="login_toast_login_succeeded">Login succeeded</string>
+    <string name="login_toast_login_succeeded">Login succeeded!</string>
 
     <!-- Toast for login activity if failed [CHAR LIMIT=NONE] -->
-    <string name="login_toast_login_failed">Login failed, please check your email and/or password!</string>
+    <string name="login_toast_login_failed">Login failed, wrong email and/or password!</string>
 
     <!-- Toast for login activity if failed, blame the internet [CHAR LIMIT=NONE] -->
-    <string name="login_toast_login_failed_nointernet">No Internet Connection!</string>
+    <string name="login_toast_login_failed_nointernet">No Internet connection!</string>
+    <string name="login_toast_short_pw_miss_number">Password must contain at least one number!</string>
+    <string name="login_toast_invalid_email">Invalid email address!</string>
 </resources>

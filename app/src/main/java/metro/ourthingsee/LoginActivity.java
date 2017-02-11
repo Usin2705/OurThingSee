@@ -45,7 +45,6 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      * Find all button here. The code look fabulous this way.
-     *
      */
     private void addControls() {
         progressDialog = new ProgressDialog(LoginActivity.this);
@@ -61,7 +60,6 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      * Do stuff here.
-     *
      */
 
     private void addEvents() {
@@ -81,7 +79,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (edtEmail.getText().toString().length() == 0 || edtPassword.getText().toString().length() == 0) {
+                if (edtEmail.getText().toString().length() == 0 || edtPassword.getText().toString().length() <4) {
                     btnLogin.setEnabled(false);
                     btnLogin.setAlpha(0.5f);
                 } else {
@@ -95,7 +93,7 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
-        edtEmail.addTextChangedListener(new TextWatcher() {
+        edtPassword.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -103,7 +101,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (edtEmail.getText().toString().length() == 0 || edtEmail.getText().toString().length() == 0) {
+                if (edtEmail.getText().toString().length() == 0 || edtPassword.getText().toString().length() < 4) {
                     btnLogin.setEnabled(false);
                     btnLogin.setAlpha(0.5f);
                 } else {
@@ -133,8 +131,8 @@ public class LoginActivity extends AppCompatActivity {
      * Send the login data to the ThingSee cloud service
      * After successfully login, we wil continously get our devices
      *
-     * @param email     User's email taken from editText
-     * @param password  User's passoword taken from editText
+     * @param email    User's email taken from editText
+     * @param password User's passoword taken from editText
      */
     public void sendPostAuth(String email, String password) {
         apiService.savePostAuth(email, password).enqueue(new Callback<Authentication>() {
@@ -156,6 +154,27 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.makeText(LoginActivity.this,
                                 getString(R.string.login_toast_login_failed),
                                 Toast.LENGTH_SHORT).show();
+                        //clear password and refocus to email edittext
+                        edtPassword.setText("");
+                        edtEmail.requestFocus();
+                        break;
+                    //Wrong email format and/or password requirement
+                    case 400:
+                        //check if email is in right format (contains @ and domain)
+                        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(edtEmail.getText().toString()).matches()) {
+                            Toast.makeText(LoginActivity.this,
+                                    R.string.login_toast_invalid_email,
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                        //check if password has any digit
+                        else if (!edtPassword.getText().toString().matches(".*\\d+.*")) {
+                            Toast.makeText(LoginActivity.this,
+                                    R.string.login_toast_short_pw_miss_number,
+                                    Toast.LENGTH_LONG).show();
+                        }
+                        //clear password and refocus to email edittext
+                        edtPassword.setText("");
+                        edtEmail.requestFocus();
                         break;
                 }
             }
@@ -172,7 +191,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     *
      * @param response this will show the document when you press Crtl Q
      */
     public void recordLoginData(Authentication response) {
@@ -194,20 +212,20 @@ public class LoginActivity extends AppCompatActivity {
     private void getUserDevices() {
         String auth = "Bearer ";
         auth += prefs.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, "");
-        Log.e(LOG_TAG,auth);
+        Log.e(LOG_TAG, auth);
         apiService.getUserDevices(auth).enqueue(new Callback<Devices>() {
             @Override
             public void onResponse(Call<Devices> call, Response<Devices> response) {
-                Log.e("Giang",response.code()+"");
-                if (response.isSuccessful()){
+                Log.e("Giang", response.code() + "");
+                if (response.isSuccessful()) {
                     // store pin code of device
                     recordDeviceData(response.body());
-            }
+                }
             }
 
             @Override
             public void onFailure(Call<Devices> call, Throwable t) {
-                Log.e(LOG_TAG,t.toString());
+                Log.e(LOG_TAG, t.toString());
             }
         });
     }
@@ -220,16 +238,17 @@ public class LoginActivity extends AppCompatActivity {
      *                 a timestamp
      */
     private void recordDeviceData(Devices response) {
-        Log.e("Giang","HERE! DAMN YOU!");
+        Log.e("Giang", "HERE! DAMN YOU!");
         String strFirstUuid = response.getDevices().get(0).getUuid();
         if (!strFirstUuid.isEmpty()) {
             prefs.edit().putString(OurContract.PREF_DEVICE_AUTH_ID_NAME, strFirstUuid).apply();
         }
-        Intent intent = new Intent (this, MainActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
     }
-// hide keyboard when touch Log in
+
+    // hide keyboard when touch Log in
     private void hideKeyboard() {
         InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
