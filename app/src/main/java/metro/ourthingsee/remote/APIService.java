@@ -28,7 +28,9 @@ public interface APIService {
     // For get User's devices
     @Headers("Content-Type: application/x-www-form-urlencoded")
     @GET("v2/devices")
-    Call<Devices> getUserDevices(@Header("Authorization") String auth);// For get User's events base on Device's id
+    Call<Devices> getUserDevices(@Header("Authorization") String auth);
+
+    // For get User's events base on Device's id
     @Headers("Content-Type: application/x-www-form-urlencoded")
     @GET("v2/events/{deviceAuthUuid}")
     Call<Events> getUserEvents(@Header("Authorization") String auth,
