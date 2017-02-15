@@ -42,7 +42,7 @@ public class OptionsAdapter extends RecyclerView.Adapter<OptionsAdapter.MyOption
         options.add(new Option(R.drawable.pin, context.getString(R.string.location_option)));
         options.add(new Option(R.drawable.temperature, context.getString(R.string.temperature_option)));
         options.add(new Option(R.drawable.nature, context.getString(R.string.humidity_option)));
-        options.add(new Option(R.drawable.ic_face_24dp, context.getString(R.string.mythingsee_option)));
+        options.add(new Option(R.drawable.ic_face_24dp, context.getString(R.string.myhome_option)));
     }
 
     @Override

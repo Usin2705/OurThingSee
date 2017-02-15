@@ -16,8 +16,11 @@
     <string name="temperature_option">Temperature</string>
     <string name="humidity_option">Humidity</string>
 
-    <!-- Option name for My Thingsee purpose, which measure light, humidity and tempt [CHAR LIMIT=30] -->
-    <string name="mythingsee_option">My Thingsee</string>
+    <!-- Option name for My Home purpose, which measure light, humidity and tempt [CHAR LIMIT=30] -->
+    <string name="myhome_option">My Home</string>
+
+    <!-- General toast for fetch data if response is failed, blame everybody [CHAR LIMIT=NONE] -->
+    <string name="fetch_toast_response_failed_general">Failed to fetch data from Thingsee cloud server. Thanks, Obama!</string>
 
     <string name="log_out">Log Out</string>
     <string name="about_us">About Us</string>

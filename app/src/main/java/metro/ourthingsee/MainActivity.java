@@ -3,6 +3,7 @@ package metro.ourthingsee;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import metro.ourthingsee.RESTObjects.DeviceConfig;
+import metro.ourthingsee.RESTObjects.Events;
 import metro.ourthingsee.adapters.OptionsAdapter;
 import metro.ourthingsee.remote.APIService;
 import metro.ourthingsee.remote.AppUtils;
@@ -138,8 +140,10 @@ public class MainActivity extends AppCompatActivity
                 // TODO Handle the click for location purpose here
                 break;
 
-            // Open activity MyThingsee, this activity will measure humidity and lightlevel
+            // Open activity MyThingsee, this activity will measure humidity and light level (luminance)
             case OurContract.INDEX_OPTION_MYTHINGSEE:
+                Intent intent = new Intent(this, MyHomeActivity.class);
+                startActivity(intent);
                 break;
 
             default:
