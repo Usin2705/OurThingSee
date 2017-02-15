@@ -15,8 +15,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import metro.ourthingsee.RESTObjects.Devices;
 import metro.ourthingsee.RESTObjects.Authentication;
+import metro.ourthingsee.RESTObjects.Devices;
 import metro.ourthingsee.remote.APIService;
 import metro.ourthingsee.remote.AppUtils;
 import retrofit2.Call;
@@ -226,6 +226,9 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Devices> call, Throwable t) {
                 Log.e(LOG_TAG, t.toString());
+                Toast.makeText(LoginActivity.this,
+                        getString(R.string.login_toast_login_failed_nointernet),
+                        Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -238,10 +241,11 @@ public class LoginActivity extends AppCompatActivity {
      *                 a timestamp
      */
     private void recordDeviceData(Devices response) {
-        Log.e("Giang", "HERE! DAMN YOU!");
         String strFirstUuid = response.getDevices().get(0).getUuid();
+        String strFirstToken = response.getDevices().get(0).getToken();
         if (!strFirstUuid.isEmpty()) {
             prefs.edit().putString(OurContract.PREF_DEVICE_AUTH_ID_NAME, strFirstUuid).apply();
+            prefs.edit().putString(OurContract.PREF_DEVICE_TOKEN, strFirstToken).apply();
         }
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
