@@ -24,7 +24,10 @@ public class OurContract {
      * Device's auth id name to stored in shared pref
      */
     public static final String PREF_DEVICE_AUTH_ID_NAME = "pref_device_auth_ID";
-
+    /**
+     * Device'sname to stored in shared pref
+     */
+    public static final String PREF_DEVICE_NAME = "pref_device_name";
 
     /**
      * User's auth token name to stored in shared pref

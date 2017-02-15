@@ -17,6 +17,11 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import metro.ourthingsee.adapters.OptionsAdapter;
 
@@ -31,6 +36,9 @@ public class MainActivity extends AppCompatActivity
     private NavigationView nav_view;
     private DrawerLayout drawer;
     private Toolbar tb_main;
+    private View navHeader;
+    private TextView tv_name;
+    private ImageView imgv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +67,19 @@ public class MainActivity extends AppCompatActivity
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         nav_view = (NavigationView) findViewById(R.id.nav_view);
         setUpNavigationView();
+        // Navigation view header
+        navHeader = nav_view.getHeaderView(0);
+        tv_name = (TextView) navHeader.findViewById(R.id.tv_name);
+        imgv = (ImageView) navHeader.findViewById(R.id.imgv);
+        Glide.with(this)
+                .load(R.drawable.navheader)
+                .asBitmap()
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .centerCrop()
+                .animate(android.R.anim.fade_in)
+                .approximate()
+                .into(imgv);
     }
 
     @Override
