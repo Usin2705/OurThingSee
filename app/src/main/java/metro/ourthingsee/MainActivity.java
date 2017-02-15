@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -26,7 +27,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import metro.ourthingsee.adapters.OptionsAdapter;
 
 public class MainActivity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<ThingSee> {
+        implements LoaderManager.LoaderCallbacks<ThingSee>, OptionsAdapter.PurposeItemClickListener {
     SharedPreferences prefs;
 
     /** Tag for the log messages */
@@ -57,16 +58,20 @@ public class MainActivity extends AppCompatActivity
         //Set up toolbar
         tb_main = (Toolbar) findViewById(R.id.tb_main);
         setSupportActionBar(tb_main);
+
         //Set up recycler view for user's options
         recv_options = (RecyclerView) findViewById(R.id.recv_options);
-        optionsAdapter = new OptionsAdapter(this);
+        optionsAdapter = new OptionsAdapter(this, this);
         recv_options.setAdapter(optionsAdapter);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager linearLayoutManager = new
+                LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recv_options.setLayoutManager(linearLayoutManager);
+
         //Set up navigation bar
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         nav_view = (NavigationView) findViewById(R.id.nav_view);
         setUpNavigationView();
+
         // Navigation view header
         navHeader = nav_view.getHeaderView(0);
         tv_name = (TextView) navHeader.findViewById(R.id.tv_name);
@@ -80,6 +85,38 @@ public class MainActivity extends AppCompatActivity
                 .animate(android.R.anim.fade_in)
                 .approximate()
                 .into(imgv);
+    }
+
+    /**
+     * This is where we receive our callback from
+     * {@link metro.ourthingsee.adapters.OptionsAdapter.PurposeItemClickListener}
+     *
+     * This callback is invoked when you click on an item in the list.
+     *
+     * @param clickedItemIndex Index in the list of the item that was clicked.
+     */
+    @Override
+    public void onListItemClick(int clickedItemIndex) {
+        switch (clickedItemIndex) {
+            case OurContract.INDEX_OPTION_LOCATION:
+                // TODO Handle the click for location purpose here
+                break;
+            case OurContract.INDEX_OPTION_TEMPERATURE:
+                // TODO Handle the click for location purpose here
+                break;
+
+            case OurContract.INDEX_OPTION_HUMIDITY:
+                // TODO Handle the click for location purpose here
+                break;
+
+            // Open activity MyThingsee, this activity will measure humidity and lightlevel
+            case OurContract.INDEX_OPTION_MYTHINGSEE:
+                break;
+
+            default:
+                break;
+        }
+
     }
 
     @Override

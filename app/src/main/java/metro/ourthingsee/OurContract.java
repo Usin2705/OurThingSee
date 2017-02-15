@@ -35,22 +35,23 @@ public class OurContract {
     public static final String PREF_USER_AUTH_TOKEN_NAME = "pref_auth_token";
 
     /**
-     * The register url for register your account with ThingSee cloud
+     * The index option for location
      */
-    public static final String URL_REGISTER = "http://api.thingsee.com/v2/accounts/login";
+    public static final int INDEX_OPTION_LOCATION = 0;
 
     /**
-     * The register url for register your account with ThingSee cloud
+     * The index option for Temperature
      */
-    public static final String URL_LOAD_DATA = "http://api.thingsee.com/v2//events/";
+    public static final int INDEX_OPTION_TEMPERATURE = 1;
 
     /**
-     * The register ID for loader. Used when register new account with ThingSee cloud
+     * The index option for location
      */
-    public static final int LOADER_ID_REGISTER = 1;
+    public static final int INDEX_OPTION_HUMIDITY = 2;
 
     /**
-     * The Load dât ID for loader. Load data from cloud to database to screen. Used when resisted
+     * The index option for My Thingsee
      */
-    public static final int LOADER_ID_DATALOADER = 2;
+    public static final int INDEX_OPTION_MYTHINGSEE = 3;
+
 }
