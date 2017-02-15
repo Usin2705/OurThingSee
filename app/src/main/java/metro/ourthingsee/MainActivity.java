@@ -24,7 +24,16 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
+import metro.ourthingsee.RESTObjects.DeviceConfig;
 import metro.ourthingsee.adapters.OptionsAdapter;
+import metro.ourthingsee.remote.APIService;
+import metro.ourthingsee.remote.AppUtils;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+import static metro.ourthingsee.OurContract.PREF_DEVICE_AUTH_ID_NAME;
+import static metro.ourthingsee.OurContract.PREF_USER_AUTH_TOKEN_NAME;
 
 public class MainActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<ThingSee>, OptionsAdapter.PurposeItemClickListener {
@@ -47,6 +56,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         prefs = getSharedPreferences(OurContract.SHARED_PREF, Context.MODE_PRIVATE);
         // If user did not login before, open login activity first
+        Log.e("Giang",prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, ""));
         if (prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, "").isEmpty()) {
             Intent intent = new Intent (this, LoginActivity.class);
             startActivity(intent);
@@ -54,7 +64,33 @@ public class MainActivity extends AppCompatActivity
         } else {
             Log.e(LOG_TAG, prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME,""));
             Log.e(LOG_TAG, prefs.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME,""));
+            //Update the name of device on UI
+            APIService apiService = AppUtils.getAPIService();
+            apiService.getDeviceName("Bearer " + prefs.getString(PREF_USER_AUTH_TOKEN_NAME,"")
+                    ,prefs.getString(PREF_DEVICE_AUTH_ID_NAME,"")).enqueue(new Callback<DeviceConfig>() {
+                @Override
+                public void onResponse(Call<DeviceConfig> call, Response<DeviceConfig> response) {
+                    Log.e(LOG_TAG,response.code()+"");
+                    if(response.code()==200) {
+                        try {
+                            Log.e(LOG_TAG, response.body().getDevice().getName());
+                            tv_name.setText(response.body().getDevice().getName());
+                        }catch(Exception e){}
+                    }else
+                        tv_name.setText("Device Name");
+                }
+
+                @Override
+                public void onFailure(Call<DeviceConfig> call, Throwable t) {
+                    Log.e(LOG_TAG+" fail", t.toString());
+                    tv_name.setText("Device Name");
+                    Toast.makeText(MainActivity.this,
+                            getString(R.string.login_toast_login_failed_nointernet),
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
         }
+
         //Set up toolbar
         tb_main = (Toolbar) findViewById(R.id.tb_main);
         setSupportActionBar(tb_main);
@@ -76,15 +112,8 @@ public class MainActivity extends AppCompatActivity
         navHeader = nav_view.getHeaderView(0);
         tv_name = (TextView) navHeader.findViewById(R.id.tv_name);
         imgv = (ImageView) navHeader.findViewById(R.id.imgv);
-        Glide.with(this)
-                .load(R.drawable.navheader)
-                .asBitmap()
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
-                .centerCrop()
-                .animate(android.R.anim.fade_in)
-                .approximate()
-                .into(imgv);
+        Glide.with(this).load(R.drawable.navheader).asBitmap().diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true).centerCrop().animate(android.R.anim.fade_in).approximate().into(imgv);
     }
 
     /**
@@ -214,6 +243,7 @@ public class MainActivity extends AppCompatActivity
         prefs.edit().putString(OurContract.PREF_AUTH_EMAIL,"").apply();
         prefs.edit().putString(OurContract.PREF_AUTH_PASSWORD,"").apply();
         prefs.edit().putString(OurContract.PREF_DEVICE_AUTH_ID_NAME, "").apply();
+        prefs.edit().putString(OurContract.PREF_DEVICE_TOKEN, "").apply();
         Intent intent = new Intent(this,LoginActivity.class);
         startActivity(intent);
         finish();

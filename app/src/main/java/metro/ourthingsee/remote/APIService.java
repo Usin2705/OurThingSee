@@ -1,6 +1,7 @@
 package metro.ourthingsee.remote;
 
 import metro.ourthingsee.RESTObjects.Authentication;
+import metro.ourthingsee.RESTObjects.DeviceConfig;
 import metro.ourthingsee.RESTObjects.Devices;
 import metro.ourthingsee.RESTObjects.Events;
 import retrofit2.Call;
@@ -40,4 +41,9 @@ public interface APIService {
                                @Query("limit") Integer limit,
                                @Query("start") Long start,
                                @Query("end") Long end);
+    // For get Device's name, UI purpose only
+    @Headers("Content-Type: application/x-www-form-urlencoded")
+    @GET("v2/devices/{deviceAuthUuid}/configuration")
+    Call<DeviceConfig> getDeviceName(@Header("Authorization") String auth,
+                                     @Path("deviceAuthUuid") String deviceAuthUuid);
 }
