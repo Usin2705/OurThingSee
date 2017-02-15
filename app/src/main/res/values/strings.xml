@@ -11,4 +11,11 @@
     <string name="login_toast_login_failed_nointernet">No Internet connection!</string>
     <string name="login_toast_short_pw_miss_number">Password must contain at least one number!</string>
     <string name="login_toast_invalid_email">Invalid email address!</string>
+    <string name="location_option">Location</string>
+    <string name="temperature_option">Temperature</string>
+    <string name="humidity_option">Humidity</string>
+    <string name="log_out">Log Out</string>
+    <string name="about_us">About Us</string>
+    <string name="openDrawer">Open Drawer</string>
+    <string name="closeDrawer">Close Drawer</string>
 </resources>

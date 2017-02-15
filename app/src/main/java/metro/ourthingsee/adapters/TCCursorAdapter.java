@@ -1,4 +1,4 @@
-package metro.ourthingsee;
+package metro.ourthingsee.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
+import metro.ourthingsee.R;
 import metro.ourthingsee.data.TCContract.TCEntry;
 
 /**

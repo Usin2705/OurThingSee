@@ -5,4 +5,7 @@
 
     <!-- Common margin value used throughout the app -->
     <dimen name="activity_margin">16dp</dimen>
+    <dimen name="list_item_icon_size">32dp</dimen>
+    <dimen name="material_design_guide_padding">16dp</dimen>
+    <dimen name="material_design_item_guide_padding">8dp</dimen>
 </resources>
