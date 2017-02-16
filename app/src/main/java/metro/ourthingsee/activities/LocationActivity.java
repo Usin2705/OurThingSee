@@ -44,14 +44,14 @@ public class LocationActivity extends AppCompatActivity {
                     public void onMapLoaded() {
                         mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                         mGoogleMap.getUiSettings().setZoomGesturesEnabled(true);
-                        getDeviceCurrentLocation();
+                        getDeviceCurrentLocation(null);
                     }
                 });
             }
         });
     }
 
-    private void getDeviceCurrentLocation() {
+    private void getDeviceCurrentLocation(Long endTimestamp) {
         String auth = "Bearer ";
         SharedPreferences sharedPreferences;
         sharedPreferences = getSharedPreferences(OurContract.SHARED_PREF, MODE_PRIVATE);
@@ -60,12 +60,13 @@ public class LocationActivity extends AppCompatActivity {
         String senseIds = "0x00010100,0x00010200";
         APIService apiService = AppUtils.getAPIService();
         apiService.getUserEvents(auth, sharedPreferences.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, "")
-                , "sense", senseIds, 1, null, null)
+                , "sense", senseIds, 1, null, endTimestamp)
                 .enqueue(new Callback<Events>() {
                     @Override
                     public void onResponse(Call<Events> call, Response<Events> response) {
                         Log.e("Giang Event", response.code() + "");
-                        if (response.code() == 200 && response.body().getEvents().size() >0) {
+                        if (response.code() == 200 && response.body().getEvents().size() ==1
+                                &&response.body().getEvents().get(0).getCause().getSenses().size()==2) {
                             double lat = 0, lng = 0;
                             Log.e("Giang Event Id", response.body().getEvents().get(0).getCause().getSenses().size() + "");
                             for (int j = 0; j < response.body().getEvents().get(0).getCause().getSenses().size(); j++) {
@@ -82,6 +83,9 @@ public class LocationActivity extends AppCompatActivity {
                             Log.e("Giang",latLng.latitude+"");
                             mGoogleMap.addMarker(new MarkerOptions().position(latLng));
                             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                        }
+                        else if (response.body().getEvents().get(0).getCause().getSenses().size()<2){
+                            getDeviceCurrentLocation(response.body().getEvents().get(0).getTimestamp()-1);
                         }
                     }
 
