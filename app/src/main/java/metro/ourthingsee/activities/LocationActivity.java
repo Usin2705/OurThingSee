@@ -50,7 +50,9 @@ public class LocationActivity extends AppCompatActivity {
             }
         });
     }
-
+/*
+Method for getting current location
+ */
     private void getDeviceCurrentLocation(Long endTimestamp) {
         String auth = "Bearer ";
         SharedPreferences sharedPreferences;
@@ -64,23 +66,23 @@ public class LocationActivity extends AppCompatActivity {
                 .enqueue(new Callback<Events>() {
                     @Override
                     public void onResponse(Call<Events> call, Response<Events> response) {
-                        Log.e("Giang Event", response.code() + "");
+//                        Log.e("Giang Event", response.code() + "");
                         if (response.code() == 200 && response.body().getEvents().size() ==1
                                 &&response.body().getEvents().get(0).getCause().getSenses().size()==2) {
                             double lat = 0, lng = 0;
-                            Log.e("Giang Event Id", response.body().getEvents().get(0).getCause().getSenses().size() + "");
+//                            Log.e("Giang Event Id", response.body().getEvents().get(0).getCause().getSenses().size() + "");
                             for (int j = 0; j < response.body().getEvents().get(0).getCause().getSenses().size(); j++) {
-                                Log.e("Giang value",response.body().getEvents().get(0).getCause().getSenses().get(j).getSId());
+//                                Log.e("Giang value",response.body().getEvents().get(0).getCause().getSenses().get(j).getSId());
                                 if (response.body().getEvents().get(0).getCause().getSenses().get(j).getSId().equals("0x00010100")) {
                                     lat = response.body().getEvents().get(0).getCause().getSenses().get(j).getVal();
-                                    Log.e("Giang Lat", lat+"");
+//                                    Log.e("Giang Lat", lat+"");
                                 } else if (response.body().getEvents().get(0).getCause().getSenses().get(j).getSId().equals("0x00010200")) {
                                     lng = response.body().getEvents().get(0).getCause().getSenses().get(j).getVal();
-                                    Log.e("Giang Lng", lng+"");
+//                                    Log.e("Giang Lng", lng+"");
                                 }
                             }
                             LatLng latLng = new LatLng(lat, lng);
-                            Log.e("Giang",latLng.latitude+"");
+//                            Log.e("Giang",latLng.latitude+"");
                             mGoogleMap.addMarker(new MarkerOptions().position(latLng));
                             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
                         }
