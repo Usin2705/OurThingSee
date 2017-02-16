@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -87,6 +88,9 @@ public class LocationActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(Call<Events> call, Throwable t) {
                         Log.e("Giang loi events", t.toString());
+                        Toast.makeText(LocationActivity.this,
+                                getString(R.string.login_toast_login_failed_nointernet),
+                                Toast.LENGTH_SHORT).show();
                     }
                 });
     }
