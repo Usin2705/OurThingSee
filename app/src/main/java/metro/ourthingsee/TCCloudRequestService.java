@@ -37,22 +37,24 @@ public class TCCloudRequestService extends IntentService {
                 enqueue(new Callback<Events>() {
                     @Override
                     public void onResponse(Call<Events> call, Response<Events> response) {
-                        Long longTimestamp = response.body().getEvents().
-                                get(0).getCause().getSenses().get(0).getTs();
+                        if(response.body().getEvents().size()>0) {
+                            Long longTimestamp = response.body().getEvents().
+                                    get(0).getCause().getSenses().get(0).getTs();
 
-                        Double dbValue = response.body().getEvents().
-                                get(0).getCause().getSenses().get(0).getVal();
+                            Double dbValue = response.body().getEvents().
+                                    get(0).getCause().getSenses().get(0).getVal();
 
-                        /**
-                         * Creates a new Intent containing a Uri object
-                         * BROADCAST_ACTION is a custom Intent action
-                         */
+                            /**
+                             * Creates a new Intent containing a Uri object
+                             * BROADCAST_ACTION is a custom Intent action
+                             */
 
-                        Intent broadcastIntent = new Intent(OurContract.BROADCAST_ACTION);
-                        // Puts the status into the Intent
-                        broadcastIntent.putExtra(OurContract.BROADCAST_RESPONSE_VALUE, dbValue);
-                        broadcastIntent.putExtra(OurContract.BROADCAST_RESPONSE_TIMESTAMP, longTimestamp);
-                        sendBroadcast(broadcastIntent);
+                            Intent broadcastIntent = new Intent(OurContract.BROADCAST_ACTION);
+                            // Puts the status into the Intent
+                            broadcastIntent.putExtra(OurContract.BROADCAST_RESPONSE_VALUE, dbValue);
+                            broadcastIntent.putExtra(OurContract.BROADCAST_RESPONSE_TIMESTAMP, longTimestamp);
+                            sendBroadcast(broadcastIntent);
+                        }
                     }
 
                     @Override

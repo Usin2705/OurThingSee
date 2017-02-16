@@ -1,4 +1,4 @@
-package metro.ourthingsee;
+package metro.ourthingsee.activities;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -9,11 +9,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
 import java.sql.Date;
-import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.FieldPosition;
-import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+
+import metro.ourthingsee.OurContract;
+import metro.ourthingsee.R;
+import metro.ourthingsee.TCCloudRequestService;
 
 /**
  * Created by Usin on 15-Feb-17.

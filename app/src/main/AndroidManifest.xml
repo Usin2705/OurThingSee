@@ -17,7 +17,7 @@
             android:exported="false"></service>
 
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:theme="@style/MainActivityTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,8 +26,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".LoginActivity"></activity>
-        <activity android:name=".MyHomeActivity"></activity>
+        <activity android:name=".activities.LoginActivity"></activity>
+        <activity android:name=".activities.MyHomeActivity"></activity>
 
     </application>
 

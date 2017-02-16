@@ -1,4 +1,4 @@
-package metro.ourthingsee;
+package metro.ourthingsee.activities;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -15,6 +15,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import metro.ourthingsee.OurContract;
+import metro.ourthingsee.R;
 import metro.ourthingsee.RESTObjects.Authentication;
 import metro.ourthingsee.RESTObjects.Devices;
 import metro.ourthingsee.remote.APIService;
@@ -144,6 +146,8 @@ public class LoginActivity extends AppCompatActivity {
 
                     //The request was fulfilled.
                     case 200:
+                        progressDialog.setMessage("Getting user's devices and settings...");
+                        progressDialog.show();
                         Toast.makeText(LoginActivity.this,
                                 getString(R.string.login_toast_login_succeeded),
                                 Toast.LENGTH_SHORT).show();
@@ -217,6 +221,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Devices> call, Response<Devices> response) {
                 Log.e("Giang", response.code() + "");
+                progressDialog.dismiss();
                 if (response.isSuccessful()) {
                     // store pin code of device
                     recordDeviceData(response.body());
@@ -226,6 +231,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Devices> call, Throwable t) {
                 Log.e(LOG_TAG, t.toString());
+                progressDialog.dismiss();
                 Toast.makeText(LoginActivity.this,
                         getString(R.string.login_toast_login_failed_nointernet),
                         Toast.LENGTH_SHORT).show();

@@ -1,9 +1,8 @@
-package metro.ourthingsee;
+package metro.ourthingsee.activities;
 
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -25,8 +24,10 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
+import metro.ourthingsee.OurContract;
+import metro.ourthingsee.R;
 import metro.ourthingsee.RESTObjects.DeviceConfig;
-import metro.ourthingsee.RESTObjects.Events;
+import metro.ourthingsee.ThingSee;
 import metro.ourthingsee.adapters.OptionsAdapter;
 import metro.ourthingsee.remote.APIService;
 import metro.ourthingsee.remote.AppUtils;
