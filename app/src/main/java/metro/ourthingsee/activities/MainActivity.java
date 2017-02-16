@@ -131,6 +131,8 @@ public class MainActivity extends AppCompatActivity
     public void onListItemClick(int clickedItemIndex) {
         switch (clickedItemIndex) {
             case OurContract.INDEX_OPTION_LOCATION:
+                Intent intent_location = new Intent(this, LocationActivity.class);
+                startActivity(intent_location);
                 // TODO Handle the click for location purpose here
                 break;
             case OurContract.INDEX_OPTION_TEMPERATURE:
