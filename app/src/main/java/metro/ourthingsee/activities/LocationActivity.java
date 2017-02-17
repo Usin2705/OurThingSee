@@ -58,14 +58,11 @@ public class LocationActivity extends AppCompatActivity {
     Method for getting current location
      */
     private void getDeviceCurrentLocation(Long endTimestamp) {
-        String auth = "Bearer ";
-        SharedPreferences sharedPreferences;
-        sharedPreferences = getSharedPreferences(OurContract.SHARED_PREF, MODE_PRIVATE);
-        auth += sharedPreferences.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, "");
-        String senseIds = "0x00010100,0x00010200";
+        SharedPreferences sharedPreferences = getSharedPreferences(OurContract.SHARED_PREF, MODE_PRIVATE);
         APIService apiService = AppUtils.getAPIService();
-        apiService.getUserEvents(auth, sharedPreferences.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, "")
-                , "sense", senseIds, 1, null, endTimestamp)
+        apiService.getUserEvents("Bearer "+sharedPreferences.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, "")
+                , sharedPreferences.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, "")
+                , "sense", "0x00010100,0x00010200", 1, null, endTimestamp)
                 .enqueue(new Callback<Events>() {
                     @Override
                     public void onResponse(Call<Events> call, Response<Events> response) {
