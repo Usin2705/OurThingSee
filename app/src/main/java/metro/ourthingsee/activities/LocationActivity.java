@@ -67,7 +67,7 @@ public class LocationActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<Events> call, Response<Events> response) {
                         if (response.code() == 200 && response.body().getEvents().size() > 0) {
-                            // sIds String List is used to check if there are both longtitude and latitude retrieved
+                            // sIds String List is used to check if there are both longitude and latitude retrieved
                             List<String> sIds = new ArrayList<String>();
                             double lat = 0, lng = 0;
                             for(int i = 0; i<response.body().getEvents().get(0).getCause().getSenses().size();i++)
@@ -81,12 +81,12 @@ public class LocationActivity extends AppCompatActivity {
                                 }
                             }
                             if (sIds.contains("0x00010100")&&sIds.contains("0x00010200")) {
-                                //if Sids satisfy the conditions then add a marker on the map
+                                //if Sids satisfies the conditions, add a marker on the map
                                 LatLng latLng = new LatLng(lat, lng);
                                 mGoogleMap.addMarker(new MarkerOptions().position(latLng));
                                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
                             } else {
-                                //if sIds doesn't contain both desired values then call a recursion
+                                //if sIds doesn't contain both desired values, call a recursion
                                 getDeviceCurrentLocation(response.body().getEvents().get(0).getTimestamp() - 1);
                             }
                         }else if (response.code() == 200 && response.body().getEvents().size() == 0){
