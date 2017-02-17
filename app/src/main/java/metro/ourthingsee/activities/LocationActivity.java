@@ -13,6 +13,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import metro.ourthingsee.OurContract;
 import metro.ourthingsee.R;
 import metro.ourthingsee.RESTObjects.Events;
@@ -50,15 +53,15 @@ public class LocationActivity extends AppCompatActivity {
             }
         });
     }
-/*
-Method for getting current location
- */
+
+    /*
+    Method for getting current location
+     */
     private void getDeviceCurrentLocation(Long endTimestamp) {
         String auth = "Bearer ";
         SharedPreferences sharedPreferences;
         sharedPreferences = getSharedPreferences(OurContract.SHARED_PREF, MODE_PRIVATE);
         auth += sharedPreferences.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, "");
-//        auth += device.getToken();
         String senseIds = "0x00010100,0x00010200";
         APIService apiService = AppUtils.getAPIService();
         apiService.getUserEvents(auth, sharedPreferences.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, "")
@@ -66,28 +69,32 @@ Method for getting current location
                 .enqueue(new Callback<Events>() {
                     @Override
                     public void onResponse(Call<Events> call, Response<Events> response) {
-//                        Log.e("Giang Event", response.code() + "");
-                        if (response.code() == 200 && response.body().getEvents().size() ==1
-                                &&response.body().getEvents().get(0).getCause().getSenses().size()==2) {
+                        if (response.code() == 200 && response.body().getEvents().size() > 0) {
+                            // sIds String List is used to check if there are both longtitude and latitude retrieved
+                            List<String> sIds = new ArrayList<String>();
                             double lat = 0, lng = 0;
-//                            Log.e("Giang Event Id", response.body().getEvents().get(0).getCause().getSenses().size() + "");
-                            for (int j = 0; j < response.body().getEvents().get(0).getCause().getSenses().size(); j++) {
-//                                Log.e("Giang value",response.body().getEvents().get(0).getCause().getSenses().get(j).getSId());
-                                if (response.body().getEvents().get(0).getCause().getSenses().get(j).getSId().equals("0x00010100")) {
-                                    lat = response.body().getEvents().get(0).getCause().getSenses().get(j).getVal();
-//                                    Log.e("Giang Lat", lat+"");
-                                } else if (response.body().getEvents().get(0).getCause().getSenses().get(j).getSId().equals("0x00010200")) {
-                                    lng = response.body().getEvents().get(0).getCause().getSenses().get(j).getVal();
-//                                    Log.e("Giang Lng", lng+"");
+                            for(int i = 0; i<response.body().getEvents().get(0).getCause().getSenses().size();i++)
+                            {
+                                sIds.add(response.body().getEvents().get(0).getCause().getSenses().get(i).getSId());
+                                //after the loop, sIds should contain at least 2 values "0x00010100" and "0x00010200"
+                                if (response.body().getEvents().get(0).getCause().getSenses().get(i).getSId().equals("0x00010100")) {
+                                    lat = response.body().getEvents().get(0).getCause().getSenses().get(i).getVal();
+                                } else if (response.body().getEvents().get(0).getCause().getSenses().get(i).getSId().equals("0x00010200")) {
+                                    lng = response.body().getEvents().get(0).getCause().getSenses().get(i).getVal();
                                 }
                             }
-                            LatLng latLng = new LatLng(lat, lng);
-//                            Log.e("Giang",latLng.latitude+"");
-                            mGoogleMap.addMarker(new MarkerOptions().position(latLng));
-                            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-                        }
-                        else if (response.body().getEvents().get(0).getCause().getSenses().size()<2){
-                            getDeviceCurrentLocation(response.body().getEvents().get(0).getTimestamp()-1);
+                            if (sIds.contains("0x00010100")&&sIds.contains("0x00010200")) {
+                                //if Sids satisfy the conditions then add a marker on the map
+                                LatLng latLng = new LatLng(lat, lng);
+                                mGoogleMap.addMarker(new MarkerOptions().position(latLng));
+                                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                            } else {
+                                //if sIds doesn't contain both desired values then call a recursion
+                                getDeviceCurrentLocation(response.body().getEvents().get(0).getTimestamp() - 1);
+                            }
+                        }else if (response.code() == 200 && response.body().getEvents().size() == 0){
+                            //If there is no event contains the location, show a toast
+                            Toast.makeText(LocationActivity.this, R.string.no_location, Toast.LENGTH_SHORT).show();
                         }
                     }
 
