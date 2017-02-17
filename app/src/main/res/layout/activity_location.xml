@@ -126,6 +126,6 @@
         android:layout_alignParentEnd="true"
         android:layout_margin="@dimen/material_design_guide_padding"
         android:src="@drawable/location"
-        app:backgroundTint="#E040FB"
+        app:backgroundTint="@color/colorAccent"
         app:fabSize="normal" />
 </RelativeLayout>
