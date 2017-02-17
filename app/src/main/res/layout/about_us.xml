@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/about_us"
+    android:background="@drawable/About">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/name"
+        android:text="@string/about_name"
+        android:layout_above="@+id/name1"
+        android:paddingLeft="20dp"
+        android:textSize="30sp"
+        android:textColor="@color/common_google_signin_btn_text_dark_focused"
+        android:layout_marginBottom="20dp" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/name1"
+        android:text="@string/about_name1"
+        android:layout_above="@+id/name2"
+        android:paddingLeft="50dp"
+        android:textColor="@color/common_google_signin_btn_text_dark_focused"
+        android:textSize="20sp" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/name2"
+        android:text="@string/about_name2"
+        android:layout_above="@+id/name3"
+        android:paddingLeft="50dp"
+        android:textColor="@color/common_google_signin_btn_text_dark_focused"
+        android:textSize="20sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/name3"
+        android:text="@string/about_name3"
+        android:layout_above="@+id/information_about_app"
+        android:layout_marginBottom="60dp"
+        android:paddingLeft="50dp"
+        android:textColor="@color/common_google_signin_btn_text_dark_focused"
+        android:textSize="20sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/information_about_app"
+        android:text="@string/information_about_app"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:textColor="@color/common_google_signin_btn_text_dark_focused"
+        android:textSize="16sp"
+        android:layout_marginBottom="174dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/back"
+        android:text="Back"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="30dp"
+        android:layout_marginBottom="30dp"
+        android:background="@color/cardview_light_background" />
+
+</RelativeLayout>
+
