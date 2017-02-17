@@ -208,6 +208,8 @@ public class MainActivity extends AppCompatActivity
                         delLoginData();
                         break;
                     case R.id.about_us:
+                        Intent aboutUs = new Intent(MainActivity.this,AboutUs.class);
+                        startActivityForResult(aboutUs,1);
                         break;
                 }
 
