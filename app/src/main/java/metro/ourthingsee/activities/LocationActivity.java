@@ -38,16 +38,16 @@ import retrofit2.Response;
 
 public class LocationActivity extends AppCompatActivity {
     Calendar calendar = Calendar.getInstance(),
-    calendarEnd = Calendar.getInstance();
+            calendarEnd = Calendar.getInstance();
     SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy");
     SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm");
-    SimpleDateFormat sdfDateTime = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
     GoogleMap mGoogleMap;
     ProgressDialog progressDialog;
     View query_view;
     FloatingActionButton fab_show_path, fab_current_location;
     TextView tv_startDate, tv_startTime, tv_endDate, tv_endTime;
     Button btn_showPath;
+    List<LatLng> listLatLng = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +63,7 @@ public class LocationActivity extends AppCompatActivity {
         //set up progress dialog showing when getting current location
         progressDialog = new ProgressDialog(LocationActivity.this);
         progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Getting current location...");
+        progressDialog.setMessage(getString(R.string.getting_current_location));
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setCanceledOnTouchOutside(false);
         //hide query view when first enter activity
@@ -122,41 +122,107 @@ public class LocationActivity extends AppCompatActivity {
         tv_startDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setUpDatePicker(tv_startDate,calendar);
+                setUpDatePicker(tv_startDate, calendar);
             }
         });
         tv_endDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setUpDatePicker(tv_endDate,calendarEnd);
+                setUpDatePicker(tv_endDate, calendarEnd);
             }
         });
         tv_startTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setUpTimePicker(tv_startTime,calendar);
+                setUpTimePicker(tv_startTime, calendar);
             }
         });
         tv_endTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setUpTimePicker(tv_endTime,calendarEnd);
+                setUpTimePicker(tv_endTime, calendarEnd);
             }
         });
         btn_showPath.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                calendar.set(Calendar.SECOND,0);
-                calendar.set(Calendar.MILLISECOND,0);
-                calendarEnd.set(Calendar.SECOND,59);
-                calendarEnd.set(Calendar.MILLISECOND,999);
-                Log.e("Giang Time", calendar.getTimeInMillis()+"");
-                Log.e("Giang Time", calendarEnd.getTimeInMillis()+"");
+                calendar.set(Calendar.SECOND, 0);
+                calendar.set(Calendar.MILLISECOND, 0);
+                calendarEnd.set(Calendar.SECOND, 59);
+                calendarEnd.set(Calendar.MILLISECOND, 999);
+                listLatLng.clear();
+                SharedPreferences sharedPreferences = getSharedPreferences(OurContract.SHARED_PREF, MODE_PRIVATE);
+                String authen = "Bearer " + sharedPreferences.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, "");
+                String deviceAuthen = sharedPreferences.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, "");
+                APIService apiService = AppUtils.getAPIService();
+                progressDialog.setMessage(getString(R.string.drawing_path));
+                progressDialog.show();
+                getPathInTimeInterval(calendar.getTimeInMillis(), calendarEnd.getTimeInMillis(), apiService, authen, deviceAuthen);
+
             }
         });
     }
 
-    private void setUpDatePicker (final TextView tv, final Calendar calendar){
+    private void getPathInTimeInterval(final Long start, final Long end, final APIService apiService, final String authen, final String deviceAuthen) {
+        apiService.getUserEvents(authen, deviceAuthen, "sense", "0x00010100,0x00010200", 50, start, end)
+                .enqueue(new Callback<Events>() {
+                    @Override
+                    public void onResponse(Call<Events> call, Response<Events> response) {
+                        switch (response.code()) {
+                            case 200:
+                                if (response.body().getEvents().size() > 0) {
+                                    for (int i = 0; i < response.body().getEvents().size(); i++) {
+                                        List<String> sIds = new ArrayList<String>();
+                                        double lat = 0, lng = 0;
+                                        for (int j = 0; j < response.body().getEvents().get(i).getCause().getSenses().size(); j++) {
+                                            sIds.add(response.body().getEvents().get(i).getCause().getSenses().get(j).getSId());
+                                            //after the loop, sIds should contain at least 2 values "0x00010100" and "0x00010200"
+                                            if (response.body().getEvents().get(i).getCause().getSenses().get(j).getSId().equals("0x00010100")) {
+                                                lat = response.body().getEvents().get(i).getCause().getSenses().get(j).getVal();
+                                            } else if (response.body().getEvents().get(i).getCause().getSenses().get(j).getSId().equals("0x00010200")) {
+                                                lng = response.body().getEvents().get(i).getCause().getSenses().get(j).getVal();
+                                            }
+                                        }
+                                        if (sIds.contains("0x00010100") && sIds.contains("0x00010200")) {
+                                            //if Sids satisfies the conditions, add a LatLng to the list
+                                            LatLng latLng = new LatLng(lat, lng);
+//                                            Log.e("Giang coor",latLng.latitude+","+latLng.longitude);
+                                            listLatLng.add(latLng);
+                                        }
+                                    }
+                                    if (response.body().getEvents().size() == 50) {
+                                        getPathInTimeInterval(start, response.body().getEvents().get(49).getTimestamp() - 1
+                                                , apiService, authen, deviceAuthen);
+                                    } else {
+                                        for(int i = 0;i<listLatLng.size();i++){
+                                            Log.e("Giang latlng",listLatLng.get(i).latitude+","+listLatLng.get(i).longitude);
+                                        }
+                                        progressDialog.dismiss();
+                                    }
+                                } else if (response.body().getEvents().size() == 0) {
+                                    if (listLatLng.isEmpty())
+                                        Toast.makeText(LocationActivity.this, R.string.no_location, Toast.LENGTH_SHORT).show();
+                                    progressDialog.dismiss();
+                                }
+                                break;
+                            case 503:
+                                getPathInTimeInterval(start, end, apiService, authen, deviceAuthen);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Events> call, Throwable t) {
+                        Log.e("Giang loi events", t.toString());
+                        Toast.makeText(LocationActivity.this,
+                                getString(R.string.login_toast_login_failed_nointernet),
+                                Toast.LENGTH_SHORT).show();
+                        progressDialog.dismiss();
+                    }
+                });
+    }
+
+
+    private void setUpDatePicker(final TextView tv, final Calendar calendar) {
         DatePickerDialog.OnDateSetListener callback = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
@@ -175,12 +241,13 @@ public class LocationActivity extends AppCompatActivity {
         datePickerDialog.setCanceledOnTouchOutside(false);
         datePickerDialog.show();
     }
-    private void setUpTimePicker (final TextView tv, final Calendar calendar){
+
+    private void setUpTimePicker(final TextView tv, final Calendar calendar) {
         TimePickerDialog.OnTimeSetListener callback = new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                calendar.set(Calendar.HOUR_OF_DAY,hourOfDay);
-                calendar.set(Calendar.MINUTE,minute);
+                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                calendar.set(Calendar.MINUTE, minute);
                 tv.setText(sdfTime.format(calendar.getTime()));
             }
         };
@@ -196,7 +263,7 @@ public class LocationActivity extends AppCompatActivity {
     /*
     Method for getting current location
      */
-    private void getDeviceCurrentLocation(Long endTimestamp) {
+    private void getDeviceCurrentLocation(final Long endTimestamp) {
         SharedPreferences sharedPreferences = getSharedPreferences(OurContract.SHARED_PREF, MODE_PRIVATE);
         APIService apiService = AppUtils.getAPIService();
         progressDialog.show();
@@ -206,7 +273,7 @@ public class LocationActivity extends AppCompatActivity {
                 .enqueue(new Callback<Events>() {
                     @Override
                     public void onResponse(Call<Events> call, Response<Events> response) {
-                        switch (response.code()){
+                        switch (response.code()) {
                             case 200:
                                 if (response.body().getEvents().size() > 0) {
                                     // sIds String List is used to check if there are both longitude and latitude retrieved
@@ -238,7 +305,7 @@ public class LocationActivity extends AppCompatActivity {
                                 }
                                 break;
                             case 503:
-                                getDeviceCurrentLocation(null);
+                                getDeviceCurrentLocation(endTimestamp);
                         }
 
                     }

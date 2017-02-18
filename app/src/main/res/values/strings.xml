@@ -42,4 +42,6 @@
     <string name="information_about_app">    This application is used for storing wine and delivering wine.
     We use Thingsee to monitor the temperature, pressure and humidity in the wine cellar to keep the environment being the most suitable for wine.
     We also use the position service to check the path when the staffs deliver wine to shops. </string>
+    <string name="getting_current_location">Getting current location...</string>
+    <string name="drawing_path">Drawing path...</string>
 </resources>
