@@ -44,4 +44,5 @@
     We also use the position service to check the path when the staffs deliver wine to shops. </string>
     <string name="getting_current_location">Getting current location...</string>
     <string name="drawing_path">Drawing path...</string>
+    <string name="no_path">Cannot retrieve path!</string>
 </resources>

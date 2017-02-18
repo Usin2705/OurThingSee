@@ -105,6 +105,7 @@ public class LocationActivity extends AppCompatActivity {
         fab_show_path.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mGoogleMap.clear();
                 query_view.setVisibility(View.VISIBLE);
                 fab_show_path.hide();
                 fab_current_location.show();
@@ -113,6 +114,7 @@ public class LocationActivity extends AppCompatActivity {
         fab_current_location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mGoogleMap.clear();
                 query_view.setVisibility(View.INVISIBLE);
                 fab_current_location.hide();
                 fab_show_path.show();
@@ -201,7 +203,7 @@ public class LocationActivity extends AppCompatActivity {
                                     }
                                 } else if (response.body().getEvents().size() == 0) {
                                     if (listLatLng.isEmpty())
-                                        Toast.makeText(LocationActivity.this, R.string.no_location, Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(LocationActivity.this, R.string.no_path, Toast.LENGTH_SHORT).show();
                                     progressDialog.dismiss();
                                 }
                                 break;
