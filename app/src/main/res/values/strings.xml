@@ -29,7 +29,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="no_location">Cannot retrieve current location!</string>
+    <string name="no_location">No location found!</string>
 
 
     <!-- The developers' name in "About us"-->
@@ -44,5 +44,5 @@
     We also use the position service to check the path when the staffs deliver wine to shops. </string>
     <string name="getting_current_location">Getting current location...</string>
     <string name="drawing_path">Drawing path...</string>
-    <string name="no_path">Cannot retrieve path!</string>
+    <string name="no_path">No path found in given time interval!</string>
 </resources>

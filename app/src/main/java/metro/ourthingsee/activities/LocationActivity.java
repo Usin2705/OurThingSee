@@ -20,8 +20,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -39,13 +43,14 @@ import retrofit2.Response;
 public class LocationActivity extends AppCompatActivity {
     Calendar calendar = Calendar.getInstance(),
             calendarEnd = Calendar.getInstance();
+    DecimalFormat df = new DecimalFormat("0.#");
     SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy");
     SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm");
     GoogleMap mGoogleMap;
     ProgressDialog progressDialog;
     View query_view;
     FloatingActionButton fab_show_path, fab_current_location;
-    TextView tv_startDate, tv_startTime, tv_endDate, tv_endTime;
+    TextView tv_startDate, tv_startTime, tv_endDate, tv_endTime, tv_distance;
     Button btn_showPath;
     List<LatLng> listLatLng = new ArrayList<>();
 
@@ -63,7 +68,6 @@ public class LocationActivity extends AppCompatActivity {
         //set up progress dialog showing when getting current location
         progressDialog = new ProgressDialog(LocationActivity.this);
         progressDialog.setIndeterminate(true);
-        progressDialog.setMessage(getString(R.string.getting_current_location));
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setCanceledOnTouchOutside(false);
         //hide query view when first enter activity
@@ -82,6 +86,7 @@ public class LocationActivity extends AppCompatActivity {
         tv_endDate.setText(sdfDate.format(calendar.getTime()));
         tv_endTime = (TextView) findViewById(R.id.tv_endTime);
         tv_endTime.setText(sdfTime.format(calendar.getTime()));
+        tv_distance = (TextView) findViewById(R.id.tv_distance);
         btn_showPath = (Button) findViewById(R.id.btn_showPath);
         //load map when first enter
         mapFragment.getMapAsync(new OnMapReadyCallback() {
@@ -107,6 +112,7 @@ public class LocationActivity extends AppCompatActivity {
             public void onClick(View v) {
                 mGoogleMap.clear();
                 query_view.setVisibility(View.VISIBLE);
+                tv_distance.setText("0 m");
                 fab_show_path.hide();
                 fab_current_location.show();
             }
@@ -148,6 +154,7 @@ public class LocationActivity extends AppCompatActivity {
         btn_showPath.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mGoogleMap.clear();
                 calendar.set(Calendar.SECOND, 0);
                 calendar.set(Calendar.MILLISECOND, 0);
                 calendarEnd.set(Calendar.SECOND, 59);
@@ -165,7 +172,11 @@ public class LocationActivity extends AppCompatActivity {
         });
     }
 
-    private void getPathInTimeInterval(final Long start, final Long end, final APIService apiService, final String authen, final String deviceAuthen) {
+    /*
+        Method for getting path in a time interval
+    */
+    private void getPathInTimeInterval(final Long start, final Long end, final APIService apiService
+            , final String authen, final String deviceAuthen) {
         apiService.getUserEvents(authen, deviceAuthen, "sense", "0x00010100,0x00010200", 50, start, end)
                 .enqueue(new Callback<Events>() {
                     @Override
@@ -196,14 +207,54 @@ public class LocationActivity extends AppCompatActivity {
                                         getPathInTimeInterval(start, response.body().getEvents().get(49).getTimestamp() - 1
                                                 , apiService, authen, deviceAuthen);
                                     } else {
-                                        for(int i = 0;i<listLatLng.size();i++){
-                                            Log.e("Giang latlng",listLatLng.get(i).latitude+","+listLatLng.get(i).longitude);
+                                        double distance = 0;
+                                        PolylineOptions polylineOptions = new PolylineOptions();
+                                        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                                        for (int i = 0; i < listLatLng.size() - 1; i++) {
+                                            distance += calculateArcLengthBaseOnLatLng(listLatLng.get(i), listLatLng.get(i + 1));
+                                            polylineOptions.add(listLatLng.get(i));
+                                            builder.include(listLatLng.get(i));
+                                            if(i==listLatLng.size() - 2){
+                                                polylineOptions.add(listLatLng.get(i+1));
+                                                builder.include(listLatLng.get(i+1));
+                                            }
                                         }
+                                        Polyline polyline = mGoogleMap.addPolyline(polylineOptions);
+                                        polyline.setColor(0xFF2196F3);
+                                        polyline.setWidth(15f);
+                                        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 10));
+                                        if (distance * 6371000 < 1000)
+                                            tv_distance.setText(df.format(distance * 6371000) + " m");
+                                        else
+                                            tv_distance.setText(df.format(distance * 6371) + " km");
                                         progressDialog.dismiss();
                                     }
                                 } else if (response.body().getEvents().size() == 0) {
-                                    if (listLatLng.isEmpty())
+                                    if (listLatLng.isEmpty()) {
                                         Toast.makeText(LocationActivity.this, R.string.no_path, Toast.LENGTH_SHORT).show();
+                                        tv_distance.setText("0 m");
+                                    }else {
+                                        double distance = 0;
+                                        PolylineOptions polylineOptions = new PolylineOptions();
+                                        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                                        for (int i = 0; i < listLatLng.size() - 1; i++) {
+                                            distance += calculateArcLengthBaseOnLatLng(listLatLng.get(i), listLatLng.get(i + 1));
+                                            polylineOptions.add(listLatLng.get(i));
+                                            builder.include(listLatLng.get(i));
+                                            if(i==listLatLng.size() - 2){
+                                                polylineOptions.add(listLatLng.get(i+1));
+                                                builder.include(listLatLng.get(i+1));
+                                            }
+                                        }
+                                        Polyline polyline = mGoogleMap.addPolyline(polylineOptions);
+                                        polyline.setColor(0xFF2196F3);
+                                        polyline.setWidth(15f);
+                                        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 10));
+                                        if (distance * 6371000 < 1000)
+                                            tv_distance.setText(df.format(distance * 6371000) + " m");
+                                        else
+                                            tv_distance.setText(df.format(distance * 6371) + " km");
+                                    }
                                     progressDialog.dismiss();
                                 }
                                 break;
@@ -224,50 +275,13 @@ public class LocationActivity extends AppCompatActivity {
     }
 
 
-    private void setUpDatePicker(final TextView tv, final Calendar calendar) {
-        DatePickerDialog.OnDateSetListener callback = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                calendar.set(Calendar.YEAR, year);
-                calendar.set(Calendar.MONTH, month);
-                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                tv.setText(sdfDate.format(calendar.getTime()));
-            }
-        };
-        DatePickerDialog datePickerDialog = new DatePickerDialog(
-                LocationActivity.this,
-                callback,
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH));
-        datePickerDialog.setCanceledOnTouchOutside(false);
-        datePickerDialog.show();
-    }
-
-    private void setUpTimePicker(final TextView tv, final Calendar calendar) {
-        TimePickerDialog.OnTimeSetListener callback = new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                calendar.set(Calendar.MINUTE, minute);
-                tv.setText(sdfTime.format(calendar.getTime()));
-            }
-        };
-        TimePickerDialog timePickerDialog = new TimePickerDialog(LocationActivity.this,
-                callback,
-                calendar.get(Calendar.HOUR_OF_DAY),
-                calendar.get(Calendar.MINUTE),
-                true);
-        timePickerDialog.setCanceledOnTouchOutside(false);
-        timePickerDialog.show();
-    }
-
     /*
     Method for getting current location
      */
     private void getDeviceCurrentLocation(final Long endTimestamp) {
         SharedPreferences sharedPreferences = getSharedPreferences(OurContract.SHARED_PREF, MODE_PRIVATE);
         APIService apiService = AppUtils.getAPIService();
+        progressDialog.setMessage(getString(R.string.getting_current_location));
         progressDialog.show();
         apiService.getUserEvents("Bearer " + sharedPreferences.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, "")
                 , sharedPreferences.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, "")
@@ -323,10 +337,54 @@ public class LocationActivity extends AppCompatActivity {
                 });
     }
 
+    private void setUpDatePicker(final TextView tv, final Calendar calendar) {
+        DatePickerDialog.OnDateSetListener callback = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                calendar.set(Calendar.YEAR, year);
+                calendar.set(Calendar.MONTH, month);
+                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                tv.setText(sdfDate.format(calendar.getTime()));
+            }
+        };
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                LocationActivity.this,
+                callback,
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH));
+        datePickerDialog.setCanceledOnTouchOutside(false);
+        datePickerDialog.show();
+    }
+
+    private void setUpTimePicker(final TextView tv, final Calendar calendar) {
+        TimePickerDialog.OnTimeSetListener callback = new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                calendar.set(Calendar.MINUTE, minute);
+                tv.setText(sdfTime.format(calendar.getTime()));
+            }
+        };
+        TimePickerDialog timePickerDialog = new TimePickerDialog(LocationActivity.this,
+                callback,
+                calendar.get(Calendar.HOUR_OF_DAY),
+                calendar.get(Calendar.MINUTE),
+                true);
+        timePickerDialog.setCanceledOnTouchOutside(false);
+        timePickerDialog.show();
+    }
+
     private double calculateArcLengthBaseOnLatLng(LatLng start, LatLng end) {
-        double distance = 2 * 6371 * Math.asin(Math.sqrt((1 - Math.sin(Math.toRadians(start.latitude)) * Math.sin(Math.toRadians(end.latitude))
+        double distance = 2 * Math.asin(Math.sqrt((1 - Math.sin(Math.toRadians(start.latitude)) * Math.sin(Math.toRadians(end.latitude))
                 - Math.cos(Math.toRadians(start.latitude)) * Math.cos(Math.toRadians(end.latitude))
                 * Math.cos(Math.toRadians(start.longitude - end.longitude))) / 2));
+        if (Double.isNaN(distance)) {
+            /*when the two points are too close, the value of distance is smaller
+            than the smallest value that a double can represent, then distance is NaN (not a number)
+            */
+            return 0;
+        }
         return distance;
     }
 }
