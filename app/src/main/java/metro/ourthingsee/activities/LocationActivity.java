@@ -386,7 +386,7 @@ public class LocationActivity extends AppCompatActivity {
                 * Math.cos(Math.toRadians(start.longitude - end.longitude))) / 2));
         if (Double.isNaN(distance)) {
             /*when the two points are too close, the value of distance is smaller
-            than the smallest value that a double can represent, then distance is NaN (not a number)
+            than the smallest positive value that a double can represent, then distance is NaN (not a number)
             */
             return 0;
         }
