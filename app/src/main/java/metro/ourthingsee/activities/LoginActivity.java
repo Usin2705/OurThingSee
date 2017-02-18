@@ -136,7 +136,7 @@ public class LoginActivity extends AppCompatActivity {
      * @param email    User's email taken from editText
      * @param password User's passoword taken from editText
      */
-    public void sendPostAuth(String email, String password) {
+    public void sendPostAuth(final String email, final String password) {
         apiService.savePostAuth(email, password).enqueue(new Callback<Authentication>() {
             @Override
             public void onResponse(Call<Authentication> call, Response<Authentication> response) {
@@ -180,6 +180,8 @@ public class LoginActivity extends AppCompatActivity {
                         edtPassword.setText("");
                         edtEmail.requestFocus();
                         break;
+                    case 503:
+                        sendPostAuth(email,password);
                 }
             }
 

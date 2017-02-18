@@ -37,9 +37,11 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LocationActivity extends AppCompatActivity {
-    Calendar calendar = Calendar.getInstance();
+    Calendar calendar = Calendar.getInstance(),
+    calendarEnd = Calendar.getInstance();
     SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy");
     SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm");
+    SimpleDateFormat sdfDateTime = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
     GoogleMap mGoogleMap;
     ProgressDialog progressDialog;
     View query_view;
@@ -51,23 +53,27 @@ public class LocationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
-        Log.e("Giang", "" + calculateArcLengthBaseOnLatLng(new LatLng(39.9, 116.4), new LatLng(-31.95, 115.867)));
         addControls();
     }
 
     private void addControls() {
+        //get map fragment
         MapFragment mapFragment = (MapFragment)
                 getFragmentManager().findFragmentById(R.id.fragment_map);
+        //set up progress dialog showing when getting current location
         progressDialog = new ProgressDialog(LocationActivity.this);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Getting current location...");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setCanceledOnTouchOutside(false);
+        //hide query view when first enter activity
         query_view = findViewById(R.id.query_view);
         query_view.setVisibility(View.INVISIBLE);
+        //2 fabs show and hide base on each other's state
         fab_show_path = (FloatingActionButton) findViewById(R.id.fab_show_path);
         fab_current_location = (FloatingActionButton) findViewById(R.id.fab_current_location);
         fab_current_location.hide();
+        //set up every views on query view
         tv_startDate = (TextView) findViewById(R.id.tv_startDate);
         tv_startDate.setText(sdfDate.format(calendar.getTime()));
         tv_startTime = (TextView) findViewById(R.id.tv_startTime);
@@ -77,6 +83,7 @@ public class LocationActivity extends AppCompatActivity {
         tv_endTime = (TextView) findViewById(R.id.tv_endTime);
         tv_endTime.setText(sdfTime.format(calendar.getTime()));
         btn_showPath = (Button) findViewById(R.id.btn_showPath);
+        //load map when first enter
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
@@ -115,83 +122,75 @@ public class LocationActivity extends AppCompatActivity {
         tv_startDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatePickerDialog.OnDateSetListener callback = new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        calendar.set(Calendar.YEAR, year);
-                        calendar.set(Calendar.MONTH, month);
-                        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                        tv_startDate.setText(sdfDate.format(calendar.getTime()));
-                    }
-                };
-                DatePickerDialog datePickerDialog = new DatePickerDialog(
-                        LocationActivity.this,
-                        callback,
-                        calendar.get(Calendar.YEAR),
-                        calendar.get(Calendar.MONTH),
-                        calendar.get(Calendar.DAY_OF_MONTH));
-                datePickerDialog.show();
+                setUpDatePicker(tv_startDate,calendar);
             }
         });
         tv_endDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatePickerDialog.OnDateSetListener callback = new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        calendar.set(Calendar.YEAR, year);
-                        calendar.set(Calendar.MONTH, month);
-                        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                        tv_endDate.setText(sdfDate.format(calendar.getTime()));
-                    }
-                };
-                DatePickerDialog datePickerDialog = new DatePickerDialog(
-                        LocationActivity.this,
-                        callback,
-                        calendar.get(Calendar.YEAR),
-                        calendar.get(Calendar.MONTH),
-                        calendar.get(Calendar.DAY_OF_MONTH));
-                datePickerDialog.show();
+                setUpDatePicker(tv_endDate,calendarEnd);
             }
         });
         tv_startTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TimePickerDialog.OnTimeSetListener callback = new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        calendar.set(Calendar.HOUR_OF_DAY,hourOfDay);
-                        calendar.set(Calendar.MINUTE,minute);
-                        tv_startTime.setText(sdfTime.format(calendar.getTime()));
-                    }
-                };
-                TimePickerDialog timePickerDialog = new TimePickerDialog(LocationActivity.this,
-                        callback,
-                        calendar.get(Calendar.HOUR_OF_DAY),
-                        calendar.get(Calendar.MINUTE),
-                        true);
-                timePickerDialog.show();
+                setUpTimePicker(tv_startTime,calendar);
             }
         });
         tv_endTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TimePickerDialog.OnTimeSetListener callback = new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        calendar.set(Calendar.HOUR_OF_DAY,hourOfDay);
-                        calendar.set(Calendar.MINUTE,minute);
-                        tv_endTime.setText(sdfTime.format(calendar.getTime()));
-                    }
-                };
-                TimePickerDialog timePickerDialog = new TimePickerDialog(LocationActivity.this,
-                        callback,
-                        calendar.get(Calendar.HOUR_OF_DAY),
-                        calendar.get(Calendar.MINUTE),
-                        true);
-                timePickerDialog.show();
+                setUpTimePicker(tv_endTime,calendarEnd);
             }
         });
+        btn_showPath.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                calendar.set(Calendar.SECOND,0);
+                calendar.set(Calendar.MILLISECOND,0);
+                calendarEnd.set(Calendar.SECOND,59);
+                calendarEnd.set(Calendar.MILLISECOND,999);
+                Log.e("Giang Time", calendar.getTimeInMillis()+"");
+                Log.e("Giang Time", calendarEnd.getTimeInMillis()+"");
+            }
+        });
+    }
+
+    private void setUpDatePicker (final TextView tv, final Calendar calendar){
+        DatePickerDialog.OnDateSetListener callback = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                calendar.set(Calendar.YEAR, year);
+                calendar.set(Calendar.MONTH, month);
+                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                tv.setText(sdfDate.format(calendar.getTime()));
+            }
+        };
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                LocationActivity.this,
+                callback,
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH));
+        datePickerDialog.setCanceledOnTouchOutside(false);
+        datePickerDialog.show();
+    }
+    private void setUpTimePicker (final TextView tv, final Calendar calendar){
+        TimePickerDialog.OnTimeSetListener callback = new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                calendar.set(Calendar.HOUR_OF_DAY,hourOfDay);
+                calendar.set(Calendar.MINUTE,minute);
+                tv.setText(sdfTime.format(calendar.getTime()));
+            }
+        };
+        TimePickerDialog timePickerDialog = new TimePickerDialog(LocationActivity.this,
+                callback,
+                calendar.get(Calendar.HOUR_OF_DAY),
+                calendar.get(Calendar.MINUTE),
+                true);
+        timePickerDialog.setCanceledOnTouchOutside(false);
+        timePickerDialog.show();
     }
 
     /*
@@ -207,34 +206,41 @@ public class LocationActivity extends AppCompatActivity {
                 .enqueue(new Callback<Events>() {
                     @Override
                     public void onResponse(Call<Events> call, Response<Events> response) {
-                        if (response.code() == 200 && response.body().getEvents().size() > 0) {
-                            // sIds String List is used to check if there are both longitude and latitude retrieved
-                            List<String> sIds = new ArrayList<String>();
-                            double lat = 0, lng = 0;
-                            for (int i = 0; i < response.body().getEvents().get(0).getCause().getSenses().size(); i++) {
-                                sIds.add(response.body().getEvents().get(0).getCause().getSenses().get(i).getSId());
-                                //after the loop, sIds should contain at least 2 values "0x00010100" and "0x00010200"
-                                if (response.body().getEvents().get(0).getCause().getSenses().get(i).getSId().equals("0x00010100")) {
-                                    lat = response.body().getEvents().get(0).getCause().getSenses().get(i).getVal();
-                                } else if (response.body().getEvents().get(0).getCause().getSenses().get(i).getSId().equals("0x00010200")) {
-                                    lng = response.body().getEvents().get(0).getCause().getSenses().get(i).getVal();
+                        switch (response.code()){
+                            case 200:
+                                if (response.body().getEvents().size() > 0) {
+                                    // sIds String List is used to check if there are both longitude and latitude retrieved
+                                    List<String> sIds = new ArrayList<String>();
+                                    double lat = 0, lng = 0;
+                                    for (int i = 0; i < response.body().getEvents().get(0).getCause().getSenses().size(); i++) {
+                                        sIds.add(response.body().getEvents().get(0).getCause().getSenses().get(i).getSId());
+                                        //after the loop, sIds should contain at least 2 values "0x00010100" and "0x00010200"
+                                        if (response.body().getEvents().get(0).getCause().getSenses().get(i).getSId().equals("0x00010100")) {
+                                            lat = response.body().getEvents().get(0).getCause().getSenses().get(i).getVal();
+                                        } else if (response.body().getEvents().get(0).getCause().getSenses().get(i).getSId().equals("0x00010200")) {
+                                            lng = response.body().getEvents().get(0).getCause().getSenses().get(i).getVal();
+                                        }
+                                    }
+                                    if (sIds.contains("0x00010100") && sIds.contains("0x00010200")) {
+                                        //if Sids satisfies the conditions, add a marker on the map
+                                        LatLng latLng = new LatLng(lat, lng);
+                                        mGoogleMap.addMarker(new MarkerOptions().position(latLng));
+                                        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                                        progressDialog.dismiss();
+                                    } else {
+                                        //if sIds doesn't contain both desired values, call a recursion
+                                        getDeviceCurrentLocation(response.body().getEvents().get(0).getTimestamp() - 1);
+                                    }
+                                } else if (response.body().getEvents().size() == 0) {
+                                    //If there is no event contains the location, show a toast
+                                    Toast.makeText(LocationActivity.this, R.string.no_location, Toast.LENGTH_SHORT).show();
+                                    progressDialog.dismiss();
                                 }
-                            }
-                            if (sIds.contains("0x00010100") && sIds.contains("0x00010200")) {
-                                //if Sids satisfies the conditions, add a marker on the map
-                                LatLng latLng = new LatLng(lat, lng);
-                                mGoogleMap.addMarker(new MarkerOptions().position(latLng));
-                                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-                                progressDialog.dismiss();
-                            } else {
-                                //if sIds doesn't contain both desired values, call a recursion
-                                getDeviceCurrentLocation(response.body().getEvents().get(0).getTimestamp() - 1);
-                            }
-                        } else if (response.code() == 200 && response.body().getEvents().size() == 0) {
-                            //If there is no event contains the location, show a toast
-                            Toast.makeText(LocationActivity.this, R.string.no_location, Toast.LENGTH_SHORT).show();
-                            progressDialog.dismiss();
+                                break;
+                            case 503:
+                                getDeviceCurrentLocation(null);
                         }
+
                     }
 
                     @Override

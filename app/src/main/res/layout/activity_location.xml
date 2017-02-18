@@ -105,7 +105,7 @@
             android:theme="@style/MyGoButton"
             android:text="Show path"
             android:textColor="#ffffff"
-            android:elevation="6dp"/>
+            android:elevation="12dp"/>
     </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton
