@@ -207,53 +207,58 @@ public class LocationActivity extends AppCompatActivity {
                                         getPathInTimeInterval(start, response.body().getEvents().get(49).getTimestamp() - 1
                                                 , apiService, authen, deviceAuthen);
                                     } else {
-                                        double distance = 0;
-                                        PolylineOptions polylineOptions = new PolylineOptions();
-                                        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                                        for (int i = 0; i < listLatLng.size() - 1; i++) {
-                                            distance += calculateArcLengthBaseOnLatLng(listLatLng.get(i), listLatLng.get(i + 1));
-                                            polylineOptions.add(listLatLng.get(i));
-                                            builder.include(listLatLng.get(i));
-                                            if(i==listLatLng.size() - 2){
-                                                polylineOptions.add(listLatLng.get(i+1));
-                                                builder.include(listLatLng.get(i+1));
+                                        if (listLatLng.size() > 1) {
+                                            double distance = 0;
+                                            PolylineOptions polylineOptions = new PolylineOptions();
+                                            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                                            for (int i = 0; i < listLatLng.size() - 1; i++) {
+                                                distance += calculateArcLengthBaseOnLatLng(listLatLng.get(i), listLatLng.get(i + 1));
+                                                polylineOptions.add(listLatLng.get(i));
+                                                builder.include(listLatLng.get(i));
+                                                if (i == listLatLng.size() - 2) {
+                                                    polylineOptions.add(listLatLng.get(i + 1));
+                                                    builder.include(listLatLng.get(i + 1));
+                                                }
                                             }
+                                            Polyline polyline = mGoogleMap.addPolyline(polylineOptions);
+                                            polyline.setColor(0xFF2196F3);
+                                            polyline.setWidth(15f);
+                                            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 10));
+                                            if (distance * 6371000 < 1000)
+                                                tv_distance.setText(df.format(distance * 6371000) + " m");
+                                            else
+                                                tv_distance.setText(df.format(distance * 6371) + " km");
                                         }
-                                        Polyline polyline = mGoogleMap.addPolyline(polylineOptions);
-                                        polyline.setColor(0xFF2196F3);
-                                        polyline.setWidth(15f);
-                                        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 10));
-                                        if (distance * 6371000 < 1000)
-                                            tv_distance.setText(df.format(distance * 6371000) + " m");
-                                        else
-                                            tv_distance.setText(df.format(distance * 6371) + " km");
                                         progressDialog.dismiss();
                                     }
                                 } else if (response.body().getEvents().size() == 0) {
                                     if (listLatLng.isEmpty()) {
                                         Toast.makeText(LocationActivity.this, R.string.no_path, Toast.LENGTH_SHORT).show();
                                         tv_distance.setText("0 m");
-                                    }else {
-                                        double distance = 0;
-                                        PolylineOptions polylineOptions = new PolylineOptions();
-                                        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                                        for (int i = 0; i < listLatLng.size() - 1; i++) {
-                                            distance += calculateArcLengthBaseOnLatLng(listLatLng.get(i), listLatLng.get(i + 1));
-                                            polylineOptions.add(listLatLng.get(i));
-                                            builder.include(listLatLng.get(i));
-                                            if(i==listLatLng.size() - 2){
-                                                polylineOptions.add(listLatLng.get(i+1));
-                                                builder.include(listLatLng.get(i+1));
+                                    } else {
+                                        if (listLatLng.size() > 1) {
+
+                                            double distance = 0;
+                                            PolylineOptions polylineOptions = new PolylineOptions();
+                                            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                                            for (int i = 0; i < listLatLng.size() - 1; i++) {
+                                                distance += calculateArcLengthBaseOnLatLng(listLatLng.get(i), listLatLng.get(i + 1));
+                                                polylineOptions.add(listLatLng.get(i));
+                                                builder.include(listLatLng.get(i));
+                                                if (i == listLatLng.size() - 2) {
+                                                    polylineOptions.add(listLatLng.get(i + 1));
+                                                    builder.include(listLatLng.get(i + 1));
+                                                }
                                             }
+                                            Polyline polyline = mGoogleMap.addPolyline(polylineOptions);
+                                            polyline.setColor(0xFF2196F3);
+                                            polyline.setWidth(15f);
+                                            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 10));
+                                            if (distance * 6371000 < 1000)
+                                                tv_distance.setText(df.format(distance * 6371000) + " m");
+                                            else
+                                                tv_distance.setText(df.format(distance * 6371) + " km");
                                         }
-                                        Polyline polyline = mGoogleMap.addPolyline(polylineOptions);
-                                        polyline.setColor(0xFF2196F3);
-                                        polyline.setWidth(15f);
-                                        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 10));
-                                        if (distance * 6371000 < 1000)
-                                            tv_distance.setText(df.format(distance * 6371000) + " m");
-                                        else
-                                            tv_distance.setText(df.format(distance * 6371) + " km");
                                     }
                                     progressDialog.dismiss();
                                 }
