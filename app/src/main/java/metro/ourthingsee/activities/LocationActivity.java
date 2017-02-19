@@ -188,8 +188,12 @@ public class LocationActivity extends AppCompatActivity {
                         switch (response.code()) {
                             case 200:
                                 if (response.body().getEvents().size() > 0) {
+                                    //If there is at least one event occur in the time interval
                                     List<String> sIds = new ArrayList<>();
                                     List<Events.Sense> senses = new ArrayList<>();
+                                    /*
+                                    STEP 1: take out a list of coordinates by a for loop
+                                    */
                                     for (int i = 0; i < response.body().getEvents().size(); i++) {
                                         double lat = 0, lng = 0;
                                         senses.addAll(response.body().getEvents().get(i).getCause().getSenses());
@@ -197,23 +201,30 @@ public class LocationActivity extends AppCompatActivity {
                                             sIds.add(senses.get(j).getSId());
                                             //after the loop, sIds should contain at least 2 values
                                             // "0x00010100" and "0x00010200"
-                                            if (senses.get(j).getSId().equals("0x00010100")) {
+                                            if (senses.get(j).getSId().equals("0x00010100"))
                                                 lat = senses.get(j).getVal();
-                                            } else if (senses.get(j).getSId().equals("0x00010200")) {
+                                            else if (senses.get(j).getSId().equals("0x00010200"))
                                                 lng = senses.get(j).getVal();
-                                            }
                                         }
-                                        if (sIds.contains("0x00010100") && sIds.contains("0x00010200")) {
+                                        if (sIds.contains("0x00010100") && sIds.contains("0x00010200"))
                                             //if Sids satisfies the conditions, add a LatLng to the list
                                             listLatLng.add(new LatLng(lat, lng));
-                                        }
+                                        //clear all the lists for the next round
                                         sIds.clear();
                                         senses.clear();
                                     }
-                                    if (response.body().getEvents().size() == 50) {
+                                    /*
+                                    STEP 2: if the response has 50 events, maybe there are more
+                                    than 50 events happened in the time interval, so check it
+                                    by a recursion method
+                                    */
+                                    if (response.body().getEvents().size() == 50)
                                         getPathInTimeInterval(start, response.body().getEvents().get(49)
                                                 .getTimestamp() - 1, apiService, authen, deviceAuthen);
-                                    } else {
+                                    /*
+                                    STEP 3: if the response has less than 50 events, draw the path
+                                    */
+                                    else {
                                         showingPathOnMap();
                                         progressDialog.dismiss();
                                     }
@@ -222,9 +233,8 @@ public class LocationActivity extends AppCompatActivity {
                                         Toast.makeText(LocationActivity.this,
                                                 R.string.no_path, Toast.LENGTH_SHORT).show();
                                         tv_distance.setText("0 m");
-                                    } else {
+                                    } else
                                         showingPathOnMap();
-                                    }
                                     progressDialog.dismiss();
                                 }
                                 break;
@@ -261,14 +271,14 @@ public class LocationActivity extends AppCompatActivity {
                         switch (response.code()) {
                             case 200:
                                 if (response.body().getEvents().size() > 0) {
-                                    // sIds String List is used to check if there are both longitude and latitude retrieved
                                     List<String> sIds = new ArrayList<>();
                                     double lat = 0, lng = 0;
-                                    //list of events
-                                    List<Events.Sense> senses = response.body().getEvents().get(0).getCause().getSenses();
+                                    List<Events.Sense> senses = response.body().getEvents().get(0)
+                                            .getCause().getSenses();
                                     for (int i = 0; i < senses.size(); i++) {
                                         sIds.add(senses.get(i).getSId());
-                                        //after the loop, sIds should contain at least 2 values "0x00010100" and "0x00010200"
+                                        //after the loop, sIds should contain at least 2 values
+                                        // "0x00010100" and "0x00010200"
                                         if (senses.get(i).getSId().equals("0x00010100")) {
                                             lat = senses.get(i).getVal();
                                         } else if (senses.get(i).getSId().equals("0x00010200")) {
@@ -283,11 +293,13 @@ public class LocationActivity extends AppCompatActivity {
                                         progressDialog.dismiss();
                                     } else {
                                         //if sIds doesn't contain both desired values, call a recursion
-                                        getDeviceCurrentLocation(response.body().getEvents().get(0).getTimestamp() - 1);
+                                        getDeviceCurrentLocation(response.body().getEvents().get(0)
+                                                .getTimestamp() - 1);
                                     }
                                 } else if (response.body().getEvents().size() == 0) {
                                     //If there is no event contains the location, show a toast
-                                    Toast.makeText(LocationActivity.this, R.string.no_location, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(LocationActivity.this, R.string.no_location
+                                            , Toast.LENGTH_SHORT).show();
                                     progressDialog.dismiss();
                                 }
                                 break;
@@ -406,8 +418,9 @@ public class LocationActivity extends AppCompatActivity {
                 - Math.cos(Math.toRadians(start.latitude)) * Math.cos(Math.toRadians(end.latitude))
                 * Math.cos(Math.toRadians(start.longitude - end.longitude))) / 2));
         if (Double.isNaN(arc)) {
-            /*when the two points are too close, the value of distance is smaller than the smallest
-            positive value that a double can represent, then distance is NaN (not a number)
+            /*
+            when the two points are too close, the value of arc is smaller than the smallest
+            positive value that a double can represent, then arc is NaN (not a number)
             */
             return 0;
         }
