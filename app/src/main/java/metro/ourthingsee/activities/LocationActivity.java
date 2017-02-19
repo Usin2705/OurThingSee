@@ -5,13 +5,16 @@ import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -24,6 +27,7 @@ import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -44,10 +48,13 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LocationActivity extends AppCompatActivity {
-    Calendar calendar = Calendar.getInstance(),
-            calendarEnd = Calendar.getInstance();
+    Calendar calendar = Calendar.getInstance()
+            , calendarEnd = Calendar.getInstance();
+    long startTime, endTime;
+    boolean currentLocationState = true;
+    List<Events.Event> eventList = new ArrayList<>();
     DecimalFormat df = new DecimalFormat("0.#");
-    SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy");
+    SimpleDateFormat sdfDate = new SimpleDateFormat("dd MMM yyyy");
     SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm");
     GoogleMap mGoogleMap;
     ProgressDialog progressDialog;
@@ -101,6 +108,31 @@ public class LocationActivity extends AppCompatActivity {
                     public void onMapLoaded() {
                         mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                         mGoogleMap.getUiSettings().setZoomGesturesEnabled(true);
+                        //Simple way to custom info window of markers
+                        mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+                            @Override
+                            public View getInfoWindow(Marker arg0) {
+                                return null;
+                            }
+                            @Override
+                            public View getInfoContents(Marker marker) {
+                                LinearLayout info = new LinearLayout(LocationActivity.this);
+                                info.setOrientation(LinearLayout.VERTICAL);
+                                TextView title = new TextView(LocationActivity.this);
+                                title.setTextColor(Color.BLACK);
+                                title.setGravity(Gravity.CENTER);
+                                title.setTypeface(null, Typeface.BOLD);
+                                title.setText(marker.getTitle());
+                                TextView snippet = new TextView(LocationActivity.this);
+                                snippet.setTextColor(Color.GRAY);
+                                snippet.setGravity(Gravity.CENTER);
+                                snippet.setTextSize(10f);
+                                snippet.setText(marker.getSnippet());
+                                info.addView(title);
+                                info.addView(snippet);
+                                return info;
+                            }
+                        });
                         getDeviceCurrentLocation(null);
                         addEvents();
                     }
@@ -110,9 +142,28 @@ public class LocationActivity extends AppCompatActivity {
     }
 
     private void addEvents() {
+        mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                fab_current_location.hide();
+                fab_show_path.hide();
+                return false;
+            }
+        });
+        mGoogleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                if(currentLocationState){
+                    fab_show_path.show();
+                }else {
+                    fab_current_location.show();
+                }
+            }
+        });
         fab_show_path.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                currentLocationState = false;
                 mGoogleMap.clear();
                 query_view.setVisibility(View.VISIBLE);
                 tv_distance.setText("0 m");
@@ -123,6 +174,7 @@ public class LocationActivity extends AppCompatActivity {
         fab_current_location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                currentLocationState =true;
                 mGoogleMap.clear();
                 query_view.setVisibility(View.INVISIBLE);
                 fab_current_location.hide();
@@ -157,6 +209,7 @@ public class LocationActivity extends AppCompatActivity {
         btn_showPath.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                eventList.clear();
                 mGoogleMap.clear();
                 calendar.set(Calendar.SECOND, 0);
                 calendar.set(Calendar.MILLISECOND, 0);
@@ -206,9 +259,11 @@ public class LocationActivity extends AppCompatActivity {
                                             else if (senses.get(j).getSId().equals("0x00010200"))
                                                 lng = senses.get(j).getVal();
                                         }
-                                        if (sIds.contains("0x00010100") && sIds.contains("0x00010200"))
+                                        if (sIds.contains("0x00010100") && sIds.contains("0x00010200")) {
+                                            eventList.add(response.body().getEvents().get(i));
                                             //if Sids satisfies the conditions, add a LatLng to the list
                                             listLatLng.add(new LatLng(lat, lng));
+                                        }
                                         //clear all the lists for the next round
                                         sIds.clear();
                                         senses.clear();
@@ -288,7 +343,12 @@ public class LocationActivity extends AppCompatActivity {
                                     if (sIds.contains("0x00010100") && sIds.contains("0x00010200")) {
                                         //if Sids satisfies the conditions, add a marker on the map
                                         LatLng latLng = new LatLng(lat, lng);
-                                        mGoogleMap.addMarker(new MarkerOptions().position(latLng));
+                                        mGoogleMap.addMarker(new MarkerOptions().position(latLng)
+                                                .title(getString(R.string.last_location))
+                                                .snippet(sdfDate.format(response.body()
+                                                        .getEvents().get(0).getTimestamp())
+                                                +"\n"+sdfTime.format(response.body()
+                                                        .getEvents().get(0).getTimestamp())));
                                         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
                                         progressDialog.dismiss();
                                     } else {
@@ -321,8 +381,9 @@ public class LocationActivity extends AppCompatActivity {
     }
 
     private void showingPathOnMap() {
+        endTime = eventList.get(0).getTimestamp();
+        startTime = eventList.get(eventList.size()-1).getTimestamp();
         if (listLatLng.size() > 1) {
-
             double distance = 0;
             PolylineOptions polylineOptions = new PolylineOptions();
             LatLngBounds.Builder builder = new LatLngBounds.Builder();
@@ -339,22 +400,26 @@ public class LocationActivity extends AppCompatActivity {
             polyline.setColor(0xFF2196F3);
             polyline.setWidth(15f);
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 10));
-            mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(0)));
-            mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(listLatLng.size() - 1)));
+            mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(0))
+                    .title(getString(R.string.destination)).snippet(sdfDate.format(endTime)+"\n"
+                    +sdfTime.format(endTime)));
+            mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(listLatLng.size() - 1))
+                    .title(getString(R.string.origin)).snippet(sdfDate.format(startTime)+"\n"
+                            +sdfTime.format(startTime)));
             final Circle circleEnd = mGoogleMap.addCircle(new CircleOptions()
                     .center(listLatLng.get(0))
-                    .fillColor(0x77888888)
+                    .fillColor(Color.GRAY)
                     .radius(calculateCircleRadiusMeterForMapCircle(
                             8, listLatLng.get(0).latitude, mGoogleMap.getCameraPosition().zoom))
                     .strokeWidth(3f)
-                    .strokeColor(Color.GRAY)
+                    .strokeColor(Color.DKGRAY)
                     .zIndex(3f));
             final Circle circleStart = mGoogleMap.addCircle(new CircleOptions()
                     .center(listLatLng.get(listLatLng.size() - 1))
-                    .fillColor(0x77888888)
+                    .fillColor(Color.GRAY)
                     .radius(circleEnd.getRadius())
                     .strokeWidth(3f)
-                    .strokeColor(Color.GRAY)
+                    .strokeColor(Color.DKGRAY)
                     .zIndex(3f));
             mGoogleMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
                 @Override
@@ -369,7 +434,11 @@ public class LocationActivity extends AppCompatActivity {
             else
                 tv_distance.setText(df.format(distance * 6371) + " km");
         } else if (listLatLng.size() == 1) {
-            mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(0)));
+            Log.e("Giang time",endTime+"");
+            mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(0))
+                    .title(getString(R.string.last_location))
+                    .snippet(sdfDate.format(endTime)+"\n"
+                    +sdfTime.format(endTime)));
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(listLatLng.get(0), 15));
         }
     }

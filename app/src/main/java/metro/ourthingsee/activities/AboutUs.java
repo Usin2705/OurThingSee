@@ -12,14 +12,13 @@ import android.widget.Button;
 ;import metro.ourthingsee.R;
 
 public class AboutUs extends AppCompatActivity implements View.OnClickListener {
-Button btn_Back;
+    Button btn_Back;
 
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.about_us);
         btn_Back = (Button) findViewById(R.id.btnBack);
-
         btn_Back.setOnClickListener(this);
     }
 
@@ -31,9 +30,6 @@ Button btn_Back;
             Intent intentAboutUs = new Intent(AboutUs.this, MainActivity.class);
             startActivityForResult(intentAboutUs, 1);
             finish();
-
         }
-
-
     }
 }
