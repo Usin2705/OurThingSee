@@ -432,8 +432,8 @@ public class LocationActivity extends AppCompatActivity {
         return distance;
     }
 
-    public static double calculateCircleRadiusMeterForMapCircle(final int _targetRadiusDip, final double _circleCenterLatitude,
-                                                                final float _currentMapZoom) {
+    public static double calculateCircleRadiusMeterForMapCircle
+            (final int _targetRadiusDip, final double _circleCenterLatitude, final float _currentMapZoom) {
         //That base value seems to work for computing the meter length of a DIP
         final double arbitraryValueForDip = 156000D;
         final double oneDipDistance = Math.abs(Math.cos(Math.toRadians(_circleCenterLatitude))) * arbitraryValueForDip / Math.pow(2, _currentMapZoom);
