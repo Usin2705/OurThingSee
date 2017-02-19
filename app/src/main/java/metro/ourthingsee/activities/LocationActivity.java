@@ -169,7 +169,8 @@ public class LocationActivity extends AppCompatActivity {
                 APIService apiService = AppUtils.getAPIService();
                 progressDialog.setMessage(getString(R.string.drawing_path));
                 progressDialog.show();
-                getPathInTimeInterval(calendar.getTimeInMillis(), calendarEnd.getTimeInMillis(), apiService, authen, deviceAuthen);
+                getPathInTimeInterval(calendar.getTimeInMillis(),
+                        calendarEnd.getTimeInMillis(), apiService, authen, deviceAuthen);
 
             }
         });
@@ -187,34 +188,39 @@ public class LocationActivity extends AppCompatActivity {
                         switch (response.code()) {
                             case 200:
                                 if (response.body().getEvents().size() > 0) {
+                                    List<String> sIds = new ArrayList<>();
+                                    List<Events.Sense> senses = new ArrayList<>();
                                     for (int i = 0; i < response.body().getEvents().size(); i++) {
-                                        List<String> sIds = new ArrayList<>();
                                         double lat = 0, lng = 0;
-                                        for (int j = 0; j < response.body().getEvents().get(i).getCause().getSenses().size(); j++) {
-                                            sIds.add(response.body().getEvents().get(i).getCause().getSenses().get(j).getSId());
-                                            //after the loop, sIds should contain at least 2 values "0x00010100" and "0x00010200"
-                                            if (response.body().getEvents().get(i).getCause().getSenses().get(j).getSId().equals("0x00010100")) {
-                                                lat = response.body().getEvents().get(i).getCause().getSenses().get(j).getVal();
-                                            } else if (response.body().getEvents().get(i).getCause().getSenses().get(j).getSId().equals("0x00010200")) {
-                                                lng = response.body().getEvents().get(i).getCause().getSenses().get(j).getVal();
+                                        senses.addAll(response.body().getEvents().get(i).getCause().getSenses());
+                                        for (int j = 0; j < senses.size(); j++) {
+                                            sIds.add(senses.get(j).getSId());
+                                            //after the loop, sIds should contain at least 2 values
+                                            // "0x00010100" and "0x00010200"
+                                            if (senses.get(j).getSId().equals("0x00010100")) {
+                                                lat = senses.get(j).getVal();
+                                            } else if (senses.get(j).getSId().equals("0x00010200")) {
+                                                lng = senses.get(j).getVal();
                                             }
                                         }
                                         if (sIds.contains("0x00010100") && sIds.contains("0x00010200")) {
                                             //if Sids satisfies the conditions, add a LatLng to the list
-                                            LatLng latLng = new LatLng(lat, lng);
-                                            listLatLng.add(latLng);
+                                            listLatLng.add(new LatLng(lat, lng));
                                         }
+                                        sIds.clear();
+                                        senses.clear();
                                     }
                                     if (response.body().getEvents().size() == 50) {
-                                        getPathInTimeInterval(start, response.body().getEvents().get(49).getTimestamp() - 1
-                                                , apiService, authen, deviceAuthen);
+                                        getPathInTimeInterval(start, response.body().getEvents().get(49)
+                                                .getTimestamp() - 1, apiService, authen, deviceAuthen);
                                     } else {
                                         showingPathOnMap();
                                         progressDialog.dismiss();
                                     }
                                 } else if (response.body().getEvents().size() == 0) {
                                     if (listLatLng.isEmpty()) {
-                                        Toast.makeText(LocationActivity.this, R.string.no_path, Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(LocationActivity.this,
+                                                R.string.no_path, Toast.LENGTH_SHORT).show();
                                         tv_distance.setText("0 m");
                                     } else {
                                         showingPathOnMap();
@@ -258,13 +264,15 @@ public class LocationActivity extends AppCompatActivity {
                                     // sIds String List is used to check if there are both longitude and latitude retrieved
                                     List<String> sIds = new ArrayList<>();
                                     double lat = 0, lng = 0;
-                                    for (int i = 0; i < response.body().getEvents().get(0).getCause().getSenses().size(); i++) {
-                                        sIds.add(response.body().getEvents().get(0).getCause().getSenses().get(i).getSId());
+                                    //list of events
+                                    List<Events.Sense> senses = response.body().getEvents().get(0).getCause().getSenses();
+                                    for (int i = 0; i < senses.size(); i++) {
+                                        sIds.add(senses.get(i).getSId());
                                         //after the loop, sIds should contain at least 2 values "0x00010100" and "0x00010200"
-                                        if (response.body().getEvents().get(0).getCause().getSenses().get(i).getSId().equals("0x00010100")) {
-                                            lat = response.body().getEvents().get(0).getCause().getSenses().get(i).getVal();
-                                        } else if (response.body().getEvents().get(0).getCause().getSenses().get(i).getSId().equals("0x00010200")) {
-                                            lng = response.body().getEvents().get(0).getCause().getSenses().get(i).getVal();
+                                        if (senses.get(i).getSId().equals("0x00010100")) {
+                                            lat = senses.get(i).getVal();
+                                        } else if (senses.get(i).getSId().equals("0x00010200")) {
+                                            lng = senses.get(i).getVal();
                                         }
                                     }
                                     if (sIds.contains("0x00010100") && sIds.contains("0x00010200")) {
@@ -321,20 +329,29 @@ public class LocationActivity extends AppCompatActivity {
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 10));
             mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(0)));
             mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(listLatLng.size() - 1)));
-            Circle circleEnd = mGoogleMap.addCircle(new CircleOptions()
+            final Circle circleEnd = mGoogleMap.addCircle(new CircleOptions()
                     .center(listLatLng.get(0))
                     .fillColor(0x77888888)
-                    .radius(calculateCircleRadiusMeterForMapCircle(8, listLatLng.get(0).latitude, mGoogleMap.getCameraPosition().zoom))
+                    .radius(calculateCircleRadiusMeterForMapCircle(
+                            8, listLatLng.get(0).latitude, mGoogleMap.getCameraPosition().zoom))
                     .strokeWidth(3f)
                     .strokeColor(Color.GRAY)
                     .zIndex(3f));
-            Circle circleStart = mGoogleMap.addCircle(new CircleOptions()
+            final Circle circleStart = mGoogleMap.addCircle(new CircleOptions()
                     .center(listLatLng.get(listLatLng.size() - 1))
                     .fillColor(0x77888888)
-                    .radius(calculateCircleRadiusMeterForMapCircle(8, listLatLng.get(listLatLng.size() - 1).latitude, mGoogleMap.getCameraPosition().zoom))
+                    .radius(circleEnd.getRadius())
                     .strokeWidth(3f)
                     .strokeColor(Color.GRAY)
                     .zIndex(3f));
+            mGoogleMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+                @Override
+                public void onCameraMove() {
+                    circleEnd.setRadius(calculateCircleRadiusMeterForMapCircle(
+                            8, listLatLng.get(0).latitude, mGoogleMap.getCameraPosition().zoom));
+                    circleStart.setRadius(circleEnd.getRadius());
+                }
+            });
             if (distance * 6371000 < 1000)
                 tv_distance.setText(df.format(distance * 6371000) + " m");
             else
@@ -384,23 +401,25 @@ public class LocationActivity extends AppCompatActivity {
     }
 
     private double calculateArcLengthBaseOnLatLng(LatLng start, LatLng end) {
-        double distance = 2 * Math.asin(Math.sqrt((1 - Math.sin(Math.toRadians(start.latitude)) * Math.sin(Math.toRadians(end.latitude))
+        double arc = 2 * Math.asin(Math.sqrt((1 - Math.sin(Math.toRadians(start.latitude))
+                * Math.sin(Math.toRadians(end.latitude))
                 - Math.cos(Math.toRadians(start.latitude)) * Math.cos(Math.toRadians(end.latitude))
                 * Math.cos(Math.toRadians(start.longitude - end.longitude))) / 2));
-        if (Double.isNaN(distance)) {
-            /*when the two points are too close, the value of distance is smaller
-            than the smallest positive value that a double can represent, then distance is NaN (not a number)
+        if (Double.isNaN(arc)) {
+            /*when the two points are too close, the value of distance is smaller than the smallest
+            positive value that a double can represent, then distance is NaN (not a number)
             */
             return 0;
         }
-        return distance;
+        return arc;
     }
 
-    public static double calculateCircleRadiusMeterForMapCircle
-            (final int _targetRadiusDip, final double _circleCenterLatitude, final float _currentMapZoom) {
+    public static double calculateCircleRadiusMeterForMapCircle(final int _targetRadiusDip
+            , final double _circleCenterLatitude, final float _currentMapZoom) {
         //That base value seems to work for computing the meter length of a DIP
         final double arbitraryValueForDip = 156000D;
-        final double oneDipDistance = Math.abs(Math.cos(Math.toRadians(_circleCenterLatitude))) * arbitraryValueForDip / Math.pow(2, _currentMapZoom);
+        final double oneDipDistance = Math.abs(Math.cos(Math.toRadians(_circleCenterLatitude)))
+                * arbitraryValueForDip / Math.pow(2, _currentMapZoom);
         return oneDipDistance * (double) _targetRadiusDip;
     }
 }
