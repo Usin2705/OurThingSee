@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +20,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -185,7 +188,7 @@ public class LocationActivity extends AppCompatActivity {
                             case 200:
                                 if (response.body().getEvents().size() > 0) {
                                     for (int i = 0; i < response.body().getEvents().size(); i++) {
-                                        List<String> sIds = new ArrayList<String>();
+                                        List<String> sIds = new ArrayList<>();
                                         double lat = 0, lng = 0;
                                         for (int j = 0; j < response.body().getEvents().get(i).getCause().getSenses().size(); j++) {
                                             sIds.add(response.body().getEvents().get(i).getCause().getSenses().get(j).getSId());
@@ -199,7 +202,6 @@ public class LocationActivity extends AppCompatActivity {
                                         if (sIds.contains("0x00010100") && sIds.contains("0x00010200")) {
                                             //if Sids satisfies the conditions, add a LatLng to the list
                                             LatLng latLng = new LatLng(lat, lng);
-//                                            Log.e("Giang coor",latLng.latitude+","+latLng.longitude);
                                             listLatLng.add(latLng);
                                         }
                                     }
@@ -224,10 +226,29 @@ public class LocationActivity extends AppCompatActivity {
                                             polyline.setColor(0xFF2196F3);
                                             polyline.setWidth(15f);
                                             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 10));
+                                            mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(0)));
+                                            mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(listLatLng.size() - 1)));
+                                            Circle circleEnd = mGoogleMap.addCircle(new CircleOptions()
+                                                    .center(listLatLng.get(0))
+                                                    .fillColor(0x77888888)
+                                                    .radius(calculateCircleRadiusMeterForMapCircle(8, listLatLng.get(0).latitude, mGoogleMap.getCameraPosition().zoom))
+                                                    .strokeWidth(3f)
+                                                    .strokeColor(Color.GRAY)
+                                                    .zIndex(3f));
+                                            Circle circleStart = mGoogleMap.addCircle(new CircleOptions()
+                                                    .center(listLatLng.get(listLatLng.size() - 1))
+                                                    .fillColor(0x77888888)
+                                                    .radius(calculateCircleRadiusMeterForMapCircle(8, listLatLng.get(listLatLng.size() - 1).latitude, mGoogleMap.getCameraPosition().zoom))
+                                                    .strokeWidth(3f)
+                                                    .strokeColor(Color.GRAY)
+                                                    .zIndex(3f));
                                             if (distance * 6371000 < 1000)
                                                 tv_distance.setText(df.format(distance * 6371000) + " m");
                                             else
                                                 tv_distance.setText(df.format(distance * 6371) + " km");
+                                        } else if (listLatLng.size() == 1) {
+                                            mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(0)));
+                                            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(listLatLng.get(0), 15));
                                         }
                                         progressDialog.dismiss();
                                     }
@@ -254,10 +275,29 @@ public class LocationActivity extends AppCompatActivity {
                                             polyline.setColor(0xFF2196F3);
                                             polyline.setWidth(15f);
                                             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 10));
+                                            mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(0)));
+                                            mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(listLatLng.size() - 1)));
+                                            Circle circleEnd = mGoogleMap.addCircle(new CircleOptions()
+                                                    .center(listLatLng.get(0))
+                                                    .fillColor(0x77888888)
+                                                    .radius(calculateCircleRadiusMeterForMapCircle(8, listLatLng.get(0).latitude, mGoogleMap.getCameraPosition().zoom))
+                                                    .strokeWidth(3f)
+                                                    .strokeColor(Color.GRAY)
+                                                    .zIndex(3f));
+                                            Circle circleStart = mGoogleMap.addCircle(new CircleOptions()
+                                                    .center(listLatLng.get(listLatLng.size() - 1))
+                                                    .fillColor(0x77888888)
+                                                    .radius(calculateCircleRadiusMeterForMapCircle(8, listLatLng.get(listLatLng.size() - 1).latitude, mGoogleMap.getCameraPosition().zoom))
+                                                    .strokeWidth(3f)
+                                                    .strokeColor(Color.GRAY)
+                                                    .zIndex(3f));
                                             if (distance * 6371000 < 1000)
                                                 tv_distance.setText(df.format(distance * 6371000) + " m");
                                             else
                                                 tv_distance.setText(df.format(distance * 6371) + " km");
+                                        } else if (listLatLng.size() == 1) {
+                                            mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(0)));
+                                            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(listLatLng.get(0), 15));
                                         }
                                     }
                                     progressDialog.dismiss();
@@ -279,7 +319,6 @@ public class LocationActivity extends AppCompatActivity {
                 });
     }
 
-
     /*
     Method for getting current location
      */
@@ -298,7 +337,7 @@ public class LocationActivity extends AppCompatActivity {
                             case 200:
                                 if (response.body().getEvents().size() > 0) {
                                     // sIds String List is used to check if there are both longitude and latitude retrieved
-                                    List<String> sIds = new ArrayList<String>();
+                                    List<String> sIds = new ArrayList<>();
                                     double lat = 0, lng = 0;
                                     for (int i = 0; i < response.body().getEvents().get(0).getCause().getSenses().size(); i++) {
                                         sIds.add(response.body().getEvents().get(0).getCause().getSenses().get(i).getSId());
@@ -391,5 +430,13 @@ public class LocationActivity extends AppCompatActivity {
             return 0;
         }
         return distance;
+    }
+
+    public static double calculateCircleRadiusMeterForMapCircle(final int _targetRadiusDip, final double _circleCenterLatitude,
+                                                                final float _currentMapZoom) {
+        //That base value seems to work for computing the meter length of a DIP
+        final double arbitraryValueForDip = 156000D;
+        final double oneDipDistance = Math.abs(Math.cos(Math.toRadians(_circleCenterLatitude))) * arbitraryValueForDip / Math.pow(2, _currentMapZoom);
+        return oneDipDistance * (double) _targetRadiusDip;
     }
 }

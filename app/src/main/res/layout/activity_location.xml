@@ -46,7 +46,7 @@
             android:id="@+id/linear"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
+            android:background="#da2196f3"
             android:elevation="6dp"
             android:orientation="vertical">
 
@@ -61,7 +61,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.5"
-                    android:text="From:"
+                    android:text="@string/from"
                     android:textColor="#ffffff" />
 
                 <TextView
@@ -94,7 +94,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.5"
-                    android:text="To:"
+                    android:text="@string/to"
                     android:textColor="#ffffff" />
 
                 <TextView
@@ -126,7 +126,7 @@
             android:layout_alignParentEnd="true"
             android:layout_below="@+id/linear"
             android:elevation="12dp"
-            android:text="Go"
+            android:text="@string/go"
             android:textColor="#ffffff"
             android:theme="@style/MyGoButton" />
 
@@ -152,7 +152,7 @@
                     android:layout_marginRight="@dimen/material_design_guide_padding"
                     android:layout_marginBottom="@dimen/material_design_item_guide_padding"
                     android:lines="1"
-                    android:text="Total distance:"
+                    android:text="@string/total_distance"
                     android:textColor="#000000"
                     android:textStyle="bold" />
                 <TextView
