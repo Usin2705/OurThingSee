@@ -209,47 +209,7 @@ public class LocationActivity extends AppCompatActivity {
                                         getPathInTimeInterval(start, response.body().getEvents().get(49).getTimestamp() - 1
                                                 , apiService, authen, deviceAuthen);
                                     } else {
-                                        if (listLatLng.size() > 1) {
-                                            double distance = 0;
-                                            PolylineOptions polylineOptions = new PolylineOptions();
-                                            LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                                            for (int i = 0; i < listLatLng.size() - 1; i++) {
-                                                distance += calculateArcLengthBaseOnLatLng(listLatLng.get(i), listLatLng.get(i + 1));
-                                                polylineOptions.add(listLatLng.get(i));
-                                                builder.include(listLatLng.get(i));
-                                                if (i == listLatLng.size() - 2) {
-                                                    polylineOptions.add(listLatLng.get(i + 1));
-                                                    builder.include(listLatLng.get(i + 1));
-                                                }
-                                            }
-                                            Polyline polyline = mGoogleMap.addPolyline(polylineOptions);
-                                            polyline.setColor(0xFF2196F3);
-                                            polyline.setWidth(15f);
-                                            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 10));
-                                            mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(0)));
-                                            mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(listLatLng.size() - 1)));
-                                            Circle circleEnd = mGoogleMap.addCircle(new CircleOptions()
-                                                    .center(listLatLng.get(0))
-                                                    .fillColor(0x77888888)
-                                                    .radius(calculateCircleRadiusMeterForMapCircle(8, listLatLng.get(0).latitude, mGoogleMap.getCameraPosition().zoom))
-                                                    .strokeWidth(3f)
-                                                    .strokeColor(Color.GRAY)
-                                                    .zIndex(3f));
-                                            Circle circleStart = mGoogleMap.addCircle(new CircleOptions()
-                                                    .center(listLatLng.get(listLatLng.size() - 1))
-                                                    .fillColor(0x77888888)
-                                                    .radius(calculateCircleRadiusMeterForMapCircle(8, listLatLng.get(listLatLng.size() - 1).latitude, mGoogleMap.getCameraPosition().zoom))
-                                                    .strokeWidth(3f)
-                                                    .strokeColor(Color.GRAY)
-                                                    .zIndex(3f));
-                                            if (distance * 6371000 < 1000)
-                                                tv_distance.setText(df.format(distance * 6371000) + " m");
-                                            else
-                                                tv_distance.setText(df.format(distance * 6371) + " km");
-                                        } else if (listLatLng.size() == 1) {
-                                            mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(0)));
-                                            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(listLatLng.get(0), 15));
-                                        }
+                                        showingPathOnMap();
                                         progressDialog.dismiss();
                                     }
                                 } else if (response.body().getEvents().size() == 0) {
@@ -257,48 +217,7 @@ public class LocationActivity extends AppCompatActivity {
                                         Toast.makeText(LocationActivity.this, R.string.no_path, Toast.LENGTH_SHORT).show();
                                         tv_distance.setText("0 m");
                                     } else {
-                                        if (listLatLng.size() > 1) {
-
-                                            double distance = 0;
-                                            PolylineOptions polylineOptions = new PolylineOptions();
-                                            LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                                            for (int i = 0; i < listLatLng.size() - 1; i++) {
-                                                distance += calculateArcLengthBaseOnLatLng(listLatLng.get(i), listLatLng.get(i + 1));
-                                                polylineOptions.add(listLatLng.get(i));
-                                                builder.include(listLatLng.get(i));
-                                                if (i == listLatLng.size() - 2) {
-                                                    polylineOptions.add(listLatLng.get(i + 1));
-                                                    builder.include(listLatLng.get(i + 1));
-                                                }
-                                            }
-                                            Polyline polyline = mGoogleMap.addPolyline(polylineOptions);
-                                            polyline.setColor(0xFF2196F3);
-                                            polyline.setWidth(15f);
-                                            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 10));
-                                            mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(0)));
-                                            mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(listLatLng.size() - 1)));
-                                            Circle circleEnd = mGoogleMap.addCircle(new CircleOptions()
-                                                    .center(listLatLng.get(0))
-                                                    .fillColor(0x77888888)
-                                                    .radius(calculateCircleRadiusMeterForMapCircle(8, listLatLng.get(0).latitude, mGoogleMap.getCameraPosition().zoom))
-                                                    .strokeWidth(3f)
-                                                    .strokeColor(Color.GRAY)
-                                                    .zIndex(3f));
-                                            Circle circleStart = mGoogleMap.addCircle(new CircleOptions()
-                                                    .center(listLatLng.get(listLatLng.size() - 1))
-                                                    .fillColor(0x77888888)
-                                                    .radius(calculateCircleRadiusMeterForMapCircle(8, listLatLng.get(listLatLng.size() - 1).latitude, mGoogleMap.getCameraPosition().zoom))
-                                                    .strokeWidth(3f)
-                                                    .strokeColor(Color.GRAY)
-                                                    .zIndex(3f));
-                                            if (distance * 6371000 < 1000)
-                                                tv_distance.setText(df.format(distance * 6371000) + " m");
-                                            else
-                                                tv_distance.setText(df.format(distance * 6371) + " km");
-                                        } else if (listLatLng.size() == 1) {
-                                            mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(0)));
-                                            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(listLatLng.get(0), 15));
-                                        }
+                                        showingPathOnMap();
                                     }
                                     progressDialog.dismiss();
                                 }
@@ -379,6 +298,51 @@ public class LocationActivity extends AppCompatActivity {
                         progressDialog.dismiss();
                     }
                 });
+    }
+
+    private void showingPathOnMap() {
+        if (listLatLng.size() > 1) {
+
+            double distance = 0;
+            PolylineOptions polylineOptions = new PolylineOptions();
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+            for (int i = 0; i < listLatLng.size() - 1; i++) {
+                distance += calculateArcLengthBaseOnLatLng(listLatLng.get(i), listLatLng.get(i + 1));
+                polylineOptions.add(listLatLng.get(i));
+                builder.include(listLatLng.get(i));
+                if (i == listLatLng.size() - 2) {
+                    polylineOptions.add(listLatLng.get(i + 1));
+                    builder.include(listLatLng.get(i + 1));
+                }
+            }
+            Polyline polyline = mGoogleMap.addPolyline(polylineOptions);
+            polyline.setColor(0xFF2196F3);
+            polyline.setWidth(15f);
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 10));
+            mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(0)));
+            mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(listLatLng.size() - 1)));
+            Circle circleEnd = mGoogleMap.addCircle(new CircleOptions()
+                    .center(listLatLng.get(0))
+                    .fillColor(0x77888888)
+                    .radius(calculateCircleRadiusMeterForMapCircle(8, listLatLng.get(0).latitude, mGoogleMap.getCameraPosition().zoom))
+                    .strokeWidth(3f)
+                    .strokeColor(Color.GRAY)
+                    .zIndex(3f));
+            Circle circleStart = mGoogleMap.addCircle(new CircleOptions()
+                    .center(listLatLng.get(listLatLng.size() - 1))
+                    .fillColor(0x77888888)
+                    .radius(calculateCircleRadiusMeterForMapCircle(8, listLatLng.get(listLatLng.size() - 1).latitude, mGoogleMap.getCameraPosition().zoom))
+                    .strokeWidth(3f)
+                    .strokeColor(Color.GRAY)
+                    .zIndex(3f));
+            if (distance * 6371000 < 1000)
+                tv_distance.setText(df.format(distance * 6371000) + " m");
+            else
+                tv_distance.setText(df.format(distance * 6371) + " km");
+        } else if (listLatLng.size() == 1) {
+            mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(0)));
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(listLatLng.get(0), 15));
+        }
     }
 
     private void setUpDatePicker(final TextView tv, final Calendar calendar) {
