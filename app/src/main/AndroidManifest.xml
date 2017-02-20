@@ -41,6 +41,7 @@
         <activity android:name=".activities.AboutUs"/>
         <activity
             android:name=".activities.LocationActivity"/>
+
     </application>
 
 </manifest>

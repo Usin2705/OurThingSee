@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.text.StringCharacterIterator;
 
 import metro.ourthingsee.OurContract;
 import metro.ourthingsee.R;
@@ -96,41 +97,6 @@ public class MyHomeActivity extends AppCompatActivity {
                         OurContract.MYHOME_NOTIFICATION_INTERVAL_MAXVALUE);
             }
         });
-
-        /*
-        * Creates a new Intent to start the TCCloudRequestService
-        * IntentService.
-        */
-        Intent serviceIntent = new Intent(this, TCCloudRequestService.class);
-
-        // Create a PendingIntent to send the service
-        // Set the flag update current to update with new setting
-        PendingIntent pendingIntent = PendingIntent.getService(this,
-                OurContract.INTENT_REQUEST_CODE_MYHOMESERVICE, serviceIntent,
-                0);
-
-
-        // Get the alarmManager to set the repeating task
-        alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-        if (true) {
-            // Wake up the device to fire the alarm in 15 minutes, and every 15 minutes after that:
-            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                    SystemClock.elapsedRealtime() + prefs.getInt(
-                            OurContract.PREF_MYHOME_NOTIFICATION_INTERVAL,
-                            DEFAULT_NOTIFICATION_INTERVAL_VALUE) * 60 * 1000,
-                    prefs.getInt(OurContract.PREF_MYHOME_NOTIFICATION_INTERVAL,
-                            DEFAULT_NOTIFICATION_INTERVAL_VALUE) * 60 * 1000, pendingIntent);
-        } else {
-            // If user turn off notification, turn off all alarm.
-            Log.e("AAAAA", "ALARM WAS CANCEL");
-            alarmManager.cancel(pendingIntent);
-        }
-
-        IntentFilter filter = new IntentFilter(OurContract.BROADCAST_ACTION);
-        filter.addCategory(Intent.CATEGORY_DEFAULT);
-        receiver = new TCCLoudRequestReceiver();
-        registerReceiver(receiver, filter);
     }
 
     /**
@@ -212,7 +178,6 @@ public class MyHomeActivity extends AppCompatActivity {
 
         // Get the alarmManager to set the repeating task
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Log.e("AAAAA","BOOLEAN STATE: " + String.valueOf(isOn));
 
         if (isOn) {
             // Wake up the device to fire the alarm in 15 minutes, and every 15 minutes after that:
@@ -224,20 +189,17 @@ public class MyHomeActivity extends AppCompatActivity {
                             DEFAULT_NOTIFICATION_INTERVAL_VALUE) * 60 * 1000, pendingIntent);
         } else {
             // If user turn off notification, turn off all alarm.
-            Log.e("AAAAA", "ALARM WAS CANCEL");
             alarmManager.cancel(pendingIntent);
+            // TODO remember to unregistered all services ???
         }
-    }
 
-
-    @Override
-    public void onDestroy() {
-        this.unregisterReceiver(receiver);
-        super.onDestroy();
+        IntentFilter filter = new IntentFilter(OurContract.BROADCAST_ACTION);
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+        receiver = new TCCLoudRequestReceiver();
+        registerReceiver(receiver, filter);
     }
 
     public void sendNotification(String strValue) {
-        Log.e("AAAAA", "NOTIFICATION SEND CAI BUM");
         //Get an instance of NotificationManager//
         NotificationCompat.Builder notification =
                 new NotificationCompat.Builder(this)
@@ -267,6 +229,10 @@ public class MyHomeActivity extends AppCompatActivity {
     }
 
     public class TCCLoudRequestReceiver extends BroadcastReceiver {
+        // Prevents instantiation
+        private TCCLoudRequestReceiver() {
+        }
+
         @Override
         public void onReceive(Context context, Intent intent) {
             Double dbResponse = intent.getDoubleExtra(OurContract.BROADCAST_RESPONSE_VALUE, 0);
@@ -274,8 +240,6 @@ public class MyHomeActivity extends AppCompatActivity {
 
             Date eventDate = new Date(longTimestamp);
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy kk:mm:ss");
-
-            Log.e("AAAAA", "DA RECEIVE OnReceive run");
 
             TextView myTextView1 = (TextView) findViewById(R.id.txtHumidityTime);
             TextView myTextView2 = (TextView) findViewById(R.id.txtHumidityValue);
@@ -286,5 +250,4 @@ public class MyHomeActivity extends AppCompatActivity {
             sendNotification(String.valueOf(dateFormat.format(eventDate) + " " + dbResponse));
         }
     }
-
 }
