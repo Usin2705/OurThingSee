@@ -3,11 +3,13 @@ package metro.ourthingsee;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
 import metro.ourthingsee.RESTObjects.Events;
+import metro.ourthingsee.activities.MyHomeActivity;
 import metro.ourthingsee.remote.APIService;
 import metro.ourthingsee.remote.AppUtils;
 import retrofit2.Call;
