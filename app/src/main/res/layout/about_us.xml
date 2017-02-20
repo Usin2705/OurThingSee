@@ -64,11 +64,12 @@
         android:layout_height="wrap_content"
         android:id="@+id/btnBack"
         android:text="Back"
+        android:textColor="@android:color/white"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
         android:layout_marginStart="30dp"
         android:layout_marginBottom="30dp"
-        android:background="@color/cardview_light_background" />
+        android:background="@color/colorPrimary" />
 
 </RelativeLayout>
 
