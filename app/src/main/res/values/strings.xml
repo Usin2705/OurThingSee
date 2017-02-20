@@ -19,6 +19,13 @@
     <!-- Option name for My Home purpose, which measure light, humidity and tempt [CHAR LIMIT=30] -->
     <string name="myhome_option">My Home</string>
 
+
+    <!-- Label for turn on notification option in my home activity [CHAR LIMIT=20] -->
+    <string name="myhome_notification_turnon_label">Turn on notification</string>
+
+    <!-- Description for turn on notification option in my home activity [CHAR LIMIT=NONE] -->
+    <string name="myhome_notification_turnon_desc">Notify user whenever humidity and light level fall below a minimum level.\nOnly notify when user is at home.</string>
+
     <!-- General toast for fetch data if response is failed, blame everybody [CHAR LIMIT=NONE] -->
     <string name="fetch_toast_response_failed_general">Failed to fetch data from Thingsee cloud server. Thanks, Obama!</string>
 

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
 
@@ -20,20 +20,269 @@
             android:layout_height="wrap_content"
             android:background="@color/colorPrimary"
             android:minHeight="56dp"
-            app:title="@string/app_name"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+            app:title="@string/app_name" />
 
-        <TextView
-            android:text="TextView"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/textView1" />
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/activity_margin"
+            android:orientation="vertical">
 
-        <TextView
-            android:text="TextView"
+            <LinearLayout
+                android:id="@+id/lnlMyHomeSwt"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/ripple"
+                android:clickable="true"
+                android:orientation="horizontal"> <!-- Ripple effect for layout -->
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.2"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        style="@android:style/TextAppearance.Large"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/myhome_notification_turnon_label" />
+
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/myhome_notification_turnon_desc" />
+                </LinearLayout>
+
+                <Switch
+                    android:id="@+id/swtMyHome"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/lnlMyHomeOption"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin_small"
+                    android:layout_marginTop="@dimen/activity_vertical_margin_small"
+                    android:background="@color/colorPrimaryDark"
+                    android:orientation="horizontal">
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin_very_small"
+                    android:layout_marginTop="@dimen/activity_vertical_margin_very_small"
+                    android:orientation="horizontal"
+                    android:clickable="true"
+                    android:background="@drawable/ripple">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.5"
+                        android:gravity="center_vertical"
+                        android:text="Time start going out"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Subhead">
+
+                    </TextView>
+
+                    <TextView
+                        android:id="@+id/txtMyHomeStartTime"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                        android:textColor="@color/colorPrimary"
+                        android:textStyle="bold"
+                        tools:text="07:25" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin_very_small"
+                    android:layout_marginTop="@dimen/activity_vertical_margin_very_small"
+                    android:orientation="horizontal"
+                    android:clickable="true"
+                    android:background="@drawable/ripple">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.5"
+                        android:gravity="center_vertical"
+                        android:text="Time back to home"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Subhead">
+
+                    </TextView>
+
+                    <TextView
+                        android:id="@+id/txtMyHomeEndTime"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                        android:textColor="@color/colorPrimary"
+                        android:textStyle="bold"
+                        tools:text="07:25" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin_very_small"
+                    android:layout_marginTop="@dimen/activity_vertical_margin_very_small"
+                    android:orientation="horizontal"
+                    android:clickable="true"
+                    android:background="@drawable/ripple">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.5"
+                        android:gravity="center_vertical"
+                        android:text="Minimum humidity level (%)"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Subhead">
+
+                    </TextView>
+
+                    <TextView
+                        android:id="@+id/txtMyHomeHumidityLevel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                        android:textColor="@color/colorPrimary"
+                        android:textStyle="bold"
+                        tools:text="07:25" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin_very_small"
+                    android:layout_marginTop="@dimen/activity_vertical_margin_very_small"
+                    android:orientation="horizontal"
+                    android:clickable="true"
+                    android:background="@drawable/ripple"
+                    android:id="@+id/lnlMyHomeNotfInterval">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.5"
+                        android:gravity="center_vertical"
+                        android:text="Notification interval (min)"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Subhead">
+
+                    </TextView>
+
+                    <TextView
+                        android:id="@+id/txtMyHomeNotfInterval"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                        android:textColor="@color/colorPrimary"
+                        android:textStyle="bold"
+                        tools:text="07:25" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="@dimen/activity_vertical_margin_small"
+                android:layout_marginTop="@dimen/activity_vertical_margin_small"
+                android:background="@color/colorPrimaryDark"
+                android:orientation="horizontal">
+
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/txtTemperatureLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Temperature" />
+
+            <TextView
+                android:id="@+id/txtTemperatureTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Temperature" />
+
+            <TextView
+                android:id="@+id/txtTemperatureValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TextView" />
+
+            <TextView
+                android:id="@+id/txtHumidityLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Humidity" />
+
+            <TextView
+                android:id="@+id/txtHumidityTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Humidity" />
+
+            <TextView
+                android:id="@+id/txtHumidityValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TextView" />
+
+            <TextView
+                android:id="@+id/txtLightLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Light level" />
+
+            <TextView
+                android:id="@+id/txtLightTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Light level" />
+
+            <TextView
+                android:id="@+id/txtLightValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TextView" />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/textView2" />
+            android:layout_height="match_parent"
+            android:orientation="vertical"></LinearLayout>
+
     </LinearLayout>
 </ScrollView>

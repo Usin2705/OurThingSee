@@ -35,6 +35,16 @@ public class OurContract {
     public static final String PREF_USER_AUTH_TOKEN_NAME = "pref_auth_token";
 
     /**
+     * MyHome notification option name to stored in shared pref
+     */
+    public static final String PREF_MYHOME_NOTIFICATION_OPTION = "pref_myhome_notification_option";
+
+    /**
+     * MyHome notification interval name to stored in shared pref
+     */
+    public static final String PREF_MYHOME_NOTIFICATION_INTERVAL = "pref_myhome_notification_value";
+
+    /**
      * The index option for location
      */
     public static final int INDEX_OPTION_LOCATION = 0;
@@ -141,6 +151,21 @@ public class OurContract {
      */
     public static final int NOTIFICATION_ID_HUMIDITY = 101;
 
+    /**
+     * Set the max value for notification interval. Used in umber picker in my home activity
+     * Notice it should be different with {@link #MYHOME_MIN_HUMIDITY_LEVEL} so we can know
+     * which number picker is for which. (those two share the same number picker)
+     *
+     */
+    public static final int MYHOME_NOTIFICATION_INTERVAL_MAXVALUE = 120;
+
+    /**
+     * Set the max value for minimum humidity level. Used in umber picker in my home activity
+     * Notice it should be different with {@link #MYHOME_NOTIFICATION_INTERVAL_MAXVALUE} so we can
+     * know which number picker is for which. (those two share the same number picker)
+     *
+     */
+    public static final int MYHOME_MIN_HUMIDITY_LEVEL = 100;
 
 
 }
