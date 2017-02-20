@@ -28,7 +28,7 @@ public class AboutUs extends AppCompatActivity implements View.OnClickListener {
     public void onClick(View v) {
         if (btn_Back.isClickable()) {
             Intent intentAboutUs = new Intent(AboutUs.this, MainActivity.class);
-            startActivityForResult(intentAboutUs, 1);
+            startActivity(intentAboutUs);
             finish();
         }
     }

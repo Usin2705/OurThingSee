@@ -2,6 +2,7 @@ package metro.ourthingsee.activities;
 
 import android.app.LoaderManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
@@ -10,7 +11,9 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -205,7 +208,21 @@ public class MainActivity extends AppCompatActivity
                 //Check to see which item was being clicked and perform appropriate action
                 switch (menuItem.getItemId()) {
                     case R.id.log_out:
-                        delLoginData();
+                        // Because Giang use a Toolbar not default ActionBar, we can't use getApplicationContext()
+                        // to get the context for this AlertDialog, we have to call our activity.this
+                        new AlertDialog.Builder(MainActivity.this)
+                                .setTitle("Log Out")
+                                .setMessage("Are you sure you want to log out?\nYour username and password will be required to open the app again.")
+                                // TODO add to string.xml
+                                .setIcon(R.drawable.ic_warning_24dp)
+                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        delLoginData();
+                                    }
+                                })
+                                .setNegativeButton(android.R.string.no,null)
+                                .show();
                         break;
                     case R.id.about_us:
                         Intent aboutUs = new Intent(MainActivity.this,AboutUs.class);
