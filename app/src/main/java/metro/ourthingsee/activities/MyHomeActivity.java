@@ -1,7 +1,6 @@
 package metro.ourthingsee.activities;
 
 import android.app.AlarmManager;
-import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -41,14 +40,12 @@ import metro.ourthingsee.TCCloudRequestService;
 public class MyHomeActivity extends AppCompatActivity {
     private static final int MIN_VALUE = 0;
     static SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy kk:mm:ss");
-    TCCLoudRequestReceiver receiver;
-    AlarmManager alarmManager;
     static SharedPreferences prefs;
-
     static TextView txtTemperatureTime, txtTemperatureValue, txtHumidityTime, txtHumidityValue,
             txtLightTime, txtLightValue;
-
     private static Context staticContext;
+    TCCLoudRequestReceiver receiver;
+    AlarmManager alarmManager;
 
     /**
      * Send the notification to user. It need to be static so it can be called by our
@@ -58,8 +55,8 @@ public class MyHomeActivity extends AppCompatActivity {
      * @param strValue the value to display
      */
     public static void sendNotification(Context context, String strValue) {
-        Intent ntfIntent = new Intent (context, MyHomeActivity.class);
-        ntfIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        Intent ntfIntent = new Intent(context, MyHomeActivity.class);
+        ntfIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
                 ntfIntent, 0);
@@ -92,6 +89,23 @@ public class MyHomeActivity extends AppCompatActivity {
         // subsequent notification. If the previous notification is still visible, the system will
         // update this existing notification, rather than create a new one.
         mNotificationManager.notify(OurContract.NOTIFICATION_ID_HUMIDITY, notification.build());
+    }
+
+    private static void updateDisplayTV() {
+        txtHumidityTime.setText(prefs.getString(OurContract.PREF_HUMID_LATEST_TIME,
+                staticContext.getString(R.string.myhome_default_novalue)));
+        txtHumidityValue.setText(prefs.getString(OurContract.PREF_HUMID_LATEST_VALUE,
+                staticContext.getString(R.string.myhome_default_novalue)));
+
+        txtTemperatureTime.setText(prefs.getString(OurContract.PREF_TEMP_LATEST_TIME,
+                staticContext.getString(R.string.myhome_default_novalue)));
+        txtTemperatureValue.setText(prefs.getString(OurContract.PREF_TEMP_LATEST_VALUE,
+                staticContext.getString(R.string.myhome_default_novalue)));
+
+        txtLightTime.setText(prefs.getString(OurContract.PREF_LIGHT_LATEST_TIME,
+                staticContext.getString(R.string.myhome_default_novalue)));
+        txtLightValue.setText(prefs.getString(OurContract.PREF_LIGHT_LATEST_VALUE,
+                staticContext.getString(R.string.myhome_default_novalue)));
     }
 
     @Override
@@ -195,18 +209,9 @@ public class MyHomeActivity extends AppCompatActivity {
         txtLightValue = (TextView) this.findViewById(R.id.txtLightValue);
     }
 
-    private static void updateDisplayTV() {
-        txtHumidityTime.setText(prefs.getString(OurContract.PREF_HUMID_LATEST_TIME,
-                staticContext.getString(R.string.myhome_default_novalue)));
-
-        txtHumidityValue.setText(prefs.getString(OurContract.PREF_HUMID_LATEST_VALUE,
-                staticContext.getString(R.string.myhome_default_novalue)));
-    }
-
     /**
      * Set up the toolbar, with a Navigation button which return to previous activity
      * (similar to onBackPress)
-     *
      */
     private void setupToolBar() {
         Toolbar toolbar = (Toolbar) this.findViewById(R.id.tb_main);
@@ -229,6 +234,7 @@ public class MyHomeActivity extends AppCompatActivity {
         // Call the updateDisplayTV() again in case of new data
         updateDisplayTV();
 
+        // Create the receiver again, since we unregister it in onPause
         IntentFilter filter = new IntentFilter(OurContract.BROADCAST_ACTION);
         filter.addCategory(Intent.CATEGORY_DEFAULT);
         receiver = new TCCLoudRequestReceiver();
@@ -369,36 +375,71 @@ public class MyHomeActivity extends AppCompatActivity {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Double dbResponse = intent.getDoubleExtra(OurContract.BROADCAST_RESPONSE_VALUE, 0);
-            Long longTimestamp = intent.getLongExtra(OurContract.BROADCAST_RESPONSE_TIMESTAMP, 0);
+            handleOnReceive(intent, context, OurContract.BROADCAST_RESPONSE_TIMESTAMP,
+                    OurContract.BROADCAST_RESPONSE_VALUE);
+
+            // Call the updateDisplayTV() again in case of new data
+            if (staticContext != null) {
+                updateDisplayTV();
+            }
+        }
+
+        /**
+         * Handle the onReceive of BroadcastReceiver here.
+         * This will record the last timestamp and value to prefs.
+         * Also it will handle the notification (if set) for each sensorID.
+         *
+         * @param intent the intent we get from the Broadcast. We need to get sensorID from this
+         *               intent to switch case based on the data we get.
+         * @param context the context of the app, for sending notification
+         * @param tsName the Broadcast Response Name contain timestamp value in Long
+         * @param vlName the Broadcast Response Name contain sensor value in Double
+         */
+        private void handleOnReceive(Intent intent, Context context, String tsName, String vlName) {
+            // If the intent have the extra value for tsName, then we take the value and process,
+            // else we stop.
+            Long longTimestamp = intent.getLongExtra(tsName, 0);
+            Double dbResponse = intent.getDoubleExtra(vlName, 0d);
 
             Date eventDate = new Date(longTimestamp);
 
-//            TextView myTextView1 = (TextView) findViewById(R.id.txtHumidityTime);
-//            TextView myTextView2 = (TextView) findViewById(R.id.txtHumidityValue);
-//            myTextView1.setText(dateFormat.format(eventDate));
-//            myTextView2.setText(String.valueOf(dbResponse));
+            String sensorID = intent.getStringExtra(OurContract.BROADCAST_RESPONSE_SENSORID);
 
-            if (prefs!=null){
-                prefs.edit().putString(OurContract.PREF_HUMID_LATEST_TIME,
-                        String.valueOf(dateFormat.format(eventDate))).apply();
+            // If prefs is not null, and both timestamp and double value are not 0
+            if (prefs != null && dbResponse != 0d && longTimestamp != 0) {
+                switch (sensorID) {
+                    case OurContract.SENSOR_ID_HUMIDITY:
+                        prefs.edit().putString(OurContract.PREF_HUMID_LATEST_TIME,
+                                String.valueOf(dateFormat.format(eventDate))).apply();
+                        prefs.edit().putString(OurContract.PREF_HUMID_LATEST_VALUE,
+                                String.valueOf(dbResponse) + " %").apply();
+                        // If the value is less than the min value, notify the user
+                        if (dbResponse < intent.getIntExtra(
+                                OurContract.INTENT_NAME_MIN_HUMIDITY_VALUE,
+                                OurContract.DEFAULT_MIN_HUMIDITY_VALUE)) {
+                            sendNotification(context, String.valueOf(dateFormat.format(eventDate) + " " + dbResponse));
+                        }
 
-                prefs.edit().putString(OurContract.PREF_HUMID_LATEST_VALUE,
-                        String.valueOf(dbResponse) + "%").apply();
+                        break;
+
+                    case OurContract.SENSOR_ID_TEMPERATURE:
+                        prefs.edit().putString(OurContract.PREF_TEMP_LATEST_TIME,
+                                String.valueOf(dateFormat.format(eventDate))).apply();
+                        prefs.edit().putString(OurContract.PREF_TEMP_LATEST_VALUE,
+                                String.valueOf(dbResponse) + " \u2103").apply();
+                        break;
+
+                    case OurContract.SENSOR_ID_LUMINANCE:
+                        prefs.edit().putString(OurContract.PREF_LIGHT_LATEST_TIME,
+                                String.valueOf(dateFormat.format(eventDate))).apply();
+                        prefs.edit().putString(OurContract.PREF_LIGHT_LATEST_VALUE,
+                                String.valueOf(dbResponse) + " lux").apply();
+                        break;
+
+                    default:
+                        break;
+                }
             }
-
-            // Call the updateDisplayTV() again in case of new data
-            if (staticContext!=null) {
-                updateDisplayTV();
-            }
-
-            // If the value is less than the min value, notify the user
-            if (dbResponse < intent.getIntExtra(
-                    OurContract.INTENT_NAME_MIN_HUMIDITY_VALUE,
-                    OurContract.DEFAULT_MIN_HUMIDITY_VALUE)) {
-                sendNotification(context, String.valueOf(dateFormat.format(eventDate) + " " + dbResponse));
-            }
-
         }
     }
 }

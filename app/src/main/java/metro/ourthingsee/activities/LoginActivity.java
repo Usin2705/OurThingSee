@@ -196,9 +196,6 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * @param response this will show the document when you press Crtl Q
-     */
     public void recordLoginData(Authentication response) {
         prefs = getSharedPreferences(OurContract.SHARED_PREF, Context.MODE_PRIVATE);
         prefs.edit().putString(OurContract.PREF_USER_AUTH_TOKEN_NAME,

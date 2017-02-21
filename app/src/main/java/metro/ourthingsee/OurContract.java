@@ -50,6 +50,26 @@ public class OurContract {
     public static final String PREF_HUMID_LATEST_TIME = "pref_humi_latest_time";
 
     /**
+     * prefs name for latest value for temperature
+     */
+    public static final String PREF_TEMP_LATEST_VALUE = "pref_temp_latest_value";
+
+    /**
+     * prefs name for latest time for temperature
+     */
+    public static final String PREF_TEMP_LATEST_TIME = "pref_temp_latest_time";
+
+    /**
+     * prefs name for latest value for luminance
+     */
+    public static final String PREF_LIGHT_LATEST_VALUE = "pref_light_latest_value";
+
+    /**
+     * prefs name for latest time for luminance
+     */
+    public static final String PREF_LIGHT_LATEST_TIME = "pref_light_latest_time";
+
+    /**
      * MyHome default minimum humidity value (%)
      */
     public static final int DEFAULT_MIN_HUMIDITY_VALUE = 30;
@@ -103,6 +123,12 @@ public class OurContract {
      * Response name for the Intent Service Extra of sensor timestamp
      */
     public static final String BROADCAST_RESPONSE_TIMESTAMP = "com.metro.ourthingsee.BROADCAST_RESPONSE_TIMESTAMP";
+
+    /**
+     * Response name for the Intent Service Extra of sensor id, which help us to
+     * differentiate the sensor type
+     */
+    public static final String BROADCAST_RESPONSE_SENSORID = "com.metro.ourthingsee.BROADCAST_RESPONSE_SENSORID";
 
     /**
      * The sensor id for Thingsee device. Temperature unit is degress
