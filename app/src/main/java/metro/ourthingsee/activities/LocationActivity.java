@@ -52,7 +52,6 @@ public class LocationActivity extends AppCompatActivity {
     long startTime, endTime;
     boolean currentLocationState = true;
     List<Events.Event> eventList = new ArrayList<>();
-    List<Long> timeStampList = new ArrayList<>();
     List<LatLng> listLatLng = new ArrayList<>();
     DecimalFormat df = new DecimalFormat("0.#");
     SimpleDateFormat sdfDate = new SimpleDateFormat("dd MMM yyyy");
@@ -212,7 +211,6 @@ public class LocationActivity extends AppCompatActivity {
             public void onClick(View v) {
                 mGoogleMap.clear();
                 eventList.clear();
-                timeStampList.clear();
                 listLatLng.clear();
                 calendar.set(Calendar.SECOND, 0);
                 calendar.set(Calendar.MILLISECOND, 0);
@@ -369,11 +367,13 @@ public class LocationActivity extends AppCompatActivity {
     private void showingPathOnMap() {
         for (int i = 0; i < eventList.size(); i++) {
             double lat = 0, lng = 0;
+            //sIds is used to check if there are both lat lng value in one timestamp or not
             List<String> sIds = new ArrayList<>();
             List<Events.Sense> senses = new ArrayList<>();
             senses.addAll(eventList.get(i).getCause().getSenses());
             long comparingTimestamp = eventList.get(i).getTimestamp();
             for (int j = 0; j < senses.size(); j++) {
+                //add all senses id in sIds
                 sIds.add(senses.get(j).getSId());
                 if (senses.get(j).getSId().equals("0x00010100")) {
                     lat = senses.get(j).getVal();
@@ -381,11 +381,18 @@ public class LocationActivity extends AppCompatActivity {
                     lng = senses.get(j).getVal();
                 }
             }
+            //if there are both lat and lng then finish
             if (sIds.contains("0x00010100") && sIds.contains("0x00010200")) {
                 listLatLng.add(new LatLng(lat, lng));
-                timeStampList.add(comparingTimestamp);
+                if(listLatLng.size()==1){
+                    endTime=comparingTimestamp;
+                }
+                startTime=comparingTimestamp;
+                //if there are one missing value then check the next event
             } else if ((sIds.contains("0x00010100") && !sIds.contains("0x00010200")) ||
                     !sIds.contains("0x00010100") && sIds.contains("0x00010200")) {
+                //if the next event has the same timestamp with the previous
+                //then check if it contains the missing value
                 if (eventList.size()>(i+1) && eventList.get(i + 1).getTimestamp() == comparingTimestamp) {
                     senses.clear();
                     senses.addAll(eventList.get(i + 1).getCause().getSenses());
@@ -397,17 +404,20 @@ public class LocationActivity extends AppCompatActivity {
                             lng = senses.get(j).getVal();
                         }
                     }
+                    //if the next event has the missing value then finish and add 1 to i
+                    //because we don't have to check it again
                     if (sIds.contains("0x00010100") && sIds.contains("0x00010200")) {
                         listLatLng.add(new LatLng(lat, lng));
-                        timeStampList.add(comparingTimestamp);
+                        if(listLatLng.size()==1){
+                            endTime=comparingTimestamp;
+                        }
+                        startTime=comparingTimestamp;
                         i++;
                     }
                 }
             }
         }
-        if(!timeStampList.isEmpty()) {
-            endTime = timeStampList.get(0);
-            startTime = timeStampList.get(timeStampList.size() - 1);
+        if(!listLatLng.isEmpty()) {
             if (listLatLng.size() > 1) {
                 double distance = 0;
                 PolylineOptions polylineOptions = new PolylineOptions();
@@ -466,7 +476,7 @@ public class LocationActivity extends AppCompatActivity {
                                 + sdfTime.format(endTime)));
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(listLatLng.get(0), 15));
             }
-        } else if (timeStampList.isEmpty()) {
+        } else if (listLatLng.isEmpty()) {
             Toast.makeText(this, R.string.no_path, Toast.LENGTH_SHORT).show();
             mGoogleMap.setOnCameraMoveListener(null);
         }
