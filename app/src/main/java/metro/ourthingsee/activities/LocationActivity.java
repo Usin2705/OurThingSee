@@ -242,7 +242,6 @@ public class LocationActivity extends AppCompatActivity {
                     public void onResponse(Call<Events> call, Response<Events> response) {
                         switch (response.code()) {
                             case 200:
-                                if (response.body().getEvents().size() > 0) {
                                     /*
                                     STEP 1: take out a list of events
                                     */
@@ -262,10 +261,6 @@ public class LocationActivity extends AppCompatActivity {
                                         showingPathOnMap();
                                         progressDialog.dismiss();
                                     }
-                                } else if (response.body().getEvents().size() == 0) {
-                                    showingPathOnMap();
-                                    progressDialog.dismiss();
-                                }
                                 break;
                             case 503:
                                 getPathInTimeInterval(start, end, apiService, authen, deviceAuthen);
@@ -473,6 +468,7 @@ public class LocationActivity extends AppCompatActivity {
             }
         } else if (timeStampList.isEmpty()) {
             Toast.makeText(this, R.string.no_path, Toast.LENGTH_SHORT).show();
+            mGoogleMap.setOnCameraMoveListener(null);
         }
     }
 
