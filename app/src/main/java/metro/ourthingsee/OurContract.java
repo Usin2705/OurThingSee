@@ -35,6 +35,16 @@ public class OurContract {
     public static final String PREF_USER_AUTH_TOKEN_NAME = "pref_auth_token";
 
     /**
+     * MyHome minimum humidity value name to stored in shared pref
+     */
+    public static final String PREF_MYHOME_MIN_HUMIDITY_VALUE = "pref_myhome_min_humidity_value";
+
+    /**
+     * MyHome default minimum humidity value (%)
+     */
+    public static final int DEFAULT_MIN_HUMIDITY_VALUE = 30;
+
+    /**
      * MyHome notification option name to stored in shared pref
      */
     public static final String PREF_MYHOME_NOTIFICATION_OPTION = "pref_myhome_notification_option";
@@ -43,6 +53,11 @@ public class OurContract {
      * MyHome notification interval name to stored in shared pref
      */
     public static final String PREF_MYHOME_NOTIFICATION_INTERVAL = "pref_myhome_notification_value";
+
+    /**
+     * MyHome default notification interval value (min)
+     */
+    public static final int DEFAULT_NOTIFICATION_INTERVAL_VALUE = 60;
 
     /**
      * The index option for location
@@ -141,6 +156,11 @@ public class OurContract {
     public static final int INTENT_REQUEST_CODE_MYHOMESERVICE = 101;
 
     /**
+     *Intent name for minimum humidity vale
+     */
+    public static final String INTENT_NAME_MIN_HUMIDITY_VALUE = "com.metro.ourthingsee.min_hud_val";
+
+    /**
      * When you issue multiple notifications about the same type of event, it’s best practice
      * for your app to try to update an existing notification with this new information, rather
      * than immediately creating a new notification. If you want to update this notification at
@@ -153,7 +173,7 @@ public class OurContract {
 
     /**
      * Set the max value for notification interval. Used in umber picker in my home activity
-     * Notice it should be different with {@link #MYHOME_MIN_HUMIDITY_LEVEL} so we can know
+     * Notice it should be different with {@link #MYHOME_MIN_HUMIDITY_MAXVALUE} so we can know
      * which number picker is for which. (those two share the same number picker)
      *
      */
@@ -165,7 +185,7 @@ public class OurContract {
      * know which number picker is for which. (those two share the same number picker)
      *
      */
-    public static final int MYHOME_MIN_HUMIDITY_LEVEL = 100;
+    public static final int MYHOME_MIN_HUMIDITY_MAXVALUE = 100;
 
 
 }

@@ -11,4 +11,7 @@
     <dimen name="material_design_guide_padding">16dp</dimen>
     <dimen name="material_design_item_guide_padding">8dp</dimen>
     <dimen name="material_design_nav_header_height">160dp</dimen>
+
+    <!-- Minimum option height value for layout -->
+    <dimen name="minimum_layout_height">48dp</dimen>
 </resources>

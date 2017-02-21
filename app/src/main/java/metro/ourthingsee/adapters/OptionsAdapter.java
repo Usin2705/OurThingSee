@@ -32,7 +32,7 @@ public class OptionsAdapter extends RecyclerView.Adapter<OptionsAdapter.MyOption
     List<Option> options = new ArrayList<>();
 
     /**
-     * TODO PUT COMMENT
+     * Display the options layout
      *
      * @param listener Listener for purpose item clicks
      */

@@ -136,7 +136,6 @@ public class MainActivity extends AppCompatActivity
             case OurContract.INDEX_OPTION_LOCATION:
                 Intent intent_location = new Intent(this, LocationActivity.class);
                 startActivity(intent_location);
-                // TODO Handle the click for location purpose here
                 break;
             case OurContract.INDEX_OPTION_TEMPERATURE:
                 // TODO Handle the click for location purpose here
@@ -211,9 +210,8 @@ public class MainActivity extends AppCompatActivity
                         // Because Giang use a Toolbar not default ActionBar, we can't use getApplicationContext()
                         // to get the context for this AlertDialog, we have to call our activity.this
                         new AlertDialog.Builder(MainActivity.this)
-                                .setTitle("Log Out")
-                                .setMessage("Are you sure you want to log out?\nYour username and password will be required to open the app again.")
-                                // TODO add to string.xml
+                                .setTitle(getString(R.string.log_out))
+                                .setMessage(R.string.log_out_message)
                                 .setIcon(R.drawable.ic_warning_24dp)
                                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                     @Override

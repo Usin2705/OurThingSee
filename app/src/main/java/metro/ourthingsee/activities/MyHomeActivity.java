@@ -16,6 +16,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -37,12 +38,18 @@ import metro.ourthingsee.TCCloudRequestService;
 
 public class MyHomeActivity extends AppCompatActivity {
     private static final int MIN_VALUE = 0;
-    private static final int DEFAULT_NOTIFICATION_INTERVAL_VALUE = 15;
     SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm");
     TCCLoudRequestReceiver receiver;
     AlarmManager alarmManager;
     SharedPreferences prefs;
 
+    /**
+     * Send the notification to user. It need to be static so it can be called by our
+     * static receiver {@link TCCLoudRequestReceiver}.
+     *
+     * @param context  the context of the app, used to get resources
+     * @param strValue the value to display
+     */
     public static void sendNotification(Context context, String strValue) {
         //Get an instance of NotificationManager//
         NotificationCompat.Builder notification =
@@ -105,10 +112,33 @@ public class MyHomeActivity extends AppCompatActivity {
             }
         });
 
+        // Find and cast the onClick for Humidity Level
+        final TextView txtMyHomeHumidityLevel = (TextView) findViewById(R.id.txtMyHomeHumidityLevel);
+        txtMyHomeHumidityLevel.setText(
+                String.valueOf(prefs.getInt(OurContract.PREF_MYHOME_MIN_HUMIDITY_VALUE,
+                        OurContract.DEFAULT_MIN_HUMIDITY_VALUE)));
+        txtMyHomeHumidityLevel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setUpNumberPicker(txtMyHomeHumidityLevel,
+                        OurContract.MYHOME_MIN_HUMIDITY_MAXVALUE);
+            }
+        });
+        LinearLayout lnlMyHomeHumidityLevel = (LinearLayout) findViewById(R.id.lnlMyHomeHumidityLevel);
+        lnlMyHomeHumidityLevel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setUpNumberPicker(txtMyHomeHumidityLevel,
+                        OurContract.MYHOME_MIN_HUMIDITY_MAXVALUE);
+            }
+        });
+
+
+        // Find and cast the onClick for Notification interval
         final TextView txtMyHomeNotfInterval = (TextView) findViewById(R.id.txtMyHomeNotfInterval);
         txtMyHomeNotfInterval.setText(
                 String.valueOf(prefs.getInt(OurContract.PREF_MYHOME_NOTIFICATION_INTERVAL,
-                        DEFAULT_NOTIFICATION_INTERVAL_VALUE)));
+                        OurContract.DEFAULT_NOTIFICATION_INTERVAL_VALUE)));
         txtMyHomeNotfInterval.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -127,9 +157,19 @@ public class MyHomeActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onDestroy() {
+    public void onResume() {
+        super.onResume();
+
+        IntentFilter filter = new IntentFilter(OurContract.BROADCAST_ACTION);
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+        receiver = new TCCLoudRequestReceiver();
+        registerReceiver(receiver, filter);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
         this.unregisterReceiver(receiver);
-        super.onDestroy();
     }
 
     /**
@@ -153,35 +193,50 @@ public class MyHomeActivity extends AppCompatActivity {
      *
      * @param textView the textview for display the return value of number picker
      * @param maxValue the max value for number picker. This varies from
-     *                 {@link OurContract#MYHOME_MIN_HUMIDITY_LEVEL} and
+     *                 {@link OurContract#MYHOME_MIN_HUMIDITY_MAXVALUE} and
      *                 {@link OurContract#MYHOME_NOTIFICATION_INTERVAL_MAXVALUE}
      */
 
-    private void setUpNumberPicker(final TextView textView, int maxValue) {
+    private void setUpNumberPicker(final TextView textView, final int maxValue) {
         final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         LayoutInflater inflater = this.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.number_picker_dialog, null);
         dialog.setView(dialogView);
 
-        if (maxValue == OurContract.MYHOME_NOTIFICATION_INTERVAL_MAXVALUE) {
-            dialog.setTitle("Select your notification interval (min)");
-        } else {
-            dialog.setTitle("Select your minimum humidity level (%)");
-        }
-
         final NumberPicker numberPicker = (NumberPicker) dialogView.findViewById(R.id.numberPicker);
         numberPicker.setMinValue(MIN_VALUE);
         numberPicker.setMaxValue(maxValue);
-        numberPicker.setValue(prefs.getInt(
-                OurContract.PREF_MYHOME_NOTIFICATION_INTERVAL, DEFAULT_NOTIFICATION_INTERVAL_VALUE));
         numberPicker.setWrapSelectorWheel(true);
+
+        // Display the number picker correctly depend on the option:
+        if (maxValue == OurContract.MYHOME_NOTIFICATION_INTERVAL_MAXVALUE) {
+            dialog.setTitle("Select your notification interval (min)");
+            numberPicker.setValue(prefs.getInt(
+                    OurContract.PREF_MYHOME_NOTIFICATION_INTERVAL,
+                    OurContract.DEFAULT_NOTIFICATION_INTERVAL_VALUE));
+        } else {
+            dialog.setTitle("Select your minimum humidity level (%)");
+            numberPicker.setValue(prefs.getInt(
+                    OurContract.PREF_MYHOME_MIN_HUMIDITY_VALUE,
+                    OurContract.DEFAULT_MIN_HUMIDITY_VALUE));
+        }
 
         dialog.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 textView.setText(String.valueOf(numberPicker.getValue()));
-                prefs.edit().putInt(OurContract.PREF_MYHOME_NOTIFICATION_INTERVAL,
-                        numberPicker.getValue()).apply();
+
+                // If the max value is for notification interval,
+                // then we know the setting is for notification interval,
+                // then we need to record it properly in prefs.
+                if (maxValue == OurContract.MYHOME_NOTIFICATION_INTERVAL_MAXVALUE) {
+                    prefs.edit().putInt(OurContract.PREF_MYHOME_NOTIFICATION_INTERVAL,
+                            numberPicker.getValue()).apply();
+                } else {
+                    prefs.edit().putInt(OurContract.PREF_MYHOME_MIN_HUMIDITY_VALUE,
+                            numberPicker.getValue()).apply();
+                }
+
                 setNotification(true);
             }
         });
@@ -201,13 +256,19 @@ public class MyHomeActivity extends AppCompatActivity {
         * IntentService.
         */
         Intent serviceIntent = new Intent(this, TCCloudRequestService.class);
+        serviceIntent.putExtra(OurContract.INTENT_NAME_MIN_HUMIDITY_VALUE,
+                prefs.getInt(OurContract.PREF_MYHOME_MIN_HUMIDITY_VALUE,
+                        OurContract.DEFAULT_MIN_HUMIDITY_VALUE));
+
+        int minHumid = prefs.getInt(OurContract.PREF_MYHOME_MIN_HUMIDITY_VALUE, 30);
+        serviceIntent.putExtra(OurContract.INTENT_NAME_MIN_HUMIDITY_VALUE, minHumid);
+        Log.e("AAAAA", "put extra in intent: " + String.valueOf(minHumid));
 
         // Create a PendingIntent to send the service
         // Set the flag update current to update with new setting
         PendingIntent pendingIntent = PendingIntent.getService(this,
                 OurContract.INTENT_REQUEST_CODE_MYHOMESERVICE, serviceIntent,
-                0);
-
+                PendingIntent.FLAG_UPDATE_CURRENT);
 
         // Get the alarmManager to set the repeating task
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
@@ -215,15 +276,15 @@ public class MyHomeActivity extends AppCompatActivity {
         if (isOn) {
             // Wake up the device to fire the alarm in 15 minutes, and every 15 minutes after that:
             alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                    SystemClock.elapsedRealtime() + prefs.getInt(
-                            OurContract.PREF_MYHOME_NOTIFICATION_INTERVAL,
-                            DEFAULT_NOTIFICATION_INTERVAL_VALUE) * 60 * 1000,
+                    SystemClock.elapsedRealtime() +
+                            prefs.getInt(OurContract.PREF_MYHOME_NOTIFICATION_INTERVAL,
+                                    OurContract.DEFAULT_NOTIFICATION_INTERVAL_VALUE) * 60 * 1000,
                     prefs.getInt(OurContract.PREF_MYHOME_NOTIFICATION_INTERVAL,
-                            DEFAULT_NOTIFICATION_INTERVAL_VALUE) * 60 * 1000, pendingIntent);
+                            OurContract.DEFAULT_NOTIFICATION_INTERVAL_VALUE) * 60 * 1000,
+                    pendingIntent);
         } else {
             // If user turn off notification, turn off all alarm.
             alarmManager.cancel(pendingIntent);
-            // TODO remember to unregistered all services ???
         }
 
         IntentFilter filter = new IntentFilter(OurContract.BROADCAST_ACTION);
@@ -249,7 +310,18 @@ public class MyHomeActivity extends AppCompatActivity {
 //            TextView myTextView2 = (TextView) findViewById(R.id.txtHumidityValue);
 //            myTextView1.setText(dateFormat.format(eventDate));
 //            myTextView2.setText(String.valueOf(dbResponse));
-            sendNotification(context, String.valueOf(dateFormat.format(eventDate) + " " + dbResponse));
+
+            // If the value is less than the min value, notify the user
+            if (dbResponse < intent.getIntExtra(
+                    OurContract.INTENT_NAME_MIN_HUMIDITY_VALUE,
+                    OurContract.DEFAULT_MIN_HUMIDITY_VALUE)) {
+                Log.e("AAAAA", String.valueOf(dbResponse));
+                Log.e("AAAAA", "THE Int Extra" + String.valueOf(intent.getIntExtra(
+                        OurContract.INTENT_NAME_MIN_HUMIDITY_VALUE,
+                        OurContract.DEFAULT_MIN_HUMIDITY_VALUE)));
+                sendNotification(context, String.valueOf(dateFormat.format(eventDate) + " " + dbResponse));
+            }
+
         }
     }
 }

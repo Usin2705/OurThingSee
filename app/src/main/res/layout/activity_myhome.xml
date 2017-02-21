@@ -76,7 +76,6 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginBottom="@dimen/activity_vertical_margin_small"
                     android:layout_marginTop="@dimen/activity_vertical_margin_small"
                     android:background="@color/colorPrimaryDark"
                     android:orientation="horizontal">
@@ -86,11 +85,10 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginBottom="@dimen/activity_vertical_margin_very_small"
-                    android:layout_marginTop="@dimen/activity_vertical_margin_very_small"
                     android:orientation="horizontal"
                     android:clickable="true"
-                    android:background="@drawable/ripple">
+                    android:background="@drawable/ripple"
+                    android:minHeight="@dimen/minimum_layout_height">
 
                     <TextView
                         android:layout_width="match_parent"
@@ -105,7 +103,7 @@
                     <TextView
                         android:id="@+id/txtMyHomeStartTime"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -118,11 +116,10 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginBottom="@dimen/activity_vertical_margin_very_small"
-                    android:layout_marginTop="@dimen/activity_vertical_margin_very_small"
                     android:orientation="horizontal"
                     android:clickable="true"
-                    android:background="@drawable/ripple">
+                    android:background="@drawable/ripple"
+                    android:minHeight="@dimen/minimum_layout_height">
 
                     <TextView
                         android:layout_width="match_parent"
@@ -137,7 +134,7 @@
                     <TextView
                         android:id="@+id/txtMyHomeEndTime"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -150,11 +147,11 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginBottom="@dimen/activity_vertical_margin_very_small"
-                    android:layout_marginTop="@dimen/activity_vertical_margin_very_small"
                     android:orientation="horizontal"
                     android:clickable="true"
-                    android:background="@drawable/ripple">
+                    android:background="@drawable/ripple"
+                    android:id="@+id/lnlMyHomeHumidityLevel"
+                    android:minHeight="@dimen/minimum_layout_height">
 
                     <TextView
                         android:layout_width="match_parent"
@@ -169,25 +166,24 @@
                     <TextView
                         android:id="@+id/txtMyHomeHumidityLevel"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:textAppearance="@style/TextAppearance.AppCompat.Large"
                         android:textColor="@color/colorPrimary"
                         android:textStyle="bold"
-                        tools:text="07:25" />
+                        tools:text="30" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginBottom="@dimen/activity_vertical_margin_very_small"
-                    android:layout_marginTop="@dimen/activity_vertical_margin_very_small"
                     android:orientation="horizontal"
                     android:clickable="true"
                     android:background="@drawable/ripple"
-                    android:id="@+id/lnlMyHomeNotfInterval">
+                    android:id="@+id/lnlMyHomeNotfInterval"
+                    android:minHeight="@dimen/minimum_layout_height">
 
                     <TextView
                         android:layout_width="match_parent"
@@ -202,13 +198,13 @@
                     <TextView
                         android:id="@+id/txtMyHomeNotfInterval"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:textAppearance="@style/TextAppearance.AppCompat.Large"
                         android:textColor="@color/colorPrimary"
                         android:textStyle="bold"
-                        tools:text="07:25" />
+                        tools:text="30" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -217,7 +213,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginBottom="@dimen/activity_vertical_margin_small"
-                android:layout_marginTop="@dimen/activity_vertical_margin_small"
                 android:background="@color/colorPrimaryDark"
                 android:orientation="horizontal">
 
