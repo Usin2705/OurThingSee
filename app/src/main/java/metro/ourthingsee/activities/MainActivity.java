@@ -147,8 +147,8 @@ public class MainActivity extends AppCompatActivity
 
             // Open activity MyThingsee, this activity will measure humidity and light level (luminance)
             case OurContract.INDEX_OPTION_MYTHINGSEE:
-                Intent intent = new Intent(this, MyHomeActivity.class);
-                startActivity(intent);
+                Intent intentMyHome = new Intent(this, MyHomeActivity.class);
+                startActivity(intentMyHome);
                 break;
 
             default:

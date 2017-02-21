@@ -16,6 +16,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -83,6 +84,7 @@ public class MyHomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_myhome);
+        setupToolBar();
 
         prefs = getSharedPreferences(OurContract.SHARED_PREF, Context.MODE_PRIVATE);
 
@@ -154,6 +156,25 @@ public class MyHomeActivity extends AppCompatActivity {
                         OurContract.MYHOME_NOTIFICATION_INTERVAL_MAXVALUE);
             }
         });
+    }
+
+    /**
+     * Set up the toolbar, with a Navigation button which return to previous activity
+     * (similar to onBackPress)
+     *
+     */
+    private void setupToolBar() {
+        Toolbar toolbar = (Toolbar) this.findViewById(R.id.tb_main);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
+
     }
 
     @Override
