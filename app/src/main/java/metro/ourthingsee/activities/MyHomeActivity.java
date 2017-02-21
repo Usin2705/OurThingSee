@@ -1,6 +1,7 @@
 package metro.ourthingsee.activities;
 
 import android.app.AlarmManager;
+import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -39,10 +40,15 @@ import metro.ourthingsee.TCCloudRequestService;
 
 public class MyHomeActivity extends AppCompatActivity {
     private static final int MIN_VALUE = 0;
-    SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm");
+    static SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy kk:mm:ss");
     TCCLoudRequestReceiver receiver;
     AlarmManager alarmManager;
-    SharedPreferences prefs;
+    static SharedPreferences prefs;
+
+    static TextView txtTemperatureTime, txtTemperatureValue, txtHumidityTime, txtHumidityValue,
+            txtLightTime, txtLightValue;
+
+    private static Context staticContext;
 
     /**
      * Send the notification to user. It need to be static so it can be called by our
@@ -52,12 +58,20 @@ public class MyHomeActivity extends AppCompatActivity {
      * @param strValue the value to display
      */
     public static void sendNotification(Context context, String strValue) {
-        //Get an instance of NotificationManager//
+        Intent ntfIntent = new Intent (context, MyHomeActivity.class);
+        ntfIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
+                ntfIntent, 0);
+
+        //Get an instance of notification
         NotificationCompat.Builder notification =
                 new NotificationCompat.Builder(context)
                         .setSmallIcon(R.drawable.nature)
                         .setContentTitle("My notification")
-                        .setContentText("ALO ALO: " + strValue);
+                        .setContentText("ALO ALO: " + strValue)
+                        .setContentIntent(pendingIntent)
+                        .setAutoCancel(true); // cancel when clicked
 
         // Set the default value (vibrate, sound, light)
         // If  your phone is set on DO NOT DISTURB MODEL all sound and stuff won't work
@@ -84,9 +98,19 @@ public class MyHomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_myhome);
+        staticContext = this;
+
+        // Setup the toolbar
         setupToolBar();
 
+        // Cast all the display texts
+        castDisplayTV();
+
         prefs = getSharedPreferences(OurContract.SHARED_PREF, Context.MODE_PRIVATE);
+
+        // Update all the display texts with latest value. Call after prefs since we will update
+        // from prefs.
+        updateDisplayTV();
 
         final LinearLayout lnlMyHomeOpt = (LinearLayout) findViewById(R.id.lnlMyHomeOption);
 
@@ -122,7 +146,7 @@ public class MyHomeActivity extends AppCompatActivity {
         txtMyHomeHumidityLevel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setUpNumberPicker(txtMyHomeHumidityLevel,
+                setupNumberPicker(txtMyHomeHumidityLevel,
                         OurContract.MYHOME_MIN_HUMIDITY_MAXVALUE);
             }
         });
@@ -130,7 +154,7 @@ public class MyHomeActivity extends AppCompatActivity {
         lnlMyHomeHumidityLevel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setUpNumberPicker(txtMyHomeHumidityLevel,
+                setupNumberPicker(txtMyHomeHumidityLevel,
                         OurContract.MYHOME_MIN_HUMIDITY_MAXVALUE);
             }
         });
@@ -144,7 +168,7 @@ public class MyHomeActivity extends AppCompatActivity {
         txtMyHomeNotfInterval.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setUpNumberPicker(txtMyHomeNotfInterval,
+                setupNumberPicker(txtMyHomeNotfInterval,
                         OurContract.MYHOME_NOTIFICATION_INTERVAL_MAXVALUE);
             }
         });
@@ -152,10 +176,31 @@ public class MyHomeActivity extends AppCompatActivity {
         lnlMyHomeNotfInterval.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setUpNumberPicker(txtMyHomeNotfInterval,
+                setupNumberPicker(txtMyHomeNotfInterval,
                         OurContract.MYHOME_NOTIFICATION_INTERVAL_MAXVALUE);
             }
         });
+    }
+
+    /**
+     * Cast all the display text, including temp, humid, light.
+     * Each sensor have both time update and value
+     */
+    private void castDisplayTV() {
+        txtTemperatureTime = (TextView) this.findViewById(R.id.txtTemperatureTime);
+        txtTemperatureValue = (TextView) this.findViewById(R.id.txtTemperatureValue);
+        txtHumidityTime = (TextView) this.findViewById(R.id.txtHumidityTime);
+        txtHumidityValue = (TextView) this.findViewById(R.id.txtHumidityValue);
+        txtLightTime = (TextView) this.findViewById(R.id.txtLightTime);
+        txtLightValue = (TextView) this.findViewById(R.id.txtLightValue);
+    }
+
+    private static void updateDisplayTV() {
+        txtHumidityTime.setText(prefs.getString(OurContract.PREF_HUMID_LATEST_TIME,
+                staticContext.getString(R.string.myhome_default_novalue)));
+
+        txtHumidityValue.setText(prefs.getString(OurContract.PREF_HUMID_LATEST_VALUE,
+                staticContext.getString(R.string.myhome_default_novalue)));
     }
 
     /**
@@ -180,6 +225,9 @@ public class MyHomeActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+
+        // Call the updateDisplayTV() again in case of new data
+        updateDisplayTV();
 
         IntentFilter filter = new IntentFilter(OurContract.BROADCAST_ACTION);
         filter.addCategory(Intent.CATEGORY_DEFAULT);
@@ -218,7 +266,7 @@ public class MyHomeActivity extends AppCompatActivity {
      *                 {@link OurContract#MYHOME_NOTIFICATION_INTERVAL_MAXVALUE}
      */
 
-    private void setUpNumberPicker(final TextView textView, final int maxValue) {
+    private void setupNumberPicker(final TextView textView, final int maxValue) {
         final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         LayoutInflater inflater = this.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.number_picker_dialog, null);
@@ -325,21 +373,29 @@ public class MyHomeActivity extends AppCompatActivity {
             Long longTimestamp = intent.getLongExtra(OurContract.BROADCAST_RESPONSE_TIMESTAMP, 0);
 
             Date eventDate = new Date(longTimestamp);
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy kk:mm:ss");
 
 //            TextView myTextView1 = (TextView) findViewById(R.id.txtHumidityTime);
 //            TextView myTextView2 = (TextView) findViewById(R.id.txtHumidityValue);
 //            myTextView1.setText(dateFormat.format(eventDate));
 //            myTextView2.setText(String.valueOf(dbResponse));
 
+            if (prefs!=null){
+                prefs.edit().putString(OurContract.PREF_HUMID_LATEST_TIME,
+                        String.valueOf(dateFormat.format(eventDate))).apply();
+
+                prefs.edit().putString(OurContract.PREF_HUMID_LATEST_VALUE,
+                        String.valueOf(dbResponse) + "%").apply();
+            }
+
+            // Call the updateDisplayTV() again in case of new data
+            if (staticContext!=null) {
+                updateDisplayTV();
+            }
+
             // If the value is less than the min value, notify the user
             if (dbResponse < intent.getIntExtra(
                     OurContract.INTENT_NAME_MIN_HUMIDITY_VALUE,
                     OurContract.DEFAULT_MIN_HUMIDITY_VALUE)) {
-                Log.e("AAAAA", String.valueOf(dbResponse));
-                Log.e("AAAAA", "THE Int Extra" + String.valueOf(intent.getIntExtra(
-                        OurContract.INTENT_NAME_MIN_HUMIDITY_VALUE,
-                        OurContract.DEFAULT_MIN_HUMIDITY_VALUE)));
                 sendNotification(context, String.valueOf(dateFormat.format(eventDate) + " " + dbResponse));
             }
 

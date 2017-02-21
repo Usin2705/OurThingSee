@@ -26,6 +26,9 @@
     <!-- Description for turn on notification option in my home activity [CHAR LIMIT=NONE] -->
     <string name="myhome_notification_turnon_desc">Notify user whenever humidity and light level fall below a minimum level.\nOnly notify when user is at home.</string>
 
+    <!-- The default string value for display texts in MyHome activity [CHAR LIMIT=50] -->
+    <string name="myhome_default_novalue">No value found, waiting for update from server.</string>
+
     <!-- General toast for fetch data if response is failed, blame everybody [CHAR LIMIT=NONE] -->
     <string name="fetch_toast_response_failed_general">Failed to fetch data from Thingsee cloud server. Thanks, Obama!</string>
 
@@ -57,5 +60,7 @@
     <string name="last_location">Last location</string>
     <string name="destination">Destination</string>
     <string name="origin">Origin</string>
+
+    <!-- The confirmation message if user click on the log out button [CHAR LIMIT=NONE] -->
     <string name="log_out_message">Are you sure you want to log out?\nYour username and password will be required to open the app again.</string>
 </resources>

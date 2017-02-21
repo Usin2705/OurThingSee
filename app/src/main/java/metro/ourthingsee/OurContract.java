@@ -40,6 +40,16 @@ public class OurContract {
     public static final String PREF_MYHOME_MIN_HUMIDITY_VALUE = "pref_myhome_min_humidity_value";
 
     /**
+     * prefs name for latest value for humidity
+     */
+    public static final String PREF_HUMID_LATEST_VALUE = "pref_humi_latest_value";
+
+    /**
+     * prefs name for latest time for humidity
+     */
+    public static final String PREF_HUMID_LATEST_TIME = "pref_humi_latest_time";
+
+    /**
      * MyHome default minimum humidity value (%)
      */
     public static final int DEFAULT_MIN_HUMIDITY_VALUE = 30;
