@@ -32,6 +32,7 @@ import java.text.SimpleDateFormat;
 import metro.ourthingsee.OurContract;
 import metro.ourthingsee.R;
 import metro.ourthingsee.TCCloudRequestService;
+import metro.ourthingsee.Utils;
 
 /**
  * Created by Usin on 15-Feb-17.
@@ -39,7 +40,6 @@ import metro.ourthingsee.TCCloudRequestService;
 
 public class MyHomeActivity extends AppCompatActivity {
     private static final int MIN_VALUE = 0;
-    static SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy kk:mm:ss");
     static SharedPreferences prefs;
     static TextView txtTemperatureTime, txtTemperatureValue, txtHumidityTime, txtHumidityValue,
             txtLightTime, txtLightValue;
@@ -410,28 +410,28 @@ public class MyHomeActivity extends AppCompatActivity {
                 switch (sensorID) {
                     case OurContract.SENSOR_ID_HUMIDITY:
                         prefs.edit().putString(OurContract.PREF_HUMID_LATEST_TIME,
-                                String.valueOf(dateFormat.format(eventDate))).apply();
+                                String.valueOf(Utils.dateFormat.format(eventDate))).apply();
                         prefs.edit().putString(OurContract.PREF_HUMID_LATEST_VALUE,
                                 String.valueOf(dbResponse) + " %").apply();
                         // If the value is less than the min value, notify the user
                         if (dbResponse < intent.getIntExtra(
                                 OurContract.INTENT_NAME_MIN_HUMIDITY_VALUE,
                                 OurContract.DEFAULT_MIN_HUMIDITY_VALUE)) {
-                            sendNotification(context, String.valueOf(dateFormat.format(eventDate) + " " + dbResponse));
+                            sendNotification(context, String.valueOf(Utils.dateFormat.format(eventDate) + " " + dbResponse));
                         }
 
                         break;
 
                     case OurContract.SENSOR_ID_TEMPERATURE:
                         prefs.edit().putString(OurContract.PREF_TEMP_LATEST_TIME,
-                                String.valueOf(dateFormat.format(eventDate))).apply();
+                                String.valueOf(Utils.dateFormat.format(eventDate))).apply();
                         prefs.edit().putString(OurContract.PREF_TEMP_LATEST_VALUE,
                                 String.valueOf(dbResponse) + " \u2103").apply();
                         break;
 
                     case OurContract.SENSOR_ID_LUMINANCE:
                         prefs.edit().putString(OurContract.PREF_LIGHT_LATEST_TIME,
-                                String.valueOf(dateFormat.format(eventDate))).apply();
+                                String.valueOf(Utils.dateFormat.format(eventDate))).apply();
                         prefs.edit().putString(OurContract.PREF_LIGHT_LATEST_VALUE,
                                 String.valueOf(dbResponse) + " lux").apply();
                         break;

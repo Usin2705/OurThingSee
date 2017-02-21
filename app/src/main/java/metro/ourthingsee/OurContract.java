@@ -223,5 +223,9 @@ public class OurContract {
      */
     public static final int MYHOME_MIN_HUMIDITY_MAXVALUE = 100;
 
-
+    /**
+     * Set the minimum of items fetch from thingsee (?limit=)
+     * the lower the faster the fetch. Used in cased we only care about the latest
+     */
+    public static final int MIN_FETCH_ITEM_TC = 1;
 }

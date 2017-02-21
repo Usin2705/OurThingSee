@@ -13,7 +13,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -30,7 +29,9 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import metro.ourthingsee.OurContract;
 import metro.ourthingsee.R;
 import metro.ourthingsee.RESTObjects.DeviceConfig;
+import metro.ourthingsee.RESTObjects.Events;
 import metro.ourthingsee.ThingSee;
+import metro.ourthingsee.Utils;
 import metro.ourthingsee.adapters.OptionsAdapter;
 import metro.ourthingsee.remote.APIService;
 import metro.ourthingsee.remote.AppUtils;
@@ -43,10 +44,11 @@ import static metro.ourthingsee.OurContract.PREF_USER_AUTH_TOKEN_NAME;
 
 public class MainActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<ThingSee>, OptionsAdapter.PurposeItemClickListener {
-    SharedPreferences prefs;
-
-    /** Tag for the log messages */
+    /**
+     * Tag for the log messages
+     */
     public static final String LOG_TAG = MainActivity.class.getSimpleName();
+    SharedPreferences prefs;
     private RecyclerView recv_options;
     private OptionsAdapter optionsAdapter;
     private NavigationView nav_view;
@@ -62,39 +64,43 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         prefs = getSharedPreferences(OurContract.SHARED_PREF, Context.MODE_PRIVATE);
         // If user did not login before, open login activity first
-        Log.e("Giang",prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, ""));
+        Log.e("Giang", prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, ""));
         if (prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, "").isEmpty()) {
-            Intent intent = new Intent (this, LoginActivity.class);
+            Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();
         } else {
-            Log.e(LOG_TAG, prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME,""));
-            Log.e(LOG_TAG, prefs.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME,""));
+            Log.e(LOG_TAG, prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, ""));
+            Log.e(LOG_TAG, prefs.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, ""));
+
             //Update the name of device on UI
             APIService apiService = AppUtils.getAPIService();
-            apiService.getDeviceName("Bearer " + prefs.getString(PREF_USER_AUTH_TOKEN_NAME,"")
-                    ,prefs.getString(PREF_DEVICE_AUTH_ID_NAME,"")).enqueue(new Callback<DeviceConfig>() {
+            apiService.getDeviceName("Bearer " + prefs.getString(PREF_USER_AUTH_TOKEN_NAME, "")
+                    , prefs.getString(PREF_DEVICE_AUTH_ID_NAME, "")).enqueue(new Callback<DeviceConfig>() {
                 @Override
                 public void onResponse(Call<DeviceConfig> call, Response<DeviceConfig> response) {
-                    Log.e(LOG_TAG,response.code()+"");
-                    if(response.code()==200) {
+                    Log.e(LOG_TAG, response.code() + "");
+                    if (response.code() == 200) {
                         try {
                             Log.e(LOG_TAG, response.body().getDevice().getName());
                             tv_name.setText(response.body().getDevice().getName());
-                        }catch(Exception e){}
-                    }else
+                        } catch (Exception e) {
+                        }
+                    } else
                         tv_name.setText("Device Name");
                 }
 
                 @Override
                 public void onFailure(Call<DeviceConfig> call, Throwable t) {
-                    Log.e(LOG_TAG+" fail", t.toString());
+                    Utils.handleFailure(MainActivity.this, t);
                     tv_name.setText("Device Name");
-                    Toast.makeText(MainActivity.this,
-                            getString(R.string.login_toast_login_failed_nointernet),
-                            Toast.LENGTH_SHORT).show();
                 }
             });
+
+            //Get the latest humidity, temperature and luminance
+            Utils.fetchDataFromThingSee(OurContract.SENSOR_ID_HUMIDITY, MainActivity.this);
+            Utils.fetchDataFromThingSee(OurContract.SENSOR_ID_TEMPERATURE, MainActivity.this);
+            Utils.fetchDataFromThingSee(OurContract.SENSOR_ID_LUMINANCE, MainActivity.this);
         }
 
         //Set up toolbar
@@ -125,7 +131,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * This is where we receive our callback from
      * {@link metro.ourthingsee.adapters.OptionsAdapter.PurposeItemClickListener}
-     *
+     * <p>
      * This callback is invoked when you click on an item in the list.
      *
      * @param clickedItemIndex Index in the list of the item that was clicked.
@@ -187,6 +193,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLoaderReset(Loader<ThingSee> loader) {
     }
+
     @Override
     public void onBackPressed() {
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -219,12 +226,12 @@ public class MainActivity extends AppCompatActivity
                                         delLoginData();
                                     }
                                 })
-                                .setNegativeButton(android.R.string.no,null)
+                                .setNegativeButton(android.R.string.no, null)
                                 .show();
                         break;
                     case R.id.about_us:
-                        Intent aboutUs = new Intent(MainActivity.this,AboutUs.class);
-                        startActivityForResult(aboutUs,1);
+                        Intent aboutUs = new Intent(MainActivity.this, AboutUs.class);
+                        startActivityForResult(aboutUs, 1);
                         break;
                 }
 
@@ -261,14 +268,15 @@ public class MainActivity extends AppCompatActivity
         //calling sync state is necessary or else your hamburger icon wont show up
         actionBarDrawerToggle.syncState();
     }
+
     public void delLoginData() {
         prefs = getSharedPreferences(OurContract.SHARED_PREF, Context.MODE_PRIVATE);
         prefs.edit().putString(OurContract.PREF_USER_AUTH_TOKEN_NAME, "").apply();
-        prefs.edit().putString(OurContract.PREF_AUTH_EMAIL,"").apply();
-        prefs.edit().putString(OurContract.PREF_AUTH_PASSWORD,"").apply();
+        prefs.edit().putString(OurContract.PREF_AUTH_EMAIL, "").apply();
+        prefs.edit().putString(OurContract.PREF_AUTH_PASSWORD, "").apply();
         prefs.edit().putString(OurContract.PREF_DEVICE_AUTH_ID_NAME, "").apply();
         prefs.edit().putString(OurContract.PREF_DEVICE_TOKEN, "").apply();
-        Intent intent = new Intent(this,LoginActivity.class);
+        Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         finish();
     }

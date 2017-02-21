@@ -20,7 +20,6 @@ import retrofit2.Response;
 
 public class TCCloudRequestService extends IntentService {
     public static final String LOG_TAG = TCCloudRequestService.class.getSimpleName();
-    private static final int NO_OF_ITEM = 1;
 
     /**
      * For the service to work in manifest, need to create the constructor this way
@@ -61,7 +60,7 @@ public class TCCloudRequestService extends IntentService {
         apiService.getUserEvents(
                 "Bearer " + prefs.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, ""),
                 prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, ""),
-                null, sensorID, NO_OF_ITEM, null, null).
+                null, sensorID, OurContract.MIN_FETCH_ITEM_TC, null, null).
                 enqueue(new Callback<Events>() {
                     @Override
                     public void onResponse(Call<Events> call, Response<Events> response) {
@@ -70,7 +69,7 @@ public class TCCloudRequestService extends IntentService {
 
                     @Override
                     public void onFailure(Call<Events> call, Throwable t) {
-                        handleFailure(t);
+                        Utils.handleFailure(getApplicationContext(), t);
                     }
                 });
     }
@@ -129,18 +128,5 @@ public class TCCloudRequestService extends IntentService {
             case 503:
                 break;
         }
-    }
-
-    /**
-     * Handle the failure from apiService request
-     * {@link APIService#getUserEvents(String, String, String, String, Integer, Long, Long)}
-     *
-     * @param t Throwable t in the onFailure
-     */
-    private void handleFailure(Throwable t) {
-        Log.e(LOG_TAG, t.toString());
-        Toast.makeText(getApplicationContext(),
-                getString(R.string.fetch_toast_response_failed_general),
-                Toast.LENGTH_SHORT).show();
     }
 }
