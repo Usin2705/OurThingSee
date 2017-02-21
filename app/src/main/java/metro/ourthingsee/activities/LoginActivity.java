@@ -182,6 +182,7 @@ public class LoginActivity extends AppCompatActivity {
                         break;
                     case 503:
                         sendPostAuth(email,password);
+                        break;
                 }
             }
 
@@ -199,7 +200,7 @@ public class LoginActivity extends AppCompatActivity {
     public void recordLoginData(Authentication response) {
         prefs = getSharedPreferences(OurContract.SHARED_PREF, Context.MODE_PRIVATE);
         prefs.edit().putString(OurContract.PREF_USER_AUTH_TOKEN_NAME,
-                response.getAccountAuthToken().toString()).apply();
+                response.getAccountAuthToken()).apply();
         prefs.edit().putString(OurContract.PREF_AUTH_EMAIL,
                 edtEmail.getText().toString()).apply();
         prefs.edit().putString(OurContract.PREF_AUTH_PASSWORD,

@@ -48,11 +48,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LocationActivity extends AppCompatActivity {
-    Calendar calendar = Calendar.getInstance()
-            , calendarEnd = Calendar.getInstance();
+    Calendar calendar = Calendar.getInstance(), calendarEnd = Calendar.getInstance();
     long startTime, endTime;
     boolean currentLocationState = true;
     List<Events.Event> eventList = new ArrayList<>();
+    List<Long> timeStampList = new ArrayList<>();
+    List<LatLng> listLatLng = new ArrayList<>();
     DecimalFormat df = new DecimalFormat("0.#");
     SimpleDateFormat sdfDate = new SimpleDateFormat("dd MMM yyyy");
     SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm");
@@ -62,7 +63,6 @@ public class LocationActivity extends AppCompatActivity {
     FloatingActionButton fab_show_path, fab_current_location;
     TextView tv_startDate, tv_startTime, tv_endDate, tv_endTime, tv_distance;
     Button btn_showPath;
-    List<LatLng> listLatLng = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +114,7 @@ public class LocationActivity extends AppCompatActivity {
                             public View getInfoWindow(Marker arg0) {
                                 return null;
                             }
+
                             @Override
                             public View getInfoContents(Marker marker) {
                                 LinearLayout info = new LinearLayout(LocationActivity.this);
@@ -133,7 +134,7 @@ public class LocationActivity extends AppCompatActivity {
                                 return info;
                             }
                         });
-                        getDeviceCurrentLocation(null);
+                        getDeviceCurrentLocation();
                         addEvents();
                     }
                 });
@@ -153,9 +154,9 @@ public class LocationActivity extends AppCompatActivity {
         mGoogleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                if(currentLocationState){
+                if (currentLocationState) {
                     fab_show_path.show();
-                }else {
+                } else {
                     fab_current_location.show();
                 }
             }
@@ -174,12 +175,12 @@ public class LocationActivity extends AppCompatActivity {
         fab_current_location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                currentLocationState =true;
+                currentLocationState = true;
                 mGoogleMap.clear();
                 query_view.setVisibility(View.INVISIBLE);
                 fab_current_location.hide();
                 fab_show_path.show();
-                getDeviceCurrentLocation(null);
+                getDeviceCurrentLocation();
             }
         });
         tv_startDate.setOnClickListener(new View.OnClickListener() {
@@ -209,13 +210,14 @@ public class LocationActivity extends AppCompatActivity {
         btn_showPath.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                eventList.clear();
                 mGoogleMap.clear();
+                eventList.clear();
+                timeStampList.clear();
+                listLatLng.clear();
                 calendar.set(Calendar.SECOND, 0);
                 calendar.set(Calendar.MILLISECOND, 0);
                 calendarEnd.set(Calendar.SECOND, 59);
                 calendarEnd.set(Calendar.MILLISECOND, 999);
-                listLatLng.clear();
                 SharedPreferences sharedPreferences = getSharedPreferences(OurContract.SHARED_PREF, MODE_PRIVATE);
                 String authen = "Bearer " + sharedPreferences.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, "");
                 String deviceAuthen = sharedPreferences.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, "");
@@ -241,33 +243,10 @@ public class LocationActivity extends AppCompatActivity {
                         switch (response.code()) {
                             case 200:
                                 if (response.body().getEvents().size() > 0) {
-                                    //If there is at least one event occur in the time interval
-                                    List<String> sIds = new ArrayList<>();
-                                    List<Events.Sense> senses = new ArrayList<>();
                                     /*
-                                    STEP 1: take out a list of coordinates by a for loop
+                                    STEP 1: take out a list of events
                                     */
-                                    for (int i = 0; i < response.body().getEvents().size(); i++) {
-                                        double lat = 0, lng = 0;
-                                        senses.addAll(response.body().getEvents().get(i).getCause().getSenses());
-                                        for (int j = 0; j < senses.size(); j++) {
-                                            sIds.add(senses.get(j).getSId());
-                                            //after the loop, sIds should contain at least 2 values
-                                            // "0x00010100" and "0x00010200"
-                                            if (senses.get(j).getSId().equals("0x00010100"))
-                                                lat = senses.get(j).getVal();
-                                            else if (senses.get(j).getSId().equals("0x00010200"))
-                                                lng = senses.get(j).getVal();
-                                        }
-                                        if (sIds.contains("0x00010100") && sIds.contains("0x00010200")) {
-                                            eventList.add(response.body().getEvents().get(i));
-                                            //if Sids satisfies the conditions, add a LatLng to the list
-                                            listLatLng.add(new LatLng(lat, lng));
-                                        }
-                                        //clear all the lists for the next round
-                                        sIds.clear();
-                                        senses.clear();
-                                    }
+                                    eventList.addAll(response.body().getEvents());
                                     /*
                                     STEP 2: if the response has 50 events, maybe there are more
                                     than 50 events happened in the time interval, so check it
@@ -284,12 +263,7 @@ public class LocationActivity extends AppCompatActivity {
                                         progressDialog.dismiss();
                                     }
                                 } else if (response.body().getEvents().size() == 0) {
-                                    if (listLatLng.isEmpty()) {
-                                        Toast.makeText(LocationActivity.this,
-                                                R.string.no_path, Toast.LENGTH_SHORT).show();
-                                        tv_distance.setText("0 m");
-                                    } else
-                                        showingPathOnMap();
+                                    showingPathOnMap();
                                     progressDialog.dismiss();
                                 }
                                 break;
@@ -312,14 +286,19 @@ public class LocationActivity extends AppCompatActivity {
     /*
     Method for getting current location
      */
-    private void getDeviceCurrentLocation(final Long endTimestamp) {
+    private void getDeviceCurrentLocation() {
         SharedPreferences sharedPreferences = getSharedPreferences(OurContract.SHARED_PREF, MODE_PRIVATE);
         APIService apiService = AppUtils.getAPIService();
         progressDialog.setMessage(getString(R.string.getting_current_location));
         progressDialog.show();
-        apiService.getUserEvents("Bearer " + sharedPreferences.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, "")
-                , sharedPreferences.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, "")
-                , "sense", "0x00010100,0x00010200", 1, null, endTimestamp)
+        requestDeviceCurrentLocation(apiService, "Bearer " + sharedPreferences.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, "")
+                , sharedPreferences.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, ""), null);
+    }
+
+    private void requestDeviceCurrentLocation(final APIService apiService, final String s
+            , final String string, final Long endTimestamp) {
+
+        apiService.getUserEvents(s, string, "sense", "0x00010100,0x00010100", 2, null, endTimestamp)
                 .enqueue(new Callback<Events>() {
                     @Override
                     public void onResponse(Call<Events> call, Response<Events> response) {
@@ -328,16 +307,21 @@ public class LocationActivity extends AppCompatActivity {
                                 if (response.body().getEvents().size() > 0) {
                                     List<String> sIds = new ArrayList<>();
                                     double lat = 0, lng = 0;
-                                    List<Events.Sense> senses = response.body().getEvents().get(0)
-                                            .getCause().getSenses();
-                                    for (int i = 0; i < senses.size(); i++) {
-                                        sIds.add(senses.get(i).getSId());
-                                        //after the loop, sIds should contain at least 2 values
-                                        // "0x00010100" and "0x00010200"
-                                        if (senses.get(i).getSId().equals("0x00010100")) {
-                                            lat = senses.get(i).getVal();
-                                        } else if (senses.get(i).getSId().equals("0x00010200")) {
-                                            lng = senses.get(i).getVal();
+                                    Long comparingTimestamp = response.body().getEvents().get(0).getTimestamp();
+                                    for (int j = 0; j < response.body().getEvents().size(); j++) {
+                                        List<Events.Sense> senses = response.body().getEvents().get(j)
+                                                .getCause().getSenses();
+                                        if (response.body().getEvents().get(j).getTimestamp() == comparingTimestamp) {
+                                            for (int i = 0; i < senses.size(); i++) {
+                                                sIds.add(senses.get(i).getSId());
+                                                //after the loop, sIds should contain at least 2 values
+                                                // "0x00010100" and "0x00010200"
+                                                if (senses.get(i).getSId().equals("0x00010100")) {
+                                                    lat = senses.get(i).getVal();
+                                                } else if (senses.get(i).getSId().equals("0x00010200")) {
+                                                    lng = senses.get(i).getVal();
+                                                }
+                                            }
                                         }
                                     }
                                     if (sIds.contains("0x00010100") && sIds.contains("0x00010200")) {
@@ -347,14 +331,19 @@ public class LocationActivity extends AppCompatActivity {
                                                 .title(getString(R.string.last_location))
                                                 .snippet(sdfDate.format(response.body()
                                                         .getEvents().get(0).getTimestamp())
-                                                +"\n"+sdfTime.format(response.body()
+                                                        + "\n" + sdfTime.format(response.body()
                                                         .getEvents().get(0).getTimestamp())));
                                         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
                                         progressDialog.dismiss();
                                     } else {
                                         //if sIds doesn't contain both desired values, call a recursion
-                                        getDeviceCurrentLocation(response.body().getEvents().get(0)
-                                                .getTimestamp() - 1);
+                                        if (response.body().getEvents().size() == 2)
+                                            requestDeviceCurrentLocation(apiService, s, string, response.body()
+                                                    .getEvents().get(response.body()
+                                                            .getEvents().size() - 1).getTimestamp());
+                                        else if (response.body().getEvents().size() == 1)
+                                            requestDeviceCurrentLocation(apiService, s, string, response.body()
+                                                    .getEvents().get(0).getTimestamp() - 1);
                                     }
                                 } else if (response.body().getEvents().size() == 0) {
                                     //If there is no event contains the location, show a toast
@@ -364,7 +353,8 @@ public class LocationActivity extends AppCompatActivity {
                                 }
                                 break;
                             case 503:
-                                getDeviceCurrentLocation(endTimestamp);
+                                requestDeviceCurrentLocation(apiService, s, string, endTimestamp);
+                                break;
                         }
 
                     }
@@ -380,66 +370,109 @@ public class LocationActivity extends AppCompatActivity {
                 });
     }
 
+
     private void showingPathOnMap() {
-        endTime = eventList.get(0).getTimestamp();
-        startTime = eventList.get(eventList.size()-1).getTimestamp();
-        if (listLatLng.size() > 1) {
-            double distance = 0;
-            PolylineOptions polylineOptions = new PolylineOptions();
-            LatLngBounds.Builder builder = new LatLngBounds.Builder();
-            for (int i = 0; i < listLatLng.size() - 1; i++) {
-                distance += calculateArcLengthBaseOnLatLng(listLatLng.get(i), listLatLng.get(i + 1));
-                polylineOptions.add(listLatLng.get(i));
-                builder.include(listLatLng.get(i));
-                if (i == listLatLng.size() - 2) {
-                    polylineOptions.add(listLatLng.get(i + 1));
-                    builder.include(listLatLng.get(i + 1));
+        for (int i = 0; i < eventList.size(); i++) {
+            double lat = 0, lng = 0;
+            List<String> sIds = new ArrayList<>();
+            List<Events.Sense> senses = new ArrayList<>();
+            senses.addAll(eventList.get(i).getCause().getSenses());
+            long comparingTimestamp = eventList.get(i).getTimestamp();
+            for (int j = 0; j < senses.size(); j++) {
+                sIds.add(senses.get(j).getSId());
+                if (senses.get(j).getSId().equals("0x00010100")) {
+                    lat = senses.get(j).getVal();
+                } else if (senses.get(j).getSId().equals("0x00010200")) {
+                    lng = senses.get(j).getVal();
                 }
             }
-            Polyline polyline = mGoogleMap.addPolyline(polylineOptions);
-            polyline.setColor(0xFF2196F3);
-            polyline.setWidth(15f);
-            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 10));
-            mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(0))
-                    .title(getString(R.string.destination)).snippet(sdfDate.format(endTime)+"\n"
-                    +sdfTime.format(endTime)));
-            mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(listLatLng.size() - 1))
-                    .title(getString(R.string.origin)).snippet(sdfDate.format(startTime)+"\n"
-                            +sdfTime.format(startTime)));
-            final Circle circleEnd = mGoogleMap.addCircle(new CircleOptions()
-                    .center(listLatLng.get(0))
-                    .fillColor(Color.GRAY)
-                    .radius(calculateCircleRadiusMeterForMapCircle(
-                            8, listLatLng.get(0).latitude, mGoogleMap.getCameraPosition().zoom))
-                    .strokeWidth(3f)
-                    .strokeColor(Color.DKGRAY)
-                    .zIndex(3f));
-            final Circle circleStart = mGoogleMap.addCircle(new CircleOptions()
-                    .center(listLatLng.get(listLatLng.size() - 1))
-                    .fillColor(Color.GRAY)
-                    .radius(circleEnd.getRadius())
-                    .strokeWidth(3f)
-                    .strokeColor(Color.DKGRAY)
-                    .zIndex(3f));
-            mGoogleMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
-                @Override
-                public void onCameraMove() {
-                    circleEnd.setRadius(calculateCircleRadiusMeterForMapCircle(
-                            8, listLatLng.get(0).latitude, mGoogleMap.getCameraPosition().zoom));
-                    circleStart.setRadius(circleEnd.getRadius());
+            if (sIds.contains("0x00010100") && sIds.contains("0x00010200")) {
+                listLatLng.add(new LatLng(lat, lng));
+                timeStampList.add(comparingTimestamp);
+            } else if ((sIds.contains("0x00010100") && !sIds.contains("0x00010200")) ||
+                    !sIds.contains("0x00010100") && sIds.contains("0x00010200")) {
+                if (eventList.size()>(i+1) && eventList.get(i + 1).getTimestamp() == comparingTimestamp) {
+                    senses.clear();
+                    senses.addAll(eventList.get(i + 1).getCause().getSenses());
+                    for (int j = 0; j < senses.size(); j++) {
+                        sIds.add(senses.get(j).getSId());
+                        if (senses.get(j).getSId().equals("0x00010100")) {
+                            lat = senses.get(j).getVal();
+                        } else if (senses.get(j).getSId().equals("0x00010200")) {
+                            lng = senses.get(j).getVal();
+                        }
+                    }
+                    if (sIds.contains("0x00010100") && sIds.contains("0x00010200")) {
+                        listLatLng.add(new LatLng(lat, lng));
+                        timeStampList.add(comparingTimestamp);
+                        i++;
+                    }
                 }
-            });
-            if (distance * 6371000 < 1000)
-                tv_distance.setText(df.format(distance * 6371000) + " m");
-            else
-                tv_distance.setText(df.format(distance * 6371) + " km");
-        } else if (listLatLng.size() == 1) {
-            Log.e("Giang time",endTime+"");
-            mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(0))
-                    .title(getString(R.string.last_location))
-                    .snippet(sdfDate.format(endTime)+"\n"
-                    +sdfTime.format(endTime)));
-            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(listLatLng.get(0), 15));
+            }
+        }
+        if(!timeStampList.isEmpty()) {
+            endTime = timeStampList.get(0);
+            startTime = timeStampList.get(timeStampList.size() - 1);
+            if (listLatLng.size() > 1) {
+                double distance = 0;
+                PolylineOptions polylineOptions = new PolylineOptions();
+                LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                for (int i = 0; i < listLatLng.size() - 1; i++) {
+                    distance += calculateArcLengthBaseOnLatLng(listLatLng.get(i), listLatLng.get(i + 1));
+                    polylineOptions.add(listLatLng.get(i));
+                    builder.include(listLatLng.get(i));
+                    if (i == listLatLng.size() - 2) {
+                        polylineOptions.add(listLatLng.get(i + 1));
+                        builder.include(listLatLng.get(i + 1));
+                    }
+                }
+                Polyline polyline = mGoogleMap.addPolyline(polylineOptions);
+                polyline.setColor(0xFF2196F3);
+                polyline.setWidth(15f);
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 10));
+                mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(0))
+                        .title(getString(R.string.destination)).snippet(sdfDate.format(endTime) + "\n"
+                                + sdfTime.format(endTime)));
+                mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(listLatLng.size() - 1))
+                        .title(getString(R.string.origin)).snippet(sdfDate.format(startTime) + "\n"
+                                + sdfTime.format(startTime)));
+                final Circle circleEnd = mGoogleMap.addCircle(new CircleOptions()
+                        .center(listLatLng.get(0))
+                        .fillColor(Color.GRAY)
+                        .radius(calculateCircleRadiusMeterForMapCircle(
+                                8, listLatLng.get(0).latitude, mGoogleMap.getCameraPosition().zoom))
+                        .strokeWidth(3f)
+                        .strokeColor(Color.DKGRAY)
+                        .zIndex(3f));
+                final Circle circleStart = mGoogleMap.addCircle(new CircleOptions()
+                        .center(listLatLng.get(listLatLng.size() - 1))
+                        .fillColor(Color.GRAY)
+                        .radius(circleEnd.getRadius())
+                        .strokeWidth(3f)
+                        .strokeColor(Color.DKGRAY)
+                        .zIndex(3f));
+                mGoogleMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+                    @Override
+                    public void onCameraMove() {
+                        circleEnd.setRadius(calculateCircleRadiusMeterForMapCircle(
+                                8, listLatLng.get(0).latitude, mGoogleMap.getCameraPosition().zoom));
+                        circleStart.setRadius(circleEnd.getRadius());
+                    }
+                });
+                if (distance * 6371000 < 1000)
+                    tv_distance.setText(df.format(distance * 6371000) + " m");
+                else
+                    tv_distance.setText(df.format(distance * 6371) + " km");
+            } else if (listLatLng.size() == 1) {
+                Log.e("Giang time", endTime + "");
+                mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(0))
+                        .title(getString(R.string.last_location))
+                        .snippet(sdfDate.format(endTime) + "\n"
+                                + sdfTime.format(endTime)));
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(listLatLng.get(0), 15));
+            }
+        } else if (timeStampList.isEmpty()) {
+            Toast.makeText(this, R.string.no_path, Toast.LENGTH_SHORT).show();
         }
     }
 
