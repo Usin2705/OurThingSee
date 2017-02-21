@@ -50,7 +50,7 @@
     <string name="information_about_app">    This application is used for storing wine and delivering wine.
     We use Thingsee to monitor the temperature, pressure and humidity in the wine cellar to keep the environment being the most suitable for wine.
     We also use the position service to check the path when the staffs deliver wine to shops. </string>
-    <string name="getting_current_location">Getting current location</string>
+    <string name="getting_current_location">Getting last location</string>
     <string name="drawing_path">Drawing path</string>
     <string name="no_path">No path found in given time interval!</string>
     <string name="from">From:</string>
@@ -63,4 +63,5 @@
 
     <!-- The confirmation message if user click on the log out button [CHAR LIMIT=NONE] -->
     <string name="log_out_message">Are you sure you want to log out?\nYour username and password will be required to open the app again.</string>
+    <string name="only_location">Only location</string>
 </resources>

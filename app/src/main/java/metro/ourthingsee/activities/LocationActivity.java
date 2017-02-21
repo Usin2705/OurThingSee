@@ -461,7 +461,7 @@ public class LocationActivity extends AppCompatActivity {
             } else if (listLatLng.size() == 1) {
                 Log.e("Giang time", endTime + "");
                 mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(0))
-                        .title(getString(R.string.last_location))
+                        .title(getString(R.string.only_location))
                         .snippet(sdfDate.format(endTime) + "\n"
                                 + sdfTime.format(endTime)));
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(listLatLng.get(0), 15));
