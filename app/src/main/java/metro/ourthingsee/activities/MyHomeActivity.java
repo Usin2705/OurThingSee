@@ -19,7 +19,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.Switch;
@@ -38,6 +37,13 @@ import metro.ourthingsee.Utils;
 
 public class MyHomeActivity extends AppCompatActivity {
     private static final int MIN_VALUE = 0;
+
+    /**
+     * If the sensor timestamp is older than the current time with this amount, no notification
+     * will be send.
+     * Set at 2 hours
+     */
+    private static final int ELAPSE_TIME = 1000*60*60*2;
     static SharedPreferences prefs;
     static TextView txtTemperatureTime, txtTemperatureValue, txtHumidityTime, txtHumidityValue,
             txtLightTime, txtLightValue;
@@ -80,30 +86,48 @@ public class MyHomeActivity extends AppCompatActivity {
 
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        //When you issue multiple notifications about the same type of event, it’s best practice
-        // for your app to try to update an existing notification with this new information, rather
-        // than immediately creating a new notification. If you want to update this notification at
-        // a later date, you need to assign it an ID. You can then use this ID whenever you issue a
-        // subsequent notification. If the previous notification is still visible, the system will
-        // update this existing notification, rather than create a new one.
-        mNotificationManager.notify(OurContract.NOTIFICATION_ID_HUMIDITY, notification.build());
+        // Only send notification if the time different between sensor time and current time less
+        // than ELAPSE_TIME
+        if ((System.currentTimeMillis() - longTimestamp) < ELAPSE_TIME) {
+            //When you issue multiple notifications about the same type of event, it’s best practice
+            // for your app to try to update an existing notification with this new information, rather
+            // than immediately creating a new notification. If you want to update this notification at
+            // a later date, you need to assign it an ID. You can then use this ID whenever you issue a
+            // subsequent notification. If the previous notification is still visible, the system will
+            // update this existing notification, rather than create a new one.
+            mNotificationManager.notify(OurContract.NOTIFICATION_ID_HUMIDITY, notification.build());
+        }
     }
 
+    /**
+     * Update the textview with data fetched from thingsee cloud.
+     * Only update if the context is not null (it still valid)
+     *
+     * @param context the context of the activity
+     */
     private static void updateDisplayTV(Context context) {
-        txtHumidityTime.setText(prefs.getString(OurContract.PREF_HUMID_LATEST_TIME,
-                context.getString(R.string.myhome_default_novalue)));
-        txtHumidityValue.setText(prefs.getString(OurContract.PREF_HUMID_LATEST_VALUE,
-                context.getString(R.string.myhome_default_novalue)));
+        if (context != null && txtHumidityTime != null) {
+            try {
 
-        txtTemperatureTime.setText(prefs.getString(OurContract.PREF_TEMP_LATEST_TIME,
-                context.getString(R.string.myhome_default_novalue)));
-        txtTemperatureValue.setText(prefs.getString(OurContract.PREF_TEMP_LATEST_VALUE,
-                context.getString(R.string.myhome_default_novalue)));
+                txtHumidityTime.setText(prefs.getString(OurContract.PREF_HUMID_LATEST_TIME,
+                        context.getString(R.string.myhome_default_novalue)));
+                txtHumidityValue.setText(prefs.getString(OurContract.PREF_HUMID_LATEST_VALUE,
+                        context.getString(R.string.myhome_default_novalue)));
 
-        txtLightTime.setText(prefs.getString(OurContract.PREF_LIGHT_LATEST_TIME,
-                context.getString(R.string.myhome_default_novalue)));
-        txtLightValue.setText(prefs.getString(OurContract.PREF_LIGHT_LATEST_VALUE,
-                context.getString(R.string.myhome_default_novalue)));
+                txtTemperatureTime.setText(prefs.getString(OurContract.PREF_TEMP_LATEST_TIME,
+                        context.getString(R.string.myhome_default_novalue)));
+                txtTemperatureValue.setText(prefs.getString(OurContract.PREF_TEMP_LATEST_VALUE,
+                        context.getString(R.string.myhome_default_novalue)));
+
+                txtLightTime.setText(prefs.getString(OurContract.PREF_LIGHT_LATEST_TIME,
+                        context.getString(R.string.myhome_default_novalue)));
+                txtLightValue.setText(prefs.getString(OurContract.PREF_LIGHT_LATEST_VALUE,
+                        context.getString(R.string.myhome_default_novalue)));
+
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -121,17 +145,17 @@ public class MyHomeActivity extends AppCompatActivity {
 
         // Update all the display texts with latest value. Call after prefs since we will update
         // from prefs.
-        updateDisplayTV(this);
+        updateDisplayTV(MyHomeActivity.this);
 
         final LinearLayout lnlMyHomeOpt = (LinearLayout) findViewById(R.id.lnlMyHomeOption);
 
         // Find the switch button, set it according to prefs, and set onCheckChangeListener
         final Switch swtMyHome = (Switch) findViewById(R.id.swtMyHome);
         swtMyHome.setChecked(prefs.getBoolean(OurContract.PREF_MYHOME_NOTIFICATION_OPTION, false));
-        swtMyHome.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        swtMyHome.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean bolSwtState) {
-                handleSwtState(lnlMyHomeOpt, swtMyHome, bolSwtState);
+            public void onClick(View view) {
+                handleSwtState(lnlMyHomeOpt, swtMyHome, swtMyHome.isChecked());
             }
         });
 
@@ -230,7 +254,7 @@ public class MyHomeActivity extends AppCompatActivity {
         super.onResume();
 
         // Call the updateDisplayTV() again in case of new data
-        updateDisplayTV(this);
+        updateDisplayTV(MyHomeActivity.this);
 
         // Create the receiver again, since we unregister it in onPause
         //IntentFilter filter = new IntentFilter(OurContract.BROADCAST_ACTION);
@@ -258,6 +282,7 @@ public class MyHomeActivity extends AppCompatActivity {
         prefs.edit().putBoolean(
                 OurContract.PREF_MYHOME_NOTIFICATION_OPTION, isOn).apply();
         lnlMyHomeOpt.setVisibility(swtMyHome.isChecked() ? View.VISIBLE : View.GONE);
+        Log.e("AAAAA", String.valueOf(isOn));
         updateNotification();
     }
 
