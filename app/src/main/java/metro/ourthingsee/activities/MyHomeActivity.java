@@ -146,9 +146,9 @@ public class MyHomeActivity extends AppCompatActivity {
         lnlMyHomeSwt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Boolean bolSwtState = swtMyHome.isChecked() ? false : true;
-                swtMyHome.setChecked(bolSwtState);
-                handleSwtState(lnlMyHomeOpt, swtMyHome, bolSwtState);
+                Boolean isOn = swtMyHome.isChecked() ? false : true;
+                swtMyHome.setChecked(isOn);
+                handleSwtState(lnlMyHomeOpt, swtMyHome, isOn);
             }
         });
 
@@ -235,16 +235,16 @@ public class MyHomeActivity extends AppCompatActivity {
         updateDisplayTV();
 
         // Create the receiver again, since we unregister it in onPause
-        IntentFilter filter = new IntentFilter(OurContract.BROADCAST_ACTION);
-        filter.addCategory(Intent.CATEGORY_DEFAULT);
-        receiver = new TCCLoudRequestReceiver();
-        registerReceiver(receiver, filter);
+        //IntentFilter filter = new IntentFilter(OurContract.BROADCAST_ACTION);
+        //filter.addCategory(Intent.CATEGORY_DEFAULT);
+        //receiver = new TCCLoudRequestReceiver();
+        //registerReceiver(receiver, filter);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        this.unregisterReceiver(receiver);
+        //this.unregisterReceiver(receiver);
     }
 
     /**
@@ -253,14 +253,14 @@ public class MyHomeActivity extends AppCompatActivity {
      *
      * @param lnlMyHomeOpt the layout contain the switch button
      * @param swtMyHome    the switch button
-     * @param bolSwtState  the state of the switch
+     * @param isOn         the state of the switch, if true then it's on
      */
 
-    private void handleSwtState(LinearLayout lnlMyHomeOpt, Switch swtMyHome, boolean bolSwtState) {
+    private void handleSwtState(LinearLayout lnlMyHomeOpt, Switch swtMyHome, boolean isOn) {
         prefs.edit().putBoolean(
-                OurContract.PREF_MYHOME_NOTIFICATION_OPTION, bolSwtState).apply();
+                OurContract.PREF_MYHOME_NOTIFICATION_OPTION, isOn).apply();
         lnlMyHomeOpt.setVisibility(swtMyHome.isChecked() ? View.VISIBLE : View.GONE);
-        setNotification(bolSwtState);
+        setNotification(isOn);
     }
 
     /**

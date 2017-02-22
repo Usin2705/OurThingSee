@@ -15,10 +15,22 @@
     <string name="location_option">Location</string>
     <string name="temperature_option">Temperature</string>
     <string name="humidity_option">Humidity</string>
+    <string name="luminance_option">Light level</string>
+
+    <!-- Label name in Myhome layout, for time start going out [CHAR LIMIT=30] -->
+    <string name="myhome_layout_time_start">Time start going out</string>
+
+    <!-- Label name in Myhome layout, for time go back to home [CHAR LIMIT=30] -->
+    <string name="myhome_layout_time_back">Time back to home</string>
+
+    <!-- Label name in Myhome layout, for minimum humidity level [CHAR LIMIT=30] -->
+    <string name="myhome_layout_min_humid">Minimum humidity level (%)</string>
+
+    <!-- Label name in Myhome layout, for update interval [CHAR LIMIT=30] -->
+    <string name="myhome_layout_update_interval">Update interval (min)</string>
 
     <!-- Option name for My Home purpose, which measure light, humidity and tempt [CHAR LIMIT=30] -->
     <string name="myhome_option">My Home</string>
-
 
     <!-- Label for turn on notification option in my home activity [CHAR LIMIT=20] -->
     <string name="myhome_notification_turnon_label">Turn on notification</string>

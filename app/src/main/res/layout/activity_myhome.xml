@@ -10,7 +10,7 @@
     <LinearLayout
         android:id="@+id/activity_main"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         tools:context="metro.ourthingsee.activities.MainActivity">
 
@@ -49,7 +49,6 @@
                         style="@android:style/TextAppearance.Large"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:text="@string/myhome_notification_turnon_label" />
 
                     <TextView
@@ -68,19 +67,21 @@
             </LinearLayout>
 
             <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/activity_vertical_margin_small"
+                android:background="@color/colorPrimaryDark"
+                android:orientation="horizontal">
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/lnlMyHomeOption"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="@dimen/activity_vertical_margin_small"
-                    android:background="@color/colorPrimaryDark"
-                    android:orientation="horizontal">
 
-                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -95,7 +96,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="0.5"
                         android:gravity="center_vertical"
-                        android:text="Time start going out"
+                        android:text="@string/myhome_layout_time_start"
                         android:textAppearance="@style/TextAppearance.AppCompat.Subhead">
 
                     </TextView>
@@ -126,7 +127,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="0.5"
                         android:gravity="center_vertical"
-                        android:text="Time back to home"
+                        android:text="@string/myhome_layout_time_back"
                         android:textAppearance="@style/TextAppearance.AppCompat.Subhead">
 
                     </TextView>
@@ -158,7 +159,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="0.5"
                         android:gravity="center_vertical"
-                        android:text="Minimum humidity level (%)"
+                        android:text="@string/myhome_layout_min_humid"
                         android:textAppearance="@style/TextAppearance.AppCompat.Subhead">
 
                     </TextView>
@@ -177,36 +178,44 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/lnlMyHomeNotfInterval"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/colorPrimaryDark"
+                    android:orientation="horizontal">
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/lnlMyHomeNotfInterval"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/ripple"
+                android:clickable="true"
+                android:minHeight="@dimen/minimum_layout_height"
+                android:orientation="horizontal">
+
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@drawable/ripple"
-                    android:clickable="true"
-                    android:minHeight="@dimen/minimum_layout_height"
-                    android:orientation="horizontal">
+                    android:layout_weight="0.5"
+                    android:gravity="center_vertical"
+                    android:text="@string/myhome_layout_update_interval"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead">
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="0.5"
-                        android:gravity="center_vertical"
-                        android:text="Notification interval (min)"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Subhead">
+                </TextView>
 
-                    </TextView>
+                <TextView
+                    android:id="@+id/txtMyHomeNotfInterval"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    android:textColor="@color/colorPrimary"
+                    android:textStyle="bold"
+                    tools:text="30" />
 
-                    <TextView
-                        android:id="@+id/txtMyHomeNotfInterval"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                        android:textColor="@color/colorPrimary"
-                        android:textStyle="bold"
-                        tools:text="30" />
-
-                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -223,55 +232,55 @@
                 android:id="@+id/txtTemperatureLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Temperature" />
+                android:text="@string/temperature_option" />
 
             <TextView
                 android:id="@+id/txtTemperatureTime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Temperature" />
+                tools:text="22-Feb-2017 04:59:51" />
 
             <TextView
                 android:id="@+id/txtTemperatureValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
+                tools:text="22 \u2103" />
 
             <TextView
                 android:id="@+id/txtHumidityLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Humidity" />
+                android:text="@string/humidity_option"/>
 
             <TextView
                 android:id="@+id/txtHumidityTime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Humidity" />
+                tools:text="22-Feb-2017 04:59:51"/>
 
             <TextView
                 android:id="@+id/txtHumidityValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
+                tools:text="22 %" />
 
             <TextView
                 android:id="@+id/txtLightLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Light level" />
+                android:text="@string/luminance_option" />
 
             <TextView
                 android:id="@+id/txtLightTime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Light level" />
+                tools:text="22-Feb-2017 04:59:51"/>
 
             <TextView
                 android:id="@+id/txtLightValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
+                tools:text="22 lux" />
         </LinearLayout>
 
         <LinearLayout
