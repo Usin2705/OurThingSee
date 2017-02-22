@@ -3,6 +3,7 @@ package metro.ourthingsee.activities;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -41,6 +42,7 @@ import java.util.List;
 import metro.ourthingsee.OurContract;
 import metro.ourthingsee.R;
 import metro.ourthingsee.RESTObjects.Events;
+import metro.ourthingsee.Utils;
 import metro.ourthingsee.remote.APIService;
 import metro.ourthingsee.remote.AppUtils;
 import retrofit2.Call;
@@ -54,8 +56,7 @@ public class LocationActivity extends AppCompatActivity {
     List<Events.Event> eventList = new ArrayList<>();
     List<LatLng> listLatLng = new ArrayList<>();
     DecimalFormat df = new DecimalFormat("0.#");
-    SimpleDateFormat sdfDate = new SimpleDateFormat("dd MMM yyyy");
-    SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm");
+    public static SimpleDateFormat sdfDate = new SimpleDateFormat("dd MMM yyyy");
     GoogleMap mGoogleMap;
     ProgressDialog progressDialog;
     View query_view;
@@ -90,11 +91,11 @@ public class LocationActivity extends AppCompatActivity {
         tv_startDate = (TextView) findViewById(R.id.tv_startDate);
         tv_startDate.setText(sdfDate.format(calendar.getTime()));
         tv_startTime = (TextView) findViewById(R.id.tv_startTime);
-        tv_startTime.setText(sdfTime.format(calendar.getTime()));
+        tv_startTime.setText(Utils.shortTimeFormat.format(calendar.getTime()));
         tv_endDate = (TextView) findViewById(R.id.tv_endDate);
         tv_endDate.setText(sdfDate.format(calendar.getTime()));
         tv_endTime = (TextView) findViewById(R.id.tv_endTime);
-        tv_endTime.setText(sdfTime.format(calendar.getTime()));
+        tv_endTime.setText(Utils.shortTimeFormat.format(calendar.getTime()));
         tv_distance = (TextView) findViewById(R.id.tv_distance);
         btn_showPath = (Button) findViewById(R.id.btn_showPath);
         //load map when first enter
@@ -197,13 +198,13 @@ public class LocationActivity extends AppCompatActivity {
         tv_startTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setUpTimePicker(tv_startTime, calendar);
+                Utils.setUpTimePicker(tv_startTime, calendar, LocationActivity.this);
             }
         });
         tv_endTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setUpTimePicker(tv_endTime, calendarEnd);
+                Utils.setUpTimePicker(tv_endTime, calendarEnd, LocationActivity.this);
             }
         });
         btn_showPath.setOnClickListener(new View.OnClickListener() {
@@ -324,7 +325,7 @@ public class LocationActivity extends AppCompatActivity {
                                                 .title(getString(R.string.last_location))
                                                 .snippet(sdfDate.format(response.body()
                                                         .getEvents().get(0).getTimestamp())
-                                                        + "\n" + sdfTime.format(response.body()
+                                                        + "\n" + Utils.shortTimeFormat.format(response.body()
                                                         .getEvents().get(0).getTimestamp())));
                                         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
                                         progressDialog.dismiss();
@@ -437,10 +438,10 @@ public class LocationActivity extends AppCompatActivity {
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 10));
                 mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(0))
                         .title(getString(R.string.destination)).snippet(sdfDate.format(endTime) + "\n"
-                                + sdfTime.format(endTime)));
+                                + Utils.shortTimeFormat.format(endTime)));
                 mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(listLatLng.size() - 1))
                         .title(getString(R.string.origin)).snippet(sdfDate.format(startTime) + "\n"
-                                + sdfTime.format(startTime)));
+                                + Utils.shortTimeFormat.format(startTime)));
                 final Circle circleEnd = mGoogleMap.addCircle(new CircleOptions()
                         .center(listLatLng.get(0))
                         .fillColor(Color.GRAY)
@@ -473,7 +474,7 @@ public class LocationActivity extends AppCompatActivity {
                 mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(0))
                         .title(getString(R.string.only_location))
                         .snippet(sdfDate.format(endTime) + "\n"
-                                + sdfTime.format(endTime)));
+                                + Utils.shortTimeFormat.format(endTime)));
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(listLatLng.get(0), 15));
             }
         } else if (listLatLng.isEmpty()) {
@@ -500,24 +501,6 @@ public class LocationActivity extends AppCompatActivity {
                 calendar.get(Calendar.DAY_OF_MONTH));
         datePickerDialog.setCanceledOnTouchOutside(false);
         datePickerDialog.show();
-    }
-
-    private void setUpTimePicker(final TextView tv, final Calendar calendar) {
-        TimePickerDialog.OnTimeSetListener callback = new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                calendar.set(Calendar.MINUTE, minute);
-                tv.setText(sdfTime.format(calendar.getTime()));
-            }
-        };
-        TimePickerDialog timePickerDialog = new TimePickerDialog(LocationActivity.this,
-                callback,
-                calendar.get(Calendar.HOUR_OF_DAY),
-                calendar.get(Calendar.MINUTE),
-                true);
-        timePickerDialog.setCanceledOnTouchOutside(false);
-        timePickerDialog.show();
     }
 
     private double calculateArcLengthBaseOnLatLng(LatLng start, LatLng end) {

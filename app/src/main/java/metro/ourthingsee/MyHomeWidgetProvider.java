@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.RemoteViews;
 
 import java.text.ParseException;
@@ -14,6 +15,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import metro.ourthingsee.RESTObjects.Events;
+import metro.ourthingsee.activities.MyHomeActivity;
 import metro.ourthingsee.remote.APIService;
 import metro.ourthingsee.remote.AppUtils;
 import retrofit2.Call;
@@ -35,6 +37,11 @@ public class MyHomeWidgetProvider extends AppWidgetProvider {
                     R.layout.widget_myhome);
 
             fetchData(context, remoteViews, appWidgetManager, widgetId);
+
+            // Click on the widget will open the activity
+            Intent myhomeIntent = new Intent(context, MyHomeActivity.class);
+            PendingIntent myhomePI = PendingIntent.getActivity(context, 0, myhomeIntent, 0);
+            remoteViews.setOnClickPendingIntent(R.id.lnlWGMainLayout, myhomePI);
 
             Intent intent = new Intent(context, MyHomeWidgetProvider.class);
             intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
@@ -127,6 +134,9 @@ public class MyHomeWidgetProvider extends AppWidgetProvider {
                     @Override
                     public void onFailure(Call<Events> call, Throwable t) {
                         Utils.handleFailure(context, t);
+                        remoteViews.setViewVisibility(R.id.imgRefresh, View.VISIBLE);
+                        remoteViews.setViewVisibility(R.id.pgbWidget, View.GONE);
+                        appWidgetManager.updateAppWidget(widgetId, remoteViews);
                     }
                 });
     }
@@ -170,6 +180,9 @@ public class MyHomeWidgetProvider extends AppWidgetProvider {
                     @Override
                     public void onFailure(Call<Events> call, Throwable t) {
                         Utils.handleFailure(context, t);
+                        remoteViews.setViewVisibility(R.id.imgRefresh, View.VISIBLE);
+                        remoteViews.setViewVisibility(R.id.pgbWidget, View.GONE);
+                        appWidgetManager.updateAppWidget(widgetId, remoteViews);
                     }
                 });
     }
@@ -215,6 +228,9 @@ public class MyHomeWidgetProvider extends AppWidgetProvider {
                     @Override
                     public void onFailure(Call<Events> call, Throwable t) {
                         Utils.handleFailure(context, t);
+                        remoteViews.setViewVisibility(R.id.imgRefresh, View.VISIBLE);
+                        remoteViews.setViewVisibility(R.id.pgbWidget, View.GONE);
+                        appWidgetManager.updateAppWidget(widgetId, remoteViews);
                     }
                 });
     }

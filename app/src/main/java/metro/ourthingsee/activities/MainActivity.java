@@ -21,7 +21,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -29,7 +28,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import metro.ourthingsee.OurContract;
 import metro.ourthingsee.R;
 import metro.ourthingsee.RESTObjects.DeviceConfig;
-import metro.ourthingsee.RESTObjects.Events;
 import metro.ourthingsee.ThingSee;
 import metro.ourthingsee.Utils;
 import metro.ourthingsee.adapters.OptionsAdapter;

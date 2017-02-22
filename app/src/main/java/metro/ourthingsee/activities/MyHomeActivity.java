@@ -174,6 +174,25 @@ public class MyHomeActivity extends AppCompatActivity {
             }
         });
 
+        // Find and cast the onClick for time start going out
+        final TextView txtMyHomeStartTime = (TextView) findViewById(R.id.txtMyHomeStartTime);
+        txtMyHomeStartTime.setText(
+                String.valueOf(prefs.getInt(OurContract.PREF_MYHOME_MIN_HUMIDITY_VALUE,
+                        OurContract.DEFAULT_MIN_HUMIDITY_VALUE)));
+        txtMyHomeStartTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        LinearLayout lnlMyHomeStartTime = (LinearLayout) findViewById(R.id.lnlMyHomeStartTime);
+        lnlMyHomeStartTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
         // Find and cast the onClick for Humidity Level
         final TextView txtMyHomeHumidityLevel = (TextView) findViewById(R.id.txtMyHomeHumidityLevel);
         txtMyHomeHumidityLevel.setText(
@@ -196,7 +215,7 @@ public class MyHomeActivity extends AppCompatActivity {
         });
 
 
-        // Find and cast the onClick for Notification interval
+        // Find and cast the onClick for Update interval
         final TextView txtMyHomeNotfInterval = (TextView) findViewById(R.id.txtMyHomeNotfInterval);
         txtMyHomeNotfInterval.setText(
                 String.valueOf(prefs.getInt(OurContract.PREF_MYHOME_NOTIFICATION_INTERVAL,
