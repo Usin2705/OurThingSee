@@ -1,13 +1,17 @@
 package metro.ourthingsee;
 
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import metro.ourthingsee.RESTObjects.Events;
 import metro.ourthingsee.remote.APIService;
@@ -24,10 +28,11 @@ public class Utils {
     /**
      * Tag for the log messages
      */
-    public static final String LOG_TAG = Utils.class.getSimpleName();
+    private static final String LOG_TAG = Utils.class.getSimpleName();
 
     public static SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy kk:mm:ss");
     public static SimpleDateFormat shortDateFormat = new SimpleDateFormat("dd-MMM kk:mm");
+    public static SimpleDateFormat shortTimeFormat = new SimpleDateFormat("HH:mm");
 
     /**
      * Handle the failure from apiService request
@@ -133,5 +138,24 @@ public class Utils {
             case 503:
                 break;
         }
+    }
+
+
+    public static void setUpTimePicker(final TextView tv, final Calendar calendar, Context context) {
+        TimePickerDialog.OnTimeSetListener callback = new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                calendar.set(Calendar.MINUTE, minute);
+                tv.setText(shortTimeFormat.format(calendar.getTime()));
+            }
+        };
+        TimePickerDialog timePickerDialog = new TimePickerDialog(context,
+                callback,
+                calendar.get(Calendar.HOUR_OF_DAY),
+                calendar.get(Calendar.MINUTE),
+                true);
+        timePickerDialog.setCanceledOnTouchOutside(false);
+        timePickerDialog.show();
     }
 }
