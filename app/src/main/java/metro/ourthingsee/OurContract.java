@@ -80,6 +80,11 @@ public class OurContract {
     public static final String PREF_MYHOME_NOTIFICATION_OPTION = "pref_myhome_notification_option";
 
     /**
+     * MyHome default notification option value, which is false
+     */
+    public static final Boolean DEFAULT_NOTIFICATION_OPTION = false;
+
+    /**
      * MyHome notification interval name to stored in shared pref
      */
     public static final String PREF_MYHOME_NOTIFICATION_INTERVAL = "pref_myhome_notification_value";

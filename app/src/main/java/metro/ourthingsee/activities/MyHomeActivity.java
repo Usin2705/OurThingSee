@@ -18,7 +18,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
@@ -27,7 +26,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import java.sql.Date;
-import java.text.SimpleDateFormat;
 
 import metro.ourthingsee.OurContract;
 import metro.ourthingsee.R;
@@ -43,7 +41,6 @@ public class MyHomeActivity extends AppCompatActivity {
     static SharedPreferences prefs;
     static TextView txtTemperatureTime, txtTemperatureValue, txtHumidityTime, txtHumidityValue,
             txtLightTime, txtLightValue;
-    private static Context staticContext;
     TCCLoudRequestReceiver receiver;
     AlarmManager alarmManager;
 
@@ -51,10 +48,11 @@ public class MyHomeActivity extends AppCompatActivity {
      * Send the notification to user. It need to be static so it can be called by our
      * static receiver {@link TCCLoudRequestReceiver}.
      *
-     * @param context  the context of the app, used to get resources
-     * @param strValue the value to display
+     * @param context       the context of the app, used to get resources
+     * @param longTimestamp the Timestamp of the sensor value, in Long milliseconds
+     * @param dbValue       the value of the sensor, in Double
      */
-    public static void sendNotification(Context context, String strValue) {
+    public static void sendNotification(Context context, Long longTimestamp, Double dbValue) {
         Intent ntfIntent = new Intent(context, MyHomeActivity.class);
         ntfIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
@@ -66,7 +64,7 @@ public class MyHomeActivity extends AppCompatActivity {
                 new NotificationCompat.Builder(context)
                         .setSmallIcon(R.drawable.nature)
                         .setContentTitle("My notification")
-                        .setContentText("ALO ALO: " + strValue)
+                        .setContentText("ALO ALO: " + String.valueOf(longTimestamp) + String.valueOf(dbValue))
                         .setContentIntent(pendingIntent)
                         .setAutoCancel(true); // cancel when clicked
 
@@ -91,28 +89,27 @@ public class MyHomeActivity extends AppCompatActivity {
         mNotificationManager.notify(OurContract.NOTIFICATION_ID_HUMIDITY, notification.build());
     }
 
-    private static void updateDisplayTV() {
+    private static void updateDisplayTV(Context context) {
         txtHumidityTime.setText(prefs.getString(OurContract.PREF_HUMID_LATEST_TIME,
-                staticContext.getString(R.string.myhome_default_novalue)));
+                context.getString(R.string.myhome_default_novalue)));
         txtHumidityValue.setText(prefs.getString(OurContract.PREF_HUMID_LATEST_VALUE,
-                staticContext.getString(R.string.myhome_default_novalue)));
+                context.getString(R.string.myhome_default_novalue)));
 
         txtTemperatureTime.setText(prefs.getString(OurContract.PREF_TEMP_LATEST_TIME,
-                staticContext.getString(R.string.myhome_default_novalue)));
+                context.getString(R.string.myhome_default_novalue)));
         txtTemperatureValue.setText(prefs.getString(OurContract.PREF_TEMP_LATEST_VALUE,
-                staticContext.getString(R.string.myhome_default_novalue)));
+                context.getString(R.string.myhome_default_novalue)));
 
         txtLightTime.setText(prefs.getString(OurContract.PREF_LIGHT_LATEST_TIME,
-                staticContext.getString(R.string.myhome_default_novalue)));
+                context.getString(R.string.myhome_default_novalue)));
         txtLightValue.setText(prefs.getString(OurContract.PREF_LIGHT_LATEST_VALUE,
-                staticContext.getString(R.string.myhome_default_novalue)));
+                context.getString(R.string.myhome_default_novalue)));
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_myhome);
-        staticContext = this;
 
         // Setup the toolbar
         setupToolBar();
@@ -124,7 +121,7 @@ public class MyHomeActivity extends AppCompatActivity {
 
         // Update all the display texts with latest value. Call after prefs since we will update
         // from prefs.
-        updateDisplayTV();
+        updateDisplayTV(this);
 
         final LinearLayout lnlMyHomeOpt = (LinearLayout) findViewById(R.id.lnlMyHomeOption);
 
@@ -141,12 +138,13 @@ public class MyHomeActivity extends AppCompatActivity {
         // Display the layout option or not depend on the switch button state
         lnlMyHomeOpt.setVisibility(swtMyHome.isChecked() ? View.VISIBLE : View.GONE);
 
-        // Find the layout of switch button, set it according to prefs, and set onClick
+        // Find the layout of switch button, and set onClick
         LinearLayout lnlMyHomeSwt = (LinearLayout) findViewById(R.id.lnlMyHomeSwt);
         lnlMyHomeSwt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Boolean isOn = swtMyHome.isChecked() ? false : true;
+                // Reverse its state (turn it off) and handle the switch state
+                Boolean isOn = !swtMyHome.isChecked();
                 swtMyHome.setChecked(isOn);
                 handleSwtState(lnlMyHomeOpt, swtMyHome, isOn);
             }
@@ -232,7 +230,7 @@ public class MyHomeActivity extends AppCompatActivity {
         super.onResume();
 
         // Call the updateDisplayTV() again in case of new data
-        updateDisplayTV();
+        updateDisplayTV(this);
 
         // Create the receiver again, since we unregister it in onPause
         //IntentFilter filter = new IntentFilter(OurContract.BROADCAST_ACTION);
@@ -260,7 +258,7 @@ public class MyHomeActivity extends AppCompatActivity {
         prefs.edit().putBoolean(
                 OurContract.PREF_MYHOME_NOTIFICATION_OPTION, isOn).apply();
         lnlMyHomeOpt.setVisibility(swtMyHome.isChecked() ? View.VISIBLE : View.GONE);
-        setNotification(isOn);
+        updateNotification();
     }
 
     /**
@@ -274,8 +272,7 @@ public class MyHomeActivity extends AppCompatActivity {
 
     private void setupNumberPicker(final TextView textView, final int maxValue) {
         final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        LayoutInflater inflater = this.getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.number_picker_dialog, null);
+        View dialogView = View.inflate(this, R.layout.number_picker_dialog, null);
         dialog.setView(dialogView);
 
         final NumberPicker numberPicker = (NumberPicker) dialogView.findViewById(R.id.numberPicker);
@@ -312,7 +309,7 @@ public class MyHomeActivity extends AppCompatActivity {
                             numberPicker.getValue()).apply();
                 }
 
-                setNotification(true);
+                updateNotification();
             }
         });
         dialog.setNegativeButton(android.R.string.no, null);
@@ -322,10 +319,8 @@ public class MyHomeActivity extends AppCompatActivity {
     /**
      * Set the repeating alarm based on the setting,
      * is the notification option is off then cancal all alarm
-     *
-     * @param isOn the state of the notification, is it on
      */
-    private void setNotification(Boolean isOn) {
+    private void updateNotification() {
         /*
         * Creates a new Intent to start the TCCloudRequestService
         * IntentService.
@@ -348,19 +343,14 @@ public class MyHomeActivity extends AppCompatActivity {
         // Get the alarmManager to set the repeating task
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-        if (isOn) {
-            // Wake up the device to fire the alarm in 15 minutes, and every 15 minutes after that:
-            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                    SystemClock.elapsedRealtime() +
-                            prefs.getInt(OurContract.PREF_MYHOME_NOTIFICATION_INTERVAL,
-                                    OurContract.DEFAULT_NOTIFICATION_INTERVAL_VALUE) * 60 * 1000,
-                    prefs.getInt(OurContract.PREF_MYHOME_NOTIFICATION_INTERVAL,
-                            OurContract.DEFAULT_NOTIFICATION_INTERVAL_VALUE) * 60 * 1000,
-                    pendingIntent);
-        } else {
-            // If user turn off notification, turn off all alarm.
-            alarmManager.cancel(pendingIntent);
-        }
+        // Wake up the device to fire the alarm in 15 minutes, and every 15 minutes after that:
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                SystemClock.elapsedRealtime() +
+                        prefs.getInt(OurContract.PREF_MYHOME_NOTIFICATION_INTERVAL,
+                                OurContract.DEFAULT_NOTIFICATION_INTERVAL_VALUE) * 60 * 1000,
+                prefs.getInt(OurContract.PREF_MYHOME_NOTIFICATION_INTERVAL,
+                        OurContract.DEFAULT_NOTIFICATION_INTERVAL_VALUE) * 60 * 1000,
+                pendingIntent);
 
         IntentFilter filter = new IntentFilter(OurContract.BROADCAST_ACTION);
         filter.addCategory(Intent.CATEGORY_DEFAULT);
@@ -379,9 +369,7 @@ public class MyHomeActivity extends AppCompatActivity {
                     OurContract.BROADCAST_RESPONSE_VALUE);
 
             // Call the updateDisplayTV() again in case of new data
-            if (staticContext != null) {
-                updateDisplayTV();
-            }
+            updateDisplayTV(context);
         }
 
         /**
@@ -389,11 +377,11 @@ public class MyHomeActivity extends AppCompatActivity {
          * This will record the last timestamp and value to prefs.
          * Also it will handle the notification (if set) for each sensorID.
          *
-         * @param intent the intent we get from the Broadcast. We need to get sensorID from this
-         *               intent to switch case based on the data we get.
+         * @param intent  the intent we get from the Broadcast. We need to get sensorID from this
+         *                intent to switch case based on the data we get.
          * @param context the context of the app, for sending notification
-         * @param tsName the Broadcast Response Name contain timestamp value in Long
-         * @param vlName the Broadcast Response Name contain sensor value in Double
+         * @param tsName  the Broadcast Response Name contain timestamp value in Long
+         * @param vlName  the Broadcast Response Name contain sensor value in Double
          */
         private void handleOnReceive(Intent intent, Context context, String tsName, String vlName) {
             // If the intent have the extra value for tsName, then we take the value and process,
@@ -414,10 +402,13 @@ public class MyHomeActivity extends AppCompatActivity {
                         prefs.edit().putString(OurContract.PREF_HUMID_LATEST_VALUE,
                                 String.valueOf(dbResponse) + " %").apply();
                         // If the value is less than the min value, notify the user
+                        // only notify if the notification option is turned on
                         if (dbResponse < intent.getIntExtra(
                                 OurContract.INTENT_NAME_MIN_HUMIDITY_VALUE,
-                                OurContract.DEFAULT_MIN_HUMIDITY_VALUE)) {
-                            sendNotification(context, String.valueOf(Utils.dateFormat.format(eventDate) + " " + dbResponse));
+                                OurContract.DEFAULT_MIN_HUMIDITY_VALUE) && prefs.getBoolean(
+                                OurContract.PREF_MYHOME_NOTIFICATION_OPTION,
+                                OurContract.DEFAULT_NOTIFICATION_OPTION)) {
+                            sendNotification(context, longTimestamp, dbResponse);
                         }
 
                         break;
