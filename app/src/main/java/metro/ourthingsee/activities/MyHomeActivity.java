@@ -25,6 +25,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import java.sql.Date;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 import metro.ourthingsee.OurContract;
 import metro.ourthingsee.R;
@@ -44,6 +46,7 @@ public class MyHomeActivity extends AppCompatActivity {
      * Set at 2 hours
      */
     private static final int ELAPSE_TIME = 1000*60*60*2;
+
     static SharedPreferences prefs;
     static TextView txtTemperatureTime, txtTemperatureValue, txtHumidityTime, txtHumidityValue,
             txtLightTime, txtLightValue;
@@ -149,6 +152,7 @@ public class MyHomeActivity extends AppCompatActivity {
 
         final LinearLayout lnlMyHomeOpt = (LinearLayout) findViewById(R.id.lnlMyHomeOption);
 
+        //************************************ NOTIFICATION OPTION *********************************
         // Find the switch button, set it according to prefs, and set onCheckChangeListener
         final Switch swtMyHome = (Switch) findViewById(R.id.swtMyHome);
         swtMyHome.setChecked(prefs.getBoolean(OurContract.PREF_MYHOME_NOTIFICATION_OPTION, false));
@@ -174,25 +178,68 @@ public class MyHomeActivity extends AppCompatActivity {
             }
         });
 
+        //************************************ START TIME ******************************************
         // Find and cast the onClick for time start going out
+
+        //Set the default time
+        final Calendar calendarStart = Calendar.getInstance(TimeZone.getDefault());
+        calendarStart.set(Calendar.HOUR_OF_DAY, 0);
+        calendarStart.set(Calendar.MINUTE, 0);
+
         final TextView txtMyHomeStartTime = (TextView) findViewById(R.id.txtMyHomeStartTime);
         txtMyHomeStartTime.setText(
-                String.valueOf(prefs.getInt(OurContract.PREF_MYHOME_MIN_HUMIDITY_VALUE,
-                        OurContract.DEFAULT_MIN_HUMIDITY_VALUE)));
+                (Utils.shortTimeFormat.format(prefs.getLong(OurContract.PREF_MYHOME_START_TIME,
+                        calendarStart.getTimeInMillis()))));
         txtMyHomeStartTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Utils.setUpTimePicker(txtMyHomeStartTime, calendarStart, MyHomeActivity.this,
+                        Utils.TIMEPICKER_CODE_RECORD_START);
             }
         });
         LinearLayout lnlMyHomeStartTime = (LinearLayout) findViewById(R.id.lnlMyHomeStartTime);
         lnlMyHomeStartTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Utils.setUpTimePicker(txtMyHomeStartTime, calendarStart, MyHomeActivity.this,
+                        Utils.TIMEPICKER_CODE_RECORD_START);
+                prefs.edit().putLong(OurContract.PREF_MYHOME_START_TIME,
+                        calendarStart.getTimeInMillis()).apply();
             }
         });
 
+
+        //************************************ END TIME ********************************************
+        // Find and cast the onClick for time start going out
+
+        //Set the default time
+        final Calendar calendarEnd = Calendar.getInstance(TimeZone.getDefault());
+        calendarEnd.set(Calendar.HOUR_OF_DAY, 19);
+        calendarEnd.set(Calendar.MINUTE, 0);
+
+        final TextView txtMyHomeEndTime = (TextView) findViewById(R.id.txtMyHomeEndTime);
+        txtMyHomeEndTime.setText(
+                (Utils.shortTimeFormat.format(prefs.getLong(OurContract.PREF_MYHOME_END_TIME,
+                        calendarEnd.getTimeInMillis()))));
+        txtMyHomeEndTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Utils.setUpTimePicker(txtMyHomeEndTime, calendarEnd,
+                        MyHomeActivity.this, Utils.TIMEPICKER_CODE_RECORD_END);
+            }
+        });
+        LinearLayout lnlMyHomeEndTime = (LinearLayout) findViewById(R.id.lnlMyHomeEndTime);
+        lnlMyHomeEndTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Utils.setUpTimePicker(txtMyHomeEndTime, calendarEnd,
+                        MyHomeActivity.this, Utils.TIMEPICKER_CODE_RECORD_END);
+                prefs.edit().putLong(OurContract.PREF_MYHOME_END_TIME,
+                        calendarEnd.getTimeInMillis()).apply();
+            }
+        });
+
+        //************************************ HUMIDITY ********************************************
         // Find and cast the onClick for Humidity Level
         final TextView txtMyHomeHumidityLevel = (TextView) findViewById(R.id.txtMyHomeHumidityLevel);
         txtMyHomeHumidityLevel.setText(
@@ -215,6 +262,7 @@ public class MyHomeActivity extends AppCompatActivity {
         });
 
 
+        //************************************ UPDATE INTERVAL *************************************
         // Find and cast the onClick for Update interval
         final TextView txtMyHomeNotfInterval = (TextView) findViewById(R.id.txtMyHomeNotfInterval);
         txtMyHomeNotfInterval.setText(

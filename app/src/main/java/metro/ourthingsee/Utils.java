@@ -34,6 +34,10 @@ public class Utils {
     public static SimpleDateFormat shortDateFormat = new SimpleDateFormat("dd-MMM kk:mm");
     public static SimpleDateFormat shortTimeFormat = new SimpleDateFormat("HH:mm");
 
+    public static final int TIMEPICKER_CODE_NO_RECORD = 0;
+    public static final int TIMEPICKER_CODE_RECORD_START = 1;
+    public static final int TIMEPICKER_CODE_RECORD_END = 2;
+
     /**
      * Handle the failure from apiService request
      * {@link APIService
@@ -140,14 +144,42 @@ public class Utils {
         }
     }
 
-
-    public static void setUpTimePicker(final TextView tv, final Calendar calendar, Context context) {
-        TimePickerDialog.OnTimeSetListener callback = new TimePickerDialog.OnTimeSetListener() {
+    /**
+     * Open the time picker dialog, and promt the user to pick the time.
+     * Then set the calendar time to that time.
+     * After that, display the time with HH:mm format in the textView.
+     *
+     * @param textView      The textview to display the results
+     * @param calendar      The calendar the get the time results
+     * @param context       The context of the activity
+     * @param  requestCode  The request code for the time picker, to know if we need to record in
+     *                      prefs or not
+     */
+    public static void setUpTimePicker(final TextView textView, final Calendar calendar, final Context context, final int requestCode) {
+        final TimePickerDialog.OnTimeSetListener callback = new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                final SharedPreferences prefs = context.getSharedPreferences(OurContract.SHARED_PREF,
+                        Context.MODE_PRIVATE);
+
                 calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
                 calendar.set(Calendar.MINUTE, minute);
-                tv.setText(shortTimeFormat.format(calendar.getTime()));
+                textView.setText(shortTimeFormat.format(calendar.getTime()));
+                switch (requestCode) {
+
+                    case TIMEPICKER_CODE_NO_RECORD:
+                        break;
+                    case TIMEPICKER_CODE_RECORD_START:
+                        prefs.edit().putLong(OurContract.PREF_MYHOME_START_TIME,
+                                calendar.getTimeInMillis()).apply();
+                        break;
+                    case TIMEPICKER_CODE_RECORD_END:
+                        prefs.edit().putLong(OurContract.PREF_MYHOME_END_TIME,
+                                calendar.getTimeInMillis()).apply();
+                        break;
+                    default:
+                        break;
+                }
             }
         };
         TimePickerDialog timePickerDialog = new TimePickerDialog(context,
@@ -158,4 +190,5 @@ public class Utils {
         timePickerDialog.setCanceledOnTouchOutside(false);
         timePickerDialog.show();
     }
+
 }

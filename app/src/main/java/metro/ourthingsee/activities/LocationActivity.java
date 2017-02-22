@@ -198,13 +198,15 @@ public class LocationActivity extends AppCompatActivity {
         tv_startTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utils.setUpTimePicker(tv_startTime, calendar, LocationActivity.this);
+                Utils.setUpTimePicker(tv_startTime, calendar, LocationActivity.this,
+                        Utils.TIMEPICKER_CODE_NO_RECORD);
             }
         });
         tv_endTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utils.setUpTimePicker(tv_endTime, calendarEnd, LocationActivity.this);
+                Utils.setUpTimePicker(tv_endTime, calendarEnd, LocationActivity.this,
+                        Utils.TIMEPICKER_CODE_NO_RECORD);
             }
         });
         btn_showPath.setOnClickListener(new View.OnClickListener() {
@@ -235,6 +237,7 @@ public class LocationActivity extends AppCompatActivity {
     */
     private void getPathInTimeInterval(final Long start, final Long end, final APIService apiService
             , final String authen, final String deviceAuthen) {
+
         apiService.getUserEvents(authen, deviceAuthen, "sense", "0x00010100,0x00010200", 50, start, end)
                 .enqueue(new Callback<Events>() {
                     @Override

@@ -35,6 +35,16 @@ public class OurContract {
     public static final String PREF_USER_AUTH_TOKEN_NAME = "pref_auth_token";
 
     /**
+     * MyHome start time for notification, record in milliseconds
+     */
+    public static final String PREF_MYHOME_START_TIME = "pref_myhome_start_time";
+
+    /**
+     * MyHome end time for notification, record in milliseconds
+     */
+    public static final String PREF_MYHOME_END_TIME = "pref_myhome_end_time";
+
+    /**
      * MyHome minimum humidity value name to stored in shared pref
      */
     public static final String PREF_MYHOME_MIN_HUMIDITY_VALUE = "pref_myhome_min_humidity_value";
