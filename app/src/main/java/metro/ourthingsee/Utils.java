@@ -27,6 +27,7 @@ public class Utils {
     public static final String LOG_TAG = Utils.class.getSimpleName();
 
     public static SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy kk:mm:ss");
+    public static SimpleDateFormat shortDateFormat = new SimpleDateFormat("dd-MMM kk:mm");
 
     /**
      * Handle the failure from apiService request
