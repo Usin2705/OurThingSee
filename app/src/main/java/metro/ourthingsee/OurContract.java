@@ -45,7 +45,7 @@ public class OurContract {
     public static final String PREF_MYHOME_MIN_HUMIDITY_VALUE = "pref_myhome_min_humidity_value";
 
     /**
-     * MyHome minimum humidity value name to stored in shared pref
+     * MyHome minimum humidity value name to stored in shared pref. Value is stored in integer
      */
     public static final String PREF_MYHOME_MIN_LIGHT_VALUE = "pref_myhome_min_light_value";
 
@@ -87,7 +87,7 @@ public class OurContract {
     /**
      * MyHome default minimum light value (lux)
      */
-    public static final int DEFAULT_MIN_LIGHT_VALUE = 500;
+    public static final int DEFAULT_MIN_LIGHT_VALUE = 250;
 
     /**
      * MyHome notification option name to stored in shared pref
@@ -215,6 +215,11 @@ public class OurContract {
      *Intent name for minimum humidity vale
      */
     public static final String INTENT_NAME_MIN_HUMIDITY_VALUE = "com.metro.ourthingsee.min_hud_val";
+
+    /**
+     *Intent name for minimum humidity vale
+     */
+    public static final String INTENT_NAME_MIN_LIGHT_VALUE = "com.metro.ourthingsee.min_light_val";
 
     /**
      * When you issue multiple notifications about the same type of event, it’s best practice

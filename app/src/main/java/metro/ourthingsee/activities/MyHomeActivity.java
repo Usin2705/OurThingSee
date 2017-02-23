@@ -17,9 +17,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -45,7 +47,7 @@ public class MyHomeActivity extends AppCompatActivity {
      * will be send.
      * Set at 2 hours
      */
-    private static final int ELAPSE_TIME = 1000*60*60*2;
+    private static final int ELAPSE_TIME = 1000 * 60 * 60 * 2;
 
     static SharedPreferences prefs;
     static TextView txtTemperatureTime, txtTemperatureValue, txtHumidityTime, txtHumidityValue,
@@ -112,18 +114,17 @@ public class MyHomeActivity extends AppCompatActivity {
      * day, and take the remainder. The integer quotient are the total days of that timestamp, and
      * the remainder is the "not full" day leftover, which can be easily compare within a day.
      *
-     * @see <a href="http://stackoverflow.com/a/7676307/3623497">Stackoverflow Link</a>
-     *
      * @return Boolean value whether the current time is not quiet time period or not
+     * @see <a href="http://stackoverflow.com/a/7676307/3623497">Stackoverflow Link</a>
      */
     private static boolean isNotQuietTime() {
         Boolean isNotQuiet = false;
 
-        int intCurrentTime = (int) ((Calendar.getInstance().getTimeInMillis()) % (24*60*60*1000L));
+        int intCurrentTime = (int) ((Calendar.getInstance().getTimeInMillis()) % (24 * 60 * 60 * 1000L));
         int intEndTime = (int) (prefs.getLong(OurContract.PREF_MYHOME_END_TIME, 0)
-                % (24*60*60*1000L));
+                % (24 * 60 * 60 * 1000L));
 
-        if (intCurrentTime>=intEndTime) {
+        if (intCurrentTime >= intEndTime) {
             isNotQuiet = true;
         }
         return isNotQuiet;
@@ -244,7 +245,7 @@ public class MyHomeActivity extends AppCompatActivity {
         txtMyHomeLightLevel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                setupSpinnerPicker(txtMyHomeLightLevel);
             }
         });
         LinearLayout lnlMyHomeLightLevel = (LinearLayout) findViewById(R.id.lnlMyHomeLightLevel);
@@ -300,8 +301,40 @@ public class MyHomeActivity extends AppCompatActivity {
         });
     }
 
-    private void setupSpinnerPicker(TextView txtMyHomeLightLevel) {
-        
+    /**
+     * Setup a spinner picker to pick the min light level.
+     * Then display the value on the textview and save in prefs
+     *
+     * @param textView The textView to display the results
+     */
+    private void setupSpinnerPicker(final TextView textView) {
+        final String[] lightLabels =
+                getResources().getStringArray(R.array.recommend_luminance_level_labels);
+        final String[] lightValues =
+                getResources().getStringArray(R.array.recommend_luminance_level_values);
+
+        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        dialogBuilder.setTitle(getString(R.string.myhome_dialog_title_light));
+        dialogBuilder.setIcon(R.drawable.ic_lightbulb_outline_24dp);
+
+        View dialogView = View.inflate(this, R.layout.listview_spinner_dialog, null);
+        dialogBuilder.setView(dialogView);
+        final AlertDialog alertDialog = dialogBuilder.create();
+
+        ListView listView = (ListView) dialogView.findViewById(R.id.myhome_listview);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(MyHomeActivity.this,
+                android.R.layout.simple_selectable_list_item, lightLabels);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                textView.setText(lightValues[position]);
+                prefs.edit().putInt(OurContract.PREF_MYHOME_MIN_LIGHT_VALUE,
+                        Integer.parseInt(lightValues[position])).apply();
+                alertDialog.dismiss();
+            }
+        });
+        alertDialog.show();
     }
 
     /**
@@ -392,12 +425,12 @@ public class MyHomeActivity extends AppCompatActivity {
 
         // Display the number picker correctly depend on the option:
         if (maxValue == OurContract.MYHOME_NOTIFICATION_INTERVAL_MAXVALUE) {
-            dialog.setTitle("Select your notification interval (min)");
+            dialog.setTitle(getString(R.string.myhome_dialog_title_notfinterval));
             numberPicker.setValue(prefs.getInt(
                     OurContract.PREF_MYHOME_NOTIFICATION_INTERVAL,
                     OurContract.DEFAULT_NOTIFICATION_INTERVAL_VALUE));
         } else {
-            dialog.setTitle("Select your minimum humidity level (%)");
+            dialog.setTitle(getString(R.string.myhome_dialog_title_humidity));
             numberPicker.setValue(prefs.getInt(
                     OurContract.PREF_MYHOME_MIN_HUMIDITY_VALUE,
                     OurContract.DEFAULT_MIN_HUMIDITY_VALUE));
@@ -436,12 +469,14 @@ public class MyHomeActivity extends AppCompatActivity {
         * IntentService.
         */
         Intent serviceIntent = new Intent(this, TCCloudRequestService.class);
+
         serviceIntent.putExtra(OurContract.INTENT_NAME_MIN_HUMIDITY_VALUE,
                 prefs.getInt(OurContract.PREF_MYHOME_MIN_HUMIDITY_VALUE,
                         OurContract.DEFAULT_MIN_HUMIDITY_VALUE));
 
-        int minHumid = prefs.getInt(OurContract.PREF_MYHOME_MIN_HUMIDITY_VALUE, 30);
-        serviceIntent.putExtra(OurContract.INTENT_NAME_MIN_HUMIDITY_VALUE, minHumid);
+        serviceIntent.putExtra(OurContract.INTENT_NAME_MIN_LIGHT_VALUE,
+                prefs.getInt(OurContract.PREF_MYHOME_MIN_LIGHT_VALUE,
+                        OurContract.DEFAULT_MIN_LIGHT_VALUE));
 
         // Create a PendingIntent to send the service
         // Set the flag update current to update with new setting
@@ -534,6 +569,16 @@ public class MyHomeActivity extends AppCompatActivity {
                                 String.valueOf(Utils.dateFormat.format(eventDate))).apply();
                         prefs.edit().putString(OurContract.PREF_LIGHT_LATEST_VALUE,
                                 String.valueOf(dbResponse) + " lux").apply();
+
+                        // If the value is less than the min value, notify the user
+                        // only notify if the notification option is turned on
+                        if (dbResponse < intent.getIntExtra(
+                                OurContract.INTENT_NAME_MIN_LIGHT_VALUE,
+                                OurContract.DEFAULT_MIN_LIGHT_VALUE) && prefs.getBoolean(
+                                OurContract.PREF_MYHOME_NOTIFICATION_OPTION,
+                                OurContract.DEFAULT_NOTIFICATION_OPTION)) {
+                            sendNotification(context, longTimestamp, dbResponse);
+                        }
                         break;
 
                     default:

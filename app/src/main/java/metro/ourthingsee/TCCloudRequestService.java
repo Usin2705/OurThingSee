@@ -116,6 +116,12 @@ public class TCCloudRequestService extends IntentService {
                                     OurContract.INTENT_NAME_MIN_HUMIDITY_VALUE,
                                     OurContract.DEFAULT_MIN_HUMIDITY_VALUE));
 
+                    broadcastIntent.putExtra(
+                            OurContract.INTENT_NAME_MIN_LIGHT_VALUE,
+                            serviceIntent.getIntExtra(
+                                    OurContract.INTENT_NAME_MIN_LIGHT_VALUE,
+                                    OurContract.DEFAULT_MIN_HUMIDITY_VALUE));
+
                     sendBroadcast(broadcastIntent);
                 }
 

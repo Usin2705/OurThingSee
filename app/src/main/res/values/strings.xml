@@ -41,6 +41,42 @@
     <!-- The default string value for display texts in MyHome activity [CHAR LIMIT=50] -->
     <string name="myhome_default_novalue">No value found, waiting for update from server.</string>
 
+    <!-- Dialog title for minimum humidity number picker [CHAR LIMIT=NONE] -->
+    <string name="myhome_dialog_title_humidity">Select your minimum humidity level (%)</string>
+
+    <!-- Dialog title for minimum light level dialog picker [CHAR LIMIT=NONE] -->
+    <string name="myhome_dialog_title_light">Select your minimum light level</string>
+
+    <!-- Dialog title for notification interval number picker [CHAR LIMIT=NONE] -->
+    <string name="myhome_dialog_title_notfinterval">Select your notification interval (min)</string>
+
+    <!-- https://www.noao.edu/education/QLTkit/ACTIVITY_Documents/Safety/LightLevels_outdoor+indoor.pdf -->
+    <!-- Array list for labels of luminance level [CHAR LIMIT=30] -->
+    <string-array name="recommend_luminance_level_labels">
+        <item>Finnish winter morning - 0</item>
+        <item>Parking, Dark areas - 50</item>
+        <item>Warehouses, Archives, Dining Areas - 150 </item>
+        <item>Easy Office Work, Classes - 250</item>
+        <item>Office Work, PC Work, Study, Lab - 500</item>
+        <item>Supermarkets, Workshops, Office area - 750</item>
+        <item>Sunlight, overcast day - 2,000</item>
+        <item>Sunlight, clear blue sky - 20,000</item>
+        <item>Bright sunlight - 100,000</item>
+    </string-array>
+
+    <!-- Array list for value of luminance level [CHAR LIMIT=NONE] -->
+    <string-array name="recommend_luminance_level_values">
+        <item>0</item>
+        <item>50</item>
+        <item>150</item>
+        <item>250</item>
+        <item>500</item>
+        <item>750</item>
+        <item>2000</item>
+        <item>20000</item>
+        <item>100000</item>
+    </string-array>
+
     <!-- General toast for fetch data if response is failed, blame everybody [CHAR LIMIT=NONE] -->
     <string name="fetch_toast_response_failed_general">Failed to fetch data from Thingsee cloud server. Thanks, Obama!</string>
 
