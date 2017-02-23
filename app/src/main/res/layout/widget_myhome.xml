@@ -15,35 +15,39 @@
 
         <TextView
             android:id="@+id/txtWGHumid"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_weight="1.2"
+            android:layout_weight="2"
             android:textAlignment="center"
             android:textSize="18sp"
+            android:textStyle="bold"
             tools:text="20%" />
 
         <ImageView
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:scaleType="centerInside"
             android:src="@drawable/nature" />
 
         <TextView
             android:id="@+id/txtWGTemp"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_weight="1.2"
+            android:layout_weight="2"
             android:textAlignment="center"
             android:textSize="18sp"
+            android:textStyle="bold"
             tools:text="27℃" />
 
         <ImageView
             android:id="@+id/imageView1"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:scaleType="centerInside"
             android:src="@drawable/temperature" />
 
     </LinearLayout>
@@ -57,44 +61,50 @@
 
         <TextView
             android:id="@+id/txtWGLight"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1.2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:gravity="center_vertical"
             android:textAlignment="center"
             android:textSize="18sp"
+            android:textStyle="bold"
             tools:text="27lx" />
 
         <ImageView
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:src="@drawable/ic_lightbulb_outline_24dp" />
+            android:scaleType="centerInside"
+            android:src="@drawable/light" />
 
         <TextView
             android:id="@+id/txtWGTime"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_weight="0.9"
+            android:layout_weight="2.5"
             android:textAlignment="center"
             tools:text="21 Feb 22:50" />
 
-        <ProgressBar
-            android:id="@+id/pgbWidget"
-            android:layout_width="match_parent"
+        <FrameLayout
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1.3"
-            android:visibility="gone"
-            android:layout_gravity="center_vertical" />
+            android:layout_weight="0.5">
 
-        <ImageView
-            android:id="@+id/imgRefresh"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1.3"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_refresh_white_24dp" />
+            <ProgressBar
+                android:id="@+id/pgbWidget"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/imgRefresh"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_refresh_white_24dp" />
+        </FrameLayout>
 
     </LinearLayout>
 
