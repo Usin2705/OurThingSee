@@ -91,7 +91,9 @@ public class MyHomeActivity extends AppCompatActivity {
 
         // Only send notification if the time different between sensor time and current time less
         // than ELAPSE_TIME
-        if ((System.currentTimeMillis() - longTimestamp) < ELAPSE_TIME) {
+        // Also check if the current time is not quite time
+        if (((System.currentTimeMillis() - longTimestamp) < ELAPSE_TIME)
+                && isNotQuietTime()) {
             //When you issue multiple notifications about the same type of event, it’s best practice
             // for your app to try to update an existing notification with this new information, rather
             // than immediately creating a new notification. If you want to update this notification at
@@ -100,6 +102,31 @@ public class MyHomeActivity extends AppCompatActivity {
             // update this existing notification, rather than create a new one.
             mNotificationManager.notify(OurContract.NOTIFICATION_ID_HUMIDITY, notification.build());
         }
+    }
+
+    /**
+     * Check if the current time is older than the quiet end time or earlier than quiet start time
+     * only compare the time within a day, by convert any long timestamp to the time within day.
+     * <p>
+     * The method here is to divide any long timestamp by the milisecond * second * min * hour in a
+     * day, and take the remainder. The integer quotient are the total days of that timestamp, and
+     * the remainder is the "not full" day leftover, which can be easily compare within a day.
+     *
+     * @see <a href="http://stackoverflow.com/a/7676307/3623497">Stackoverflow Link</a>
+     *
+     * @return Boolean value whether the current time is not quiet time period or not
+     */
+    private static boolean isNotQuietTime() {
+        Boolean isNotQuiet = false;
+
+        int intCurrentTime = (int) ((Calendar.getInstance().getTimeInMillis()) % (24*60*60*1000L));
+        int intEndTime = (int) (prefs.getLong(OurContract.PREF_MYHOME_END_TIME, 0)
+                % (24*60*60*1000L));
+
+        if (intCurrentTime>=intEndTime) {
+            isNotQuiet = true;
+        }
+        return isNotQuiet;
     }
 
     /**
@@ -178,37 +205,6 @@ public class MyHomeActivity extends AppCompatActivity {
             }
         });
 
-        //************************************ START TIME ******************************************
-        // Find and cast the onClick for time start going out
-
-        //Set the default time
-        final Calendar calendarStart = Calendar.getInstance(TimeZone.getDefault());
-        calendarStart.set(Calendar.HOUR_OF_DAY, 0);
-        calendarStart.set(Calendar.MINUTE, 0);
-
-        final TextView txtMyHomeStartTime = (TextView) findViewById(R.id.txtMyHomeStartTime);
-        txtMyHomeStartTime.setText(
-                (Utils.shortTimeFormat.format(prefs.getLong(OurContract.PREF_MYHOME_START_TIME,
-                        calendarStart.getTimeInMillis()))));
-        txtMyHomeStartTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Utils.setUpTimePicker(txtMyHomeStartTime, calendarStart, MyHomeActivity.this,
-                        Utils.TIMEPICKER_CODE_RECORD_START);
-            }
-        });
-        LinearLayout lnlMyHomeStartTime = (LinearLayout) findViewById(R.id.lnlMyHomeStartTime);
-        lnlMyHomeStartTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Utils.setUpTimePicker(txtMyHomeStartTime, calendarStart, MyHomeActivity.this,
-                        Utils.TIMEPICKER_CODE_RECORD_START);
-                prefs.edit().putLong(OurContract.PREF_MYHOME_START_TIME,
-                        calendarStart.getTimeInMillis()).apply();
-            }
-        });
-
-
         //************************************ END TIME ********************************************
         // Find and cast the onClick for time start going out
 
@@ -239,6 +235,26 @@ public class MyHomeActivity extends AppCompatActivity {
             }
         });
 
+        //************************************ LUMINANCE ********************************************
+        // Find and cast the onClick for Humidity Level
+        final TextView txtMyHomeLightLevel = (TextView) findViewById(R.id.txtMyHomeLightLevel);
+        txtMyHomeLightLevel.setText(
+                String.valueOf(prefs.getInt(OurContract.PREF_MYHOME_MIN_LIGHT_VALUE,
+                        OurContract.DEFAULT_MIN_LIGHT_VALUE)));
+        txtMyHomeLightLevel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        LinearLayout lnlMyHomeLightLevel = (LinearLayout) findViewById(R.id.lnlMyHomeLightLevel);
+        lnlMyHomeLightLevel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setupSpinnerPicker(txtMyHomeLightLevel);
+            }
+        });
+
         //************************************ HUMIDITY ********************************************
         // Find and cast the onClick for Humidity Level
         final TextView txtMyHomeHumidityLevel = (TextView) findViewById(R.id.txtMyHomeHumidityLevel);
@@ -261,7 +277,6 @@ public class MyHomeActivity extends AppCompatActivity {
             }
         });
 
-
         //************************************ UPDATE INTERVAL *************************************
         // Find and cast the onClick for Update interval
         final TextView txtMyHomeNotfInterval = (TextView) findViewById(R.id.txtMyHomeNotfInterval);
@@ -283,6 +298,10 @@ public class MyHomeActivity extends AppCompatActivity {
                         OurContract.MYHOME_NOTIFICATION_INTERVAL_MAXVALUE);
             }
         });
+    }
+
+    private void setupSpinnerPicker(TextView txtMyHomeLightLevel) {
+        
     }
 
     /**
@@ -349,7 +368,6 @@ public class MyHomeActivity extends AppCompatActivity {
         prefs.edit().putBoolean(
                 OurContract.PREF_MYHOME_NOTIFICATION_OPTION, isOn).apply();
         lnlMyHomeOpt.setVisibility(swtMyHome.isChecked() ? View.VISIBLE : View.GONE);
-        Log.e("AAAAA", String.valueOf(isOn));
         updateNotification();
     }
 
@@ -424,7 +442,6 @@ public class MyHomeActivity extends AppCompatActivity {
 
         int minHumid = prefs.getInt(OurContract.PREF_MYHOME_MIN_HUMIDITY_VALUE, 30);
         serviceIntent.putExtra(OurContract.INTENT_NAME_MIN_HUMIDITY_VALUE, minHumid);
-        Log.e("AAAAA", "put extra in intent: " + String.valueOf(minHumid));
 
         // Create a PendingIntent to send the service
         // Set the flag update current to update with new setting

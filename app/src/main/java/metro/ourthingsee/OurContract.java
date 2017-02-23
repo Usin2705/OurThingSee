@@ -35,11 +35,6 @@ public class OurContract {
     public static final String PREF_USER_AUTH_TOKEN_NAME = "pref_auth_token";
 
     /**
-     * MyHome start time for notification, record in milliseconds
-     */
-    public static final String PREF_MYHOME_START_TIME = "pref_myhome_start_time";
-
-    /**
      * MyHome end time for notification, record in milliseconds
      */
     public static final String PREF_MYHOME_END_TIME = "pref_myhome_end_time";
@@ -48,6 +43,11 @@ public class OurContract {
      * MyHome minimum humidity value name to stored in shared pref
      */
     public static final String PREF_MYHOME_MIN_HUMIDITY_VALUE = "pref_myhome_min_humidity_value";
+
+    /**
+     * MyHome minimum humidity value name to stored in shared pref
+     */
+    public static final String PREF_MYHOME_MIN_LIGHT_VALUE = "pref_myhome_min_light_value";
 
     /**
      * prefs name for latest value for humidity
@@ -83,6 +83,11 @@ public class OurContract {
      * MyHome default minimum humidity value (%)
      */
     public static final int DEFAULT_MIN_HUMIDITY_VALUE = 30;
+
+    /**
+     * MyHome default minimum light value (lux)
+     */
+    public static final int DEFAULT_MIN_LIGHT_VALUE = 500;
 
     /**
      * MyHome notification option name to stored in shared pref

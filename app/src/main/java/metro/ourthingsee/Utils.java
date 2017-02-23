@@ -35,8 +35,7 @@ public class Utils {
     public static SimpleDateFormat shortTimeFormat = new SimpleDateFormat("HH:mm");
 
     public static final int TIMEPICKER_CODE_NO_RECORD = 0;
-    public static final int TIMEPICKER_CODE_RECORD_START = 1;
-    public static final int TIMEPICKER_CODE_RECORD_END = 2;
+    public static final int TIMEPICKER_CODE_RECORD_END = 1;
 
     /**
      * Handle the failure from apiService request
@@ -169,10 +168,7 @@ public class Utils {
 
                     case TIMEPICKER_CODE_NO_RECORD:
                         break;
-                    case TIMEPICKER_CODE_RECORD_START:
-                        prefs.edit().putLong(OurContract.PREF_MYHOME_START_TIME,
-                                calendar.getTimeInMillis()).apply();
-                        break;
+
                     case TIMEPICKER_CODE_RECORD_END:
                         prefs.edit().putLong(OurContract.PREF_MYHOME_END_TIME,
                                 calendar.getTimeInMillis()).apply();
