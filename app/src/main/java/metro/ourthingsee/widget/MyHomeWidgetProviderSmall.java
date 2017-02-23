@@ -1,4 +1,4 @@
-package metro.ourthingsee;
+package metro.ourthingsee.widget;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -7,14 +7,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.RemoteViews;
 
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Locale;
 
+import metro.ourthingsee.OurContract;
+import metro.ourthingsee.R;
 import metro.ourthingsee.RESTObjects.Events;
+import metro.ourthingsee.Utils;
 import metro.ourthingsee.activities.MyHomeActivity;
 import metro.ourthingsee.remote.APIService;
 import metro.ourthingsee.remote.AppUtils;
@@ -29,7 +31,7 @@ import retrofit2.Response;
  * Each time the widget update, it will fetch data from the internet.
  *
  */
-public class MyHomeWidgetProvider extends AppWidgetProvider {
+public class MyHomeWidgetProviderSmall extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         for (int widgetId:appWidgetIds) {
@@ -43,7 +45,7 @@ public class MyHomeWidgetProvider extends AppWidgetProvider {
             PendingIntent myhomePI = PendingIntent.getActivity(context, 0, myhomeIntent, 0);
             remoteViews.setOnClickPendingIntent(R.id.lnlWGMainLayout, myhomePI);
 
-            Intent intent = new Intent(context, MyHomeWidgetProvider.class);
+            Intent intent = new Intent(context, MyHomeWidgetProviderSmall.class);
             intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context,

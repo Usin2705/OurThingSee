@@ -546,8 +546,8 @@ public class MyHomeActivity extends AppCompatActivity {
         private void handleOnReceive(Intent intent, Context context, String tsName, String vlName) {
             // If the intent have the extra value for tsName, then we take the value and process,
             // else we stop.
-            Long longTimestamp = intent.getLongExtra(tsName, 0);
-            Double dbResponse = intent.getDoubleExtra(vlName, 0d);
+            Long longTimestamp = intent.getLongExtra(tsName, -100);
+            Double dbResponse = intent.getDoubleExtra(vlName, -100d);
 
             Date eventDate = new Date(longTimestamp);
 
@@ -558,7 +558,7 @@ public class MyHomeActivity extends AppCompatActivity {
                     (OurContract.SHARED_PREF, MODE_PRIVATE);
 
             // If prefsGiang is not null, and both timestamp and double value are not 0
-            if (dbResponse != 0d && longTimestamp != 0) {
+            if (dbResponse != -100 && longTimestamp != -100) {
                 switch (sensorID) {
                     case OurContract.SENSOR_ID_HUMIDITY:
                         prefsGiang.edit().putString(OurContract.PREF_HUMID_LATEST_TIME,
