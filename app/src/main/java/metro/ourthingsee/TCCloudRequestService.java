@@ -34,16 +34,16 @@ public class TCCloudRequestService extends IntentService {
      * @param serviceIntent the intent used to pass data to this service
      */
     @Override
-    protected void onHandleIntent(final Intent serviceIntent) {
-        fetchDataFromThingSee(OurContract.SENSOR_ID_HUMIDITY, serviceIntent);
-        fetchDataFromThingSee(OurContract.SENSOR_ID_TEMPERATURE, serviceIntent);
-        fetchDataFromThingSee(OurContract.SENSOR_ID_LUMINANCE, serviceIntent);
+    protected void onHandleIntent(Intent serviceIntent) {
+        fetchDataFromThingSee(OurContract.SENSOR_ID_HUMIDITY);
+        fetchDataFromThingSee(OurContract.SENSOR_ID_TEMPERATURE);
+        fetchDataFromThingSee(OurContract.SENSOR_ID_LUMINANCE);
     }
 
     /**
      * Fetch the data from ThingSee device by calling the {@link APIService} method's
      * {@link APIService#getUserEvents(String, String, String, String, Integer, Long, Long)}
-     * The response is then handle in {@link #handleOnResponse(String, Response, Intent)}
+     * The response is then handle in {@link #handleOnResponse(String, Response)}
      * <p>
      * <p>
      * If we call all data at the same time, ThingSee may return only one data, which may
@@ -51,9 +51,8 @@ public class TCCloudRequestService extends IntentService {
      *
      * @param sensorID      the SensorID of the data we need. Refer to
      *                      <a href="https://thingsee.zendesk.com/hc/en-us/articles/205133092-How-can-I-understand-the-info-displayed-in-senses-view-sensor-s-ID-">ThingSee documentation</a>
-     * @param serviceIntent the intent used to pass data to this service
      */
-    private void fetchDataFromThingSee(final String sensorID, final Intent serviceIntent) {
+    private void fetchDataFromThingSee(final String sensorID) {
         SharedPreferences prefs = getSharedPreferences(OurContract.SHARED_PREF,
                 Context.MODE_PRIVATE);
         APIService apiService = AppUtils.getAPIService();
@@ -64,7 +63,7 @@ public class TCCloudRequestService extends IntentService {
                 enqueue(new Callback<Events>() {
                     @Override
                     public void onResponse(Call<Events> call, Response<Events> response) {
-                        handleOnResponse(sensorID, response, serviceIntent);
+                        handleOnResponse(sensorID, response);
                     }
 
                     @Override
@@ -80,10 +79,8 @@ public class TCCloudRequestService extends IntentService {
      *
      * @param sensorID      the sensorID used to send the request
      * @param response      the response return from the request. This is a success response.
-     * @param serviceIntent the intent used to pass data to this service
      */
-    private void handleOnResponse(String sensorID, Response<Events> response,
-                                  Intent serviceIntent) {
+    private void handleOnResponse(String sensorID, Response<Events> response) {
         switch (response.code()) {
             case 200:
                 if (response.body().getEvents().size() > 0) {
@@ -105,22 +102,6 @@ public class TCCloudRequestService extends IntentService {
                     broadcastIntent.putExtra(OurContract.BROADCAST_RESPONSE_TIMESTAMP, longTimestamp);
                     broadcastIntent.putExtra(OurContract.BROADCAST_RESPONSE_VALUE, dbValue);
                     broadcastIntent.putExtra(OurContract.BROADCAST_RESPONSE_SENSORID, sensorID);
-
-                    // Put the minimum humidity value back, so receiver can check
-                    // to notify. Notice that you can get the extra if the flag
-                    // of the pendingIntent start the service intent is UPDATE
-                    // CURRENT and not 0
-                    broadcastIntent.putExtra(
-                            OurContract.INTENT_NAME_MIN_HUMIDITY_VALUE,
-                            serviceIntent.getIntExtra(
-                                    OurContract.INTENT_NAME_MIN_HUMIDITY_VALUE,
-                                    OurContract.DEFAULT_MIN_HUMIDITY_VALUE));
-
-                    broadcastIntent.putExtra(
-                            OurContract.INTENT_NAME_MIN_LIGHT_VALUE,
-                            serviceIntent.getIntExtra(
-                                    OurContract.INTENT_NAME_MIN_LIGHT_VALUE,
-                                    OurContract.DEFAULT_MIN_HUMIDITY_VALUE));
 
                     sendBroadcast(broadcastIntent);
                 }

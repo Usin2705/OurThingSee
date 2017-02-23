@@ -17,7 +17,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -29,7 +28,6 @@ import android.widget.TextView;
 
 import java.sql.Date;
 import java.util.Calendar;
-import java.util.Locale;
 import java.util.TimeZone;
 
 import metro.ourthingsee.OurContract;
@@ -64,7 +62,7 @@ public class MyHomeActivity extends AppCompatActivity {
      * @param context       the context of the app, used to get resources
      * @param longTimestamp the Timestamp of the sensor value, in Long milliseconds
      * @param strContent    the content of the notification to be send
-     * @param  sensorType   the notification id
+     * @param sensorType    the notification id
      */
     public static void sendNotification(Context context, Long longTimestamp, String strContent,
                                         int sensorType) {
@@ -77,9 +75,9 @@ public class MyHomeActivity extends AppCompatActivity {
         //Get an instance of notification
         NotificationCompat.Builder notification =
                 new NotificationCompat.Builder(context)
-                        .setSmallIcon((sensorType==OurContract.NOTIFICATION_ID_HUMIDITY)
-                                ?R.drawable.nature
-                                :R.drawable.ic_lightbulb_outline_24dp)
+                        .setSmallIcon((sensorType == OurContract.NOTIFICATION_ID_HUMIDITY)
+                                ? R.drawable.nature
+                                : R.drawable.ic_lightbulb_outline_24dp)
                         .setContentTitle(context.getString(R.string.myhome_option))
                         .setContentText(strContent)
                         .setContentIntent(pendingIntent)
@@ -101,21 +99,20 @@ public class MyHomeActivity extends AppCompatActivity {
         // than ELAPSE_TIME
         // Also check if the current time is not quite time
         if (((System.currentTimeMillis() - longTimestamp) < ELAPSE_TIME)
-                && isNotQuietTime()) {
+                && isNotQuietTime(context)) {
             //When you issue multiple notifications about the same type of event, it’s best practice
             // for your app to try to update an existing notification with this new information, rather
             // than immediately creating a new notification. If you want to update this notification at
             // a later date, you need to assign it an ID. You can then use this ID whenever you issue a
             // subsequent notification. If the previous notification is still visible, the system will
             // update this existing notification, rather than create a new one.
-            if (sensorType==OurContract.NOTIFICATION_ID_HUMIDITY) {
+            if (sensorType == OurContract.NOTIFICATION_ID_HUMIDITY) {
                 mNotificationManager.notify(OurContract.NOTIFICATION_ID_HUMIDITY,
                         notification.build());
-            } else if (sensorType == OurContract.NOTIFICATION_ID_LUMINANCE){
+            } else if (sensorType == OurContract.NOTIFICATION_ID_LUMINANCE) {
                 mNotificationManager.notify(OurContract.NOTIFICATION_ID_LUMINANCE,
                         notification.build());
             }
-
         }
     }
 
@@ -126,24 +123,29 @@ public class MyHomeActivity extends AppCompatActivity {
      * The method here is to divide any long timestamp by the milisecond * second * min * hour in a
      * day, and take the remainder. The integer quotient are the total days of that timestamp, and
      * the remainder is the "not full" day leftover, which can be easily compare within a day.
-     *
+     * <p>
      * To compare time correctly, avoid timezone complication, get timezone default and compare
      * minutes within day
      *
+     * @param context The context to get the shareprefs
      * @return Boolean value whether the current time is not quiet time period or not
      * @see <a href="http://stackoverflow.com/a/7676307/3623497">Stackoverflow Link</a>
      */
-    private static boolean isNotQuietTime() {
+    private static boolean isNotQuietTime(Context context) {
         Boolean isNotQuiet = false;
+
+        // Named the prefs after the glory Giang
+        SharedPreferences prefsGiang = context.getSharedPreferences
+                (OurContract.SHARED_PREF, MODE_PRIVATE);
 
         Calendar currentCalendar = Calendar.getInstance(TimeZone.getDefault());
         Calendar endCalendar = Calendar.getInstance(TimeZone.getDefault());
 
-        endCalendar.setTimeInMillis(prefs.getLong(OurContract.PREF_MYHOME_END_TIME, 0));
+        endCalendar.setTimeInMillis(prefsGiang.getLong(OurContract.PREF_MYHOME_END_TIME, 0));
 
-        int intCurrentTime = currentCalendar.get(Calendar.HOUR_OF_DAY)*60 +
+        int intCurrentTime = currentCalendar.get(Calendar.HOUR_OF_DAY) * 60 +
                 currentCalendar.get(Calendar.MINUTE);
-        int intEndTime = endCalendar.get(Calendar.HOUR_OF_DAY)*60 +
+        int intEndTime = endCalendar.get(Calendar.HOUR_OF_DAY) * 60 +
                 endCalendar.get(Calendar.MINUTE);
 
         if (intCurrentTime >= intEndTime) {
@@ -398,16 +400,16 @@ public class MyHomeActivity extends AppCompatActivity {
         updateDisplayTV(MyHomeActivity.this);
 
         // Create the receiver again, since we unregister it in onPause
-        //IntentFilter filter = new IntentFilter(OurContract.BROADCAST_ACTION);
-        //filter.addCategory(Intent.CATEGORY_DEFAULT);
-        //receiver = new TCCLoudRequestReceiver();
-        //registerReceiver(receiver, filter);
+//        IntentFilter filter = new IntentFilter(OurContract.BROADCAST_ACTION);
+//        filter.addCategory(Intent.CATEGORY_DEFAULT);
+//        receiver = new TCCLoudRequestReceiver();
+//        registerReceiver(receiver, filter);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        //this.unregisterReceiver(receiver);
+//        this.unregisterReceiver(receiver);
     }
 
     /**
@@ -483,22 +485,14 @@ public class MyHomeActivity extends AppCompatActivity {
 
     /**
      * Set the repeating alarm based on the setting,
-     * is the notification option is off then cancal all alarm
+     * is the notification option is off then cancel all alarm
      */
     private void updateNotification() {
         /*
         * Creates a new Intent to start the TCCloudRequestService
         * IntentService.
         */
-        Intent serviceIntent = new Intent(this, TCCloudRequestService.class);
-
-        serviceIntent.putExtra(OurContract.INTENT_NAME_MIN_HUMIDITY_VALUE,
-                prefs.getInt(OurContract.PREF_MYHOME_MIN_HUMIDITY_VALUE,
-                        OurContract.DEFAULT_MIN_HUMIDITY_VALUE));
-
-        serviceIntent.putExtra(OurContract.INTENT_NAME_MIN_LIGHT_VALUE,
-                prefs.getInt(OurContract.PREF_MYHOME_MIN_LIGHT_VALUE,
-                        OurContract.DEFAULT_MIN_LIGHT_VALUE));
+        Intent serviceIntent = new Intent(getBaseContext(), TCCloudRequestService.class);
 
         // Create a PendingIntent to send the service
         // Set the flag update current to update with new setting
@@ -559,19 +553,23 @@ public class MyHomeActivity extends AppCompatActivity {
 
             String sensorID = intent.getStringExtra(OurContract.BROADCAST_RESPONSE_SENSORID);
 
-            // If prefs is not null, and both timestamp and double value are not 0
-            if (prefs != null && dbResponse != 0d && longTimestamp != 0) {
+            // Named the prefs after the glory Giang
+            SharedPreferences prefsGiang = context.getSharedPreferences
+                    (OurContract.SHARED_PREF, MODE_PRIVATE);
+
+            // If prefsGiang is not null, and both timestamp and double value are not 0
+            if (dbResponse != 0d && longTimestamp != 0) {
                 switch (sensorID) {
                     case OurContract.SENSOR_ID_HUMIDITY:
-                        prefs.edit().putString(OurContract.PREF_HUMID_LATEST_TIME,
+                        prefsGiang.edit().putString(OurContract.PREF_HUMID_LATEST_TIME,
                                 String.valueOf(Utils.dateFormat.format(eventDate))).apply();
-                        prefs.edit().putString(OurContract.PREF_HUMID_LATEST_VALUE,
+                        prefsGiang.edit().putString(OurContract.PREF_HUMID_LATEST_VALUE,
                                 String.valueOf(dbResponse) + " %").apply();
                         // If the value is less than the min value, notify the user
                         // only notify if the notification option is turned on
-                        if (dbResponse < intent.getIntExtra(
+                        if (dbResponse < prefsGiang.getInt(
                                 OurContract.INTENT_NAME_MIN_HUMIDITY_VALUE,
-                                OurContract.DEFAULT_MIN_HUMIDITY_VALUE) && prefs.getBoolean(
+                                OurContract.DEFAULT_MIN_HUMIDITY_VALUE) && prefsGiang.getBoolean(
                                 OurContract.PREF_MYHOME_NOTIFICATION_OPTION,
                                 OurContract.DEFAULT_NOTIFICATION_OPTION)) {
 
@@ -585,23 +583,23 @@ public class MyHomeActivity extends AppCompatActivity {
                         break;
 
                     case OurContract.SENSOR_ID_TEMPERATURE:
-                        prefs.edit().putString(OurContract.PREF_TEMP_LATEST_TIME,
+                        prefsGiang.edit().putString(OurContract.PREF_TEMP_LATEST_TIME,
                                 String.valueOf(Utils.dateFormat.format(eventDate))).apply();
-                        prefs.edit().putString(OurContract.PREF_TEMP_LATEST_VALUE,
+                        prefsGiang.edit().putString(OurContract.PREF_TEMP_LATEST_VALUE,
                                 String.valueOf(dbResponse) + " \u2103").apply();
                         break;
 
                     case OurContract.SENSOR_ID_LUMINANCE:
-                        prefs.edit().putString(OurContract.PREF_LIGHT_LATEST_TIME,
+                        prefsGiang.edit().putString(OurContract.PREF_LIGHT_LATEST_TIME,
                                 String.valueOf(Utils.dateFormat.format(eventDate))).apply();
-                        prefs.edit().putString(OurContract.PREF_LIGHT_LATEST_VALUE,
+                        prefsGiang.edit().putString(OurContract.PREF_LIGHT_LATEST_VALUE,
                                 String.valueOf(dbResponse) + "lux").apply();
 
                         // If the value is less than the min value, notify the user
                         // only notify if the notification option is turned on
-                        if (dbResponse < intent.getIntExtra(
+                        if (dbResponse < prefsGiang.getInt(
                                 OurContract.INTENT_NAME_MIN_LIGHT_VALUE,
-                                OurContract.DEFAULT_MIN_LIGHT_VALUE) && prefs.getBoolean(
+                                OurContract.DEFAULT_MIN_LIGHT_VALUE) && prefsGiang.getBoolean(
                                 OurContract.PREF_MYHOME_NOTIFICATION_OPTION,
                                 OurContract.DEFAULT_NOTIFICATION_OPTION)) {
 
