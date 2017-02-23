@@ -2,6 +2,7 @@ package metro.ourthingsee;
 
 /**
  * Created by Usin on 06-Feb-17.
+ * Store all static String and integer that is shared between activities
  */
 
 public class OurContract {
@@ -231,6 +232,8 @@ public class OurContract {
      * the notification’s ID is 001
      */
     public static final int NOTIFICATION_ID_HUMIDITY = 101;
+
+    public static final int NOTIFICATION_ID_LUMINANCE = 102;
 
     /**
      * Set the max value for notification interval. Used in umber picker in my home activity

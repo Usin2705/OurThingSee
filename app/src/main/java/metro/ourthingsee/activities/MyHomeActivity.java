@@ -61,9 +61,11 @@ public class MyHomeActivity extends AppCompatActivity {
      *
      * @param context       the context of the app, used to get resources
      * @param longTimestamp the Timestamp of the sensor value, in Long milliseconds
-     * @param dbValue       the value of the sensor, in Double
+     * @param strContent    the content of the notification to be send
+     * @param  sensorType   the notification id
      */
-    public static void sendNotification(Context context, Long longTimestamp, Double dbValue) {
+    public static void sendNotification(Context context, Long longTimestamp, String strContent,
+                                        int sensorType) {
         Intent ntfIntent = new Intent(context, MyHomeActivity.class);
         ntfIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
@@ -73,9 +75,11 @@ public class MyHomeActivity extends AppCompatActivity {
         //Get an instance of notification
         NotificationCompat.Builder notification =
                 new NotificationCompat.Builder(context)
-                        .setSmallIcon(R.drawable.nature)
-                        .setContentTitle("My notification")
-                        .setContentText("ALO ALO: " + String.valueOf(longTimestamp) + String.valueOf(dbValue))
+                        .setSmallIcon((sensorType==OurContract.NOTIFICATION_ID_HUMIDITY)
+                                ?R.drawable.nature
+                                :R.drawable.ic_lightbulb_outline_24dp)
+                        .setContentTitle(context.getString(R.string.myhome_option))
+                        .setContentText(strContent)
                         .setContentIntent(pendingIntent)
                         .setAutoCancel(true); // cancel when clicked
 
@@ -102,7 +106,14 @@ public class MyHomeActivity extends AppCompatActivity {
             // a later date, you need to assign it an ID. You can then use this ID whenever you issue a
             // subsequent notification. If the previous notification is still visible, the system will
             // update this existing notification, rather than create a new one.
-            mNotificationManager.notify(OurContract.NOTIFICATION_ID_HUMIDITY, notification.build());
+            if (sensorType==OurContract.NOTIFICATION_ID_HUMIDITY) {
+                mNotificationManager.notify(OurContract.NOTIFICATION_ID_HUMIDITY,
+                        notification.build());
+            } else if (sensorType == OurContract.NOTIFICATION_ID_LUMINANCE){
+                mNotificationManager.notify(OurContract.NOTIFICATION_ID_LUMINANCE,
+                        notification.build());
+            }
+
         }
     }
 
@@ -552,7 +563,12 @@ public class MyHomeActivity extends AppCompatActivity {
                                 OurContract.DEFAULT_MIN_HUMIDITY_VALUE) && prefs.getBoolean(
                                 OurContract.PREF_MYHOME_NOTIFICATION_OPTION,
                                 OurContract.DEFAULT_NOTIFICATION_OPTION)) {
-                            sendNotification(context, longTimestamp, dbResponse);
+
+                            String strNotf = context.getString
+                                    (R.string.notification_humidity, dbResponse);
+                            strNotf += "%. Updated:" + Utils.shortDateFormat.format(longTimestamp);
+                            sendNotification(context, longTimestamp, strNotf,
+                                    OurContract.NOTIFICATION_ID_HUMIDITY);
                         }
 
                         break;
@@ -568,7 +584,7 @@ public class MyHomeActivity extends AppCompatActivity {
                         prefs.edit().putString(OurContract.PREF_LIGHT_LATEST_TIME,
                                 String.valueOf(Utils.dateFormat.format(eventDate))).apply();
                         prefs.edit().putString(OurContract.PREF_LIGHT_LATEST_VALUE,
-                                String.valueOf(dbResponse) + " lux").apply();
+                                String.valueOf(dbResponse) + "lux").apply();
 
                         // If the value is less than the min value, notify the user
                         // only notify if the notification option is turned on
@@ -577,7 +593,12 @@ public class MyHomeActivity extends AppCompatActivity {
                                 OurContract.DEFAULT_MIN_LIGHT_VALUE) && prefs.getBoolean(
                                 OurContract.PREF_MYHOME_NOTIFICATION_OPTION,
                                 OurContract.DEFAULT_NOTIFICATION_OPTION)) {
-                            sendNotification(context, longTimestamp, dbResponse);
+
+                            String strNotf = context.getString
+                                    (R.string.notification_luminance, dbResponse);
+                            strNotf += "lux. Updated:" + Utils.shortDateFormat.format(longTimestamp);
+                            sendNotification(context, longTimestamp, strNotf,
+                                    OurContract.NOTIFICATION_ID_LUMINANCE);
                         }
                         break;
 

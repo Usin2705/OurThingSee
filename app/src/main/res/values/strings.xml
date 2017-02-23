@@ -61,7 +61,6 @@
         <item>Supermarkets, Workshops, Office area - 750</item>
         <item>Sunlight, overcast day - 2,000</item>
         <item>Sunlight, clear blue sky - 20,000</item>
-        <item>Bright sunlight - 100,000</item>
     </string-array>
 
     <!-- Array list for value of luminance level [CHAR LIMIT=NONE] -->
@@ -74,8 +73,13 @@
         <item>750</item>
         <item>2000</item>
         <item>20000</item>
-        <item>100000</item>
     </string-array>
+
+    <!-- Notification for humidity [CHAR LIMIT=30] -->
+    <string name="notification_humidity">"Current humidity level: %1$.0f"</string>
+
+    <!-- Notification for humidity [CHAR LIMIT=30] -->
+    <string name="notification_luminance">"Current light level: %1$.0f"</string>
 
     <!-- General toast for fetch data if response is failed, blame everybody [CHAR LIMIT=NONE] -->
     <string name="fetch_toast_response_failed_general">Failed to fetch data from Thingsee cloud server. Thanks, Obama!</string>
