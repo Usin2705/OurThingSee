@@ -59,8 +59,7 @@
         <item>Easy Office Work, Classes - 250</item>
         <item>Office Work, PC Work, Study, Lab - 500</item>
         <item>Supermarkets, Workshops, Office area - 750</item>
-        <item>Sunlight, overcast day - 2,000</item>
-        <item>Sunlight, clear blue sky - 20,000</item>
+        <item>Sunlight - 2,000</item>
     </string-array>
 
     <!-- Array list for value of luminance level [CHAR LIMIT=NONE] -->
@@ -72,7 +71,6 @@
         <item>500</item>
         <item>750</item>
         <item>2000</item>
-        <item>20000</item>
     </string-array>
 
     <!-- Notification for humidity [CHAR LIMIT=30] -->

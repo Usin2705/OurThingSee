@@ -17,6 +17,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -28,6 +29,7 @@ import android.widget.TextView;
 
 import java.sql.Date;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import metro.ourthingsee.OurContract;
@@ -40,7 +42,7 @@ import metro.ourthingsee.Utils;
  */
 
 public class MyHomeActivity extends AppCompatActivity {
-    private static final int MIN_VALUE = 0;
+    private static final int MIN_VALUE = 1;
 
     /**
      * If the sensor timestamp is older than the current time with this amount, no notification
@@ -125,15 +127,24 @@ public class MyHomeActivity extends AppCompatActivity {
      * day, and take the remainder. The integer quotient are the total days of that timestamp, and
      * the remainder is the "not full" day leftover, which can be easily compare within a day.
      *
+     * To compare time correctly, avoid timezone complication, get timezone default and compare
+     * minutes within day
+     *
      * @return Boolean value whether the current time is not quiet time period or not
      * @see <a href="http://stackoverflow.com/a/7676307/3623497">Stackoverflow Link</a>
      */
     private static boolean isNotQuietTime() {
         Boolean isNotQuiet = false;
 
-        int intCurrentTime = (int) ((Calendar.getInstance().getTimeInMillis()) % (24 * 60 * 60 * 1000L));
-        int intEndTime = (int) (prefs.getLong(OurContract.PREF_MYHOME_END_TIME, 0)
-                % (24 * 60 * 60 * 1000L));
+        Calendar currentCalendar = Calendar.getInstance(TimeZone.getDefault());
+        Calendar endCalendar = Calendar.getInstance(TimeZone.getDefault());
+
+        endCalendar.setTimeInMillis(prefs.getLong(OurContract.PREF_MYHOME_END_TIME, 0));
+
+        int intCurrentTime = currentCalendar.get(Calendar.HOUR_OF_DAY)*60 +
+                currentCalendar.get(Calendar.MINUTE);
+        int intEndTime = endCalendar.get(Calendar.HOUR_OF_DAY)*60 +
+                endCalendar.get(Calendar.MINUTE);
 
         if (intCurrentTime >= intEndTime) {
             isNotQuiet = true;
@@ -566,7 +577,7 @@ public class MyHomeActivity extends AppCompatActivity {
 
                             String strNotf = context.getString
                                     (R.string.notification_humidity, dbResponse);
-                            strNotf += "%. Updated:" + Utils.shortDateFormat.format(longTimestamp);
+                            strNotf += "%. " + Utils.shortDateFormat.format(longTimestamp);
                             sendNotification(context, longTimestamp, strNotf,
                                     OurContract.NOTIFICATION_ID_HUMIDITY);
                         }
@@ -596,7 +607,7 @@ public class MyHomeActivity extends AppCompatActivity {
 
                             String strNotf = context.getString
                                     (R.string.notification_luminance, dbResponse);
-                            strNotf += "lux. Updated:" + Utils.shortDateFormat.format(longTimestamp);
+                            strNotf += "lux. " + Utils.shortDateFormat.format(longTimestamp);
                             sendNotification(context, longTimestamp, strNotf,
                                     OurContract.NOTIFICATION_ID_LUMINANCE);
                         }

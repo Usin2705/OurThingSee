@@ -17,6 +17,7 @@ import java.util.List;
  * class called State
  *
  * Most of the class is random generated at this website:
+ * @see <a href="https://code.tutsplus.com/vi/tutorials/sending-data-with-retrofit-2-http-client-for-android--cms-27845">Sexy men</a>
  * @see <a href="http://www.jsonschema2pojo.org/">Sexy ladies</a>
  *
  *

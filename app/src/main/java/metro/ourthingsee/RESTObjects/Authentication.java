@@ -62,20 +62,7 @@ public class Authentication {
 //                '}';
 //    }
 
-    /**
-     * Class to store the List of devices taken from devices
-     * The most important one is "uuid", which store the device's unique id. We must use this
-     * id to get the event from devices
-     *
-     * <p>NOTE: there're also a "state" but we did not use it (since it require creating another
-     * class called State
-     *
-     * Most of the class is random generated at this website:
-     * @see <a href="http://www.jsonschema2pojo.org/">Sexy ladies</a>
-     *
-     *
-     *
-     */
+
 //    public class Device {
 //        @SerializedName("uuid")
 //        @Expose
