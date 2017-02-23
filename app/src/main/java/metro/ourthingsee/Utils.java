@@ -2,7 +2,6 @@ package metro.ourthingsee;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.TextView;
@@ -29,11 +28,9 @@ public class Utils {
      * Tag for the log messages
      */
     private static final String LOG_TAG = Utils.class.getSimpleName();
-
-    public static SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy kk:mm:ss");
-    public static SimpleDateFormat shortDateFormat = new SimpleDateFormat("dd-MMM kk:mm");
+    public static SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
+    public static SimpleDateFormat shortDateFormat = new SimpleDateFormat("dd-MMM HH:mm");
     public static SimpleDateFormat shortTimeFormat = new SimpleDateFormat("HH:mm");
-
     public static final int TIMEPICKER_CODE_NO_RECORD = 0;
     public static final int TIMEPICKER_CODE_RECORD_END = 1;
 
@@ -148,11 +145,11 @@ public class Utils {
      * Then set the calendar time to that time.
      * After that, display the time with HH:mm format in the textView.
      *
-     * @param textView      The textview to display the results
-     * @param calendar      The calendar the get the time results
-     * @param context       The context of the activity
-     * @param  requestCode  The request code for the time picker, to know if we need to record in
-     *                      prefs or not
+     * @param textView    The textview to display the results
+     * @param calendar    The calendar the get the time results
+     * @param context     The context of the activity
+     * @param requestCode The request code for the time picker, to know if we need to record in
+     *                    prefs or not
      */
     public static void setUpTimePicker(final TextView textView, final Calendar calendar, final Context context, final int requestCode) {
         final TimePickerDialog.OnTimeSetListener callback = new TimePickerDialog.OnTimeSetListener() {
@@ -186,5 +183,4 @@ public class Utils {
         timePickerDialog.setCanceledOnTouchOutside(false);
         timePickerDialog.show();
     }
-
 }
