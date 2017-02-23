@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -125,6 +126,8 @@ public class LoginActivity extends AppCompatActivity {
                 String password = edtPassword.getText().toString();
                 progressDialog.show();
                 sendPostAuth(email, password);
+                edtEmail.setError(null);
+                edtPassword.setError(null);
             }
         });
     }
@@ -140,10 +143,10 @@ public class LoginActivity extends AppCompatActivity {
         apiService.savePostAuth(email, password).enqueue(new Callback<Authentication>() {
             @Override
             public void onResponse(Call<Authentication> call, Response<Authentication> response) {
-                Log.i(LOG_TAG, response.code() + "");
+                Drawable drawable = getDrawable(R.drawable.warning);
+                drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
                 progressDialog.dismiss();
                 switch (response.code()) {
-
                     //The request was fulfilled.
                     case 200:
                         progressDialog.setMessage("Getting user's devices and settings...");
@@ -155,9 +158,7 @@ public class LoginActivity extends AppCompatActivity {
                         break;
                     //Unauthorized
                     case 401:
-                        Toast.makeText(LoginActivity.this,
-                                getString(R.string.login_toast_login_failed),
-                                Toast.LENGTH_SHORT).show();
+                        edtEmail.setError(getString(R.string.login_toast_login_failed),drawable);
                         //clear password and refocus to email edittext
                         edtPassword.setText("");
                         edtEmail.requestFocus();
@@ -166,19 +167,16 @@ public class LoginActivity extends AppCompatActivity {
                     case 400:
                         //check if email is in right format (contains @ and domain)
                         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(edtEmail.getText().toString()).matches()) {
-                            Toast.makeText(LoginActivity.this,
-                                    R.string.login_toast_invalid_email,
-                                    Toast.LENGTH_SHORT).show();
+                            edtEmail.setError(getString(R.string.login_toast_invalid_email),drawable);
+                            edtEmail.requestFocus();
                         }
                         //check if password has any digit
                         else if (!edtPassword.getText().toString().matches(".*\\d+.*")) {
-                            Toast.makeText(LoginActivity.this,
-                                    R.string.login_toast_short_pw_miss_number,
-                                    Toast.LENGTH_LONG).show();
+                            edtPassword.setError(getString(R.string.login_toast_short_pw_miss_number),null);
+                            edtPassword.requestFocus();
                         }
                         //clear password and refocus to email edittext
                         edtPassword.setText("");
-                        edtEmail.requestFocus();
                         break;
                     case 503:
                         sendPostAuth(email,password);
