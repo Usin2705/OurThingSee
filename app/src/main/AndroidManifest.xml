@@ -32,15 +32,16 @@
 
         <receiver android:name=".activities.MyHomeActivity$TCCLoudRequestReceiver">
             <intent-filter>
-                <action android:name="com.metro.ourthingsee.BROADCAST"/>
+                <action android:name="com.metro.ourthingsee.BROADCAST" />
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".MyHomeWidgetProvider" >
+        <receiver android:name=".MyHomeWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-            <meta-data android:name="android.appwidget.provider"
+            <meta-data
+                android:name="android.appwidget.provider"
                 android:resource="@xml/widget_myhome_info" />
         </receiver>
 
@@ -55,7 +56,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.LoginActivity" />
-        <activity android:name=".activities.MyHomeActivity" />
+        <activity
+            android:name=".activities.MyHomeActivity" />
         <activity android:name=".activities.AboutUs" />
         <activity android:name=".activities.LocationActivity" />
 
