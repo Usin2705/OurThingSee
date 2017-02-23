@@ -5,7 +5,7 @@
     <string name="login_toast_login_succeeded">Login succeeded!</string>
 
     <!-- Toast for login activity if failed [CHAR LIMIT=NONE] -->
-    <string name="login_toast_login_failed">Login failed, wrong email and/or password!</string>
+    <string name="login_toast_login_failed">Wrong email or password!</string>
 
     <!-- Toast for login activity if failed, blame the internet [CHAR LIMIT=NONE] -->
     <string name="login_toast_login_failed_nointernet">No Internet connection!</string>
@@ -116,4 +116,5 @@
     <!-- The confirmation message if user click on the log out button [CHAR LIMIT=NONE] -->
     <string name="log_out_message">Are you sure you want to log out?\nYour username and password will be required to open the app again.</string>
     <string name="only_location">Only location</string>
+    <string name="unknown_device">Unknown Device</string>
 </resources>

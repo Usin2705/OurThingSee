@@ -82,10 +82,15 @@ public class MainActivity extends AppCompatActivity
                         try {
                             Log.e(LOG_TAG, response.body().getDevice().getName());
                             tv_name.setText(response.body().getDevice().getName());
+                            tb_main.setTitle(response.body().getDevice().getName());
                         } catch (Exception e) {
+                            tv_name.setText(R.string.unknown_device);
+                            tb_main.setTitle(R.string.unknown_device);
                         }
-                    } else
-                        tv_name.setText("Device Name");
+                    } else {
+                        tv_name.setText(R.string.unknown_device);
+                        tb_main.setTitle(R.string.unknown_device);
+                    }
                 }
 
                 @Override
