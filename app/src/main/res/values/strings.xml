@@ -30,7 +30,7 @@
     <string name="myhome_layout_update_interval">Update interval (min)</string>
 
     <!-- Option name for My Home purpose, which measure light, humidity and tempt [CHAR LIMIT=30] -->
-    <string name="myhome_option">My Home</string>
+    <string name="myhome_option">Environment Sensors</string>
 
     <!-- Label for turn on notification option in my home activity [CHAR LIMIT=20] -->
     <string name="myhome_notification_turnon_label">Turn on notification</string>

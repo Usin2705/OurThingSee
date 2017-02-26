@@ -25,6 +25,13 @@ public class OurContract {
      * Device's auth id name to stored in shared pref
      */
     public static final String PREF_DEVICE_AUTH_ID_NAME = "pref_device_auth_ID";
+
+    /**
+     * Device's name. Value in string
+     */
+    public static final String PREF_DEVICE_NAME = "pref_device_name";
+
+
     /**
      * Device's token to stored in shared pref
      */
@@ -188,9 +195,9 @@ public class OurContract {
     public static final String SENSOR_ID_ACCELERATION_Z = "0x00050100";
 
     /**
-     * The sensor id for Thingsee device. Latidude unit is degrees
+     * The sensor id for Thingsee device. Latitude unit is degrees
      */
-    public static final String SENSOR_ID_LOCATION_LATIDUDE = "0x00010100";
+    public static final String SENSOR_ID_LOCATION_LATITUDE = "0x00010100";
 
     /**
      * The sensor id for Thingsee device. Longitude unit is degrees
@@ -211,16 +218,6 @@ public class OurContract {
      *Intent request code for my home service
      */
     public static final int INTENT_REQUEST_CODE_MYHOMESERVICE = 101;
-
-    /**
-     *Intent name for minimum humidity vale
-     */
-    public static final String INTENT_NAME_MIN_HUMIDITY_VALUE = "com.metro.ourthingsee.min_hud_val";
-
-    /**
-     *Intent name for minimum humidity vale
-     */
-    public static final String INTENT_NAME_MIN_LIGHT_VALUE = "com.metro.ourthingsee.min_light_val";
 
     /**
      * When you issue multiple notifications about the same type of event, it’s best practice

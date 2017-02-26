@@ -235,7 +235,9 @@ public class LocationActivity extends AppCompatActivity {
     private void getPathInTimeInterval(final Long start, final Long end, final APIService apiService
             , final String authen, final String deviceAuthen) {
 
-        apiService.getUserEvents(authen, deviceAuthen, "sense", "0x00010100,0x00010200", 50, start, end)
+        apiService.getUserEvents(authen, deviceAuthen, "sense",
+                OurContract.SENSOR_ID_LOCATION_LATITUDE +"," +
+                OurContract.SENSOR_ID_LOCATION_LONGITUDE, 50, start, end)
                 .enqueue(new Callback<Events>() {
                     @Override
                     public void onResponse(Call<Events> call, Response<Events> response) {
@@ -292,7 +294,9 @@ public class LocationActivity extends AppCompatActivity {
     private void requestDeviceCurrentLocation(final APIService apiService, final String s
             , final String string, final Long endTimestamp) {
 
-        apiService.getUserEvents(s, string, "sense", "0x00010100,0x00010100", 2, null, endTimestamp)
+        apiService.getUserEvents(s, string, "sense",
+                OurContract.SENSOR_ID_LOCATION_LATITUDE +"," +
+                OurContract.SENSOR_ID_LOCATION_LONGITUDE, 2, null, endTimestamp)
                 .enqueue(new Callback<Events>() {
                     @Override
                     public void onResponse(Call<Events> call, Response<Events> response) {
@@ -310,15 +314,15 @@ public class LocationActivity extends AppCompatActivity {
                                                 sIds.add(senses.get(i).getSId());
                                                 //after the loop, sIds should contain at least 2 values
                                                 // "0x00010100" and "0x00010200"
-                                                if (senses.get(i).getSId().equals("0x00010100")) {
+                                                if (senses.get(i).getSId().equals(OurContract.SENSOR_ID_LOCATION_LATITUDE)) {
                                                     lat = senses.get(i).getVal();
-                                                } else if (senses.get(i).getSId().equals("0x00010200")) {
+                                                } else if (senses.get(i).getSId().equals(OurContract.SENSOR_ID_LOCATION_LONGITUDE)) {
                                                     lng = senses.get(i).getVal();
                                                 }
                                             }
                                         }
                                     }
-                                    if (sIds.contains("0x00010100") && sIds.contains("0x00010200")) {
+                                    if (sIds.contains(OurContract.SENSOR_ID_LOCATION_LATITUDE) && sIds.contains(OurContract.SENSOR_ID_LOCATION_LONGITUDE)) {
                                         //if Sids satisfies the conditions, add a marker on the map
                                         LatLng latLng = new LatLng(lat, lng);
                                         mGoogleMap.addMarker(new MarkerOptions().position(latLng)
@@ -376,22 +380,22 @@ public class LocationActivity extends AppCompatActivity {
             for (int j = 0; j < senses.size(); j++) {
                 //add all senses id in sIds
                 sIds.add(senses.get(j).getSId());
-                if (senses.get(j).getSId().equals("0x00010100")) {
+                if (senses.get(j).getSId().equals(OurContract.SENSOR_ID_LOCATION_LATITUDE)) {
                     lat = senses.get(j).getVal();
-                } else if (senses.get(j).getSId().equals("0x00010200")) {
+                } else if (senses.get(j).getSId().equals(OurContract.SENSOR_ID_LOCATION_LONGITUDE)) {
                     lng = senses.get(j).getVal();
                 }
             }
             //if there are both lat and lng then finish
-            if (sIds.contains("0x00010100") && sIds.contains("0x00010200")) {
+            if (sIds.contains(OurContract.SENSOR_ID_LOCATION_LATITUDE) && sIds.contains(OurContract.SENSOR_ID_LOCATION_LONGITUDE)) {
                 listLatLng.add(new LatLng(lat, lng));
                 if(listLatLng.size()==1){
                     endTime=comparingTimestamp;
                 }
                 startTime=comparingTimestamp;
                 //if there are one missing value then check the next event
-            } else if ((sIds.contains("0x00010100") && !sIds.contains("0x00010200")) ||
-                    !sIds.contains("0x00010100") && sIds.contains("0x00010200")) {
+            } else if ((sIds.contains(OurContract.SENSOR_ID_LOCATION_LATITUDE) && !sIds.contains(OurContract.SENSOR_ID_LOCATION_LONGITUDE)) ||
+                    !sIds.contains(OurContract.SENSOR_ID_LOCATION_LATITUDE) && sIds.contains(OurContract.SENSOR_ID_LOCATION_LONGITUDE)) {
                 //if the next event has the same timestamp with the previous
                 //then check if it contains the missing value
                 if (eventList.size()>(i+1) && eventList.get(i + 1).getTimestamp() == comparingTimestamp) {
@@ -399,15 +403,15 @@ public class LocationActivity extends AppCompatActivity {
                     senses.addAll(eventList.get(i + 1).getCause().getSenses());
                     for (int j = 0; j < senses.size(); j++) {
                         sIds.add(senses.get(j).getSId());
-                        if (senses.get(j).getSId().equals("0x00010100")) {
+                        if (senses.get(j).getSId().equals(OurContract.SENSOR_ID_LOCATION_LATITUDE)) {
                             lat = senses.get(j).getVal();
-                        } else if (senses.get(j).getSId().equals("0x00010200")) {
+                        } else if (senses.get(j).getSId().equals(OurContract.SENSOR_ID_LOCATION_LONGITUDE)) {
                             lng = senses.get(j).getVal();
                         }
                     }
                     //if the next event has the missing value then finish and add 1 to i
                     //because we don't have to check it again
-                    if (sIds.contains("0x00010100") && sIds.contains("0x00010200")) {
+                    if (sIds.contains(OurContract.SENSOR_ID_LOCATION_LATITUDE) && sIds.contains(OurContract.SENSOR_ID_LOCATION_LONGITUDE)) {
                         listLatLng.add(new LatLng(lat, lng));
                         if(listLatLng.size()==1){
                             endTime=comparingTimestamp;

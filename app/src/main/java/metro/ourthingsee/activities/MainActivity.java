@@ -25,6 +25,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
+
 import metro.ourthingsee.OurContract;
 import metro.ourthingsee.R;
 import metro.ourthingsee.RESTObjects.DeviceConfig;
@@ -81,6 +82,8 @@ public class MainActivity extends AppCompatActivity
                     if (response.code() == 200) {
                         try {
                             Log.e(LOG_TAG, response.body().getDevice().getName());
+                            prefs.edit().putString(OurContract.PREF_DEVICE_NAME,
+                                    response.body().getDevice().getName()).apply();
                             tv_name.setText(response.body().getDevice().getName());
                             tb_main.setTitle(response.body().getDevice().getName());
                         } catch (Exception e) {
@@ -96,7 +99,7 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void onFailure(Call<DeviceConfig> call, Throwable t) {
                     Utils.handleFailure(MainActivity.this, t);
-                    tv_name.setText("Device Name");
+                    tv_name.setText(R.string.unknown_device);
                 }
             });
 
@@ -133,7 +136,7 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * This is where we receive our callback from
-     * {@link metro.ourthingsee.adapters.OptionsAdapter.PurposeItemClickListener}
+     * {@link OptionsAdapter.PurposeItemClickListener}
      * <p>
      * This callback is invoked when you click on an item in the list.
      *

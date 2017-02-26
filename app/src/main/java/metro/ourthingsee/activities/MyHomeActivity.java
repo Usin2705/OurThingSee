@@ -17,6 +17,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -190,13 +191,13 @@ public class MyHomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_myhome);
 
+        prefs = getSharedPreferences(OurContract.SHARED_PREF, Context.MODE_PRIVATE);
+
         // Setup the toolbar
         setupToolBar();
 
         // Cast all the display texts
         castDisplayTV();
-
-        prefs = getSharedPreferences(OurContract.SHARED_PREF, Context.MODE_PRIVATE);
 
         // Update all the display texts with latest value. Call after prefs since we will update
         // from prefs.
@@ -389,6 +390,8 @@ public class MyHomeActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
+        toolbar.setTitle(prefs.getString(OurContract.PREF_DEVICE_NAME,
+                getString(R.string.unknown_device)));
 
     }
 
@@ -546,7 +549,7 @@ public class MyHomeActivity extends AppCompatActivity {
         private void handleOnReceive(Intent intent, Context context, String tsName, String vlName) {
             // If the intent have the extra value for tsName, then we take the value and process,
             // else we stop.
-            Long longTimestamp = intent.getLongExtra(tsName, -100);
+            Long longTimestamp = intent.getLongExtra(tsName, -100L);
             Double dbResponse = intent.getDoubleExtra(vlName, -100d);
 
             Date eventDate = new Date(longTimestamp);
@@ -557,22 +560,28 @@ public class MyHomeActivity extends AppCompatActivity {
             SharedPreferences prefsGiang = context.getSharedPreferences
                     (OurContract.SHARED_PREF, MODE_PRIVATE);
 
+            Log.e("AAAAA", "Get value" + String.valueOf(dbResponse));
+            Log.e("AAAAA", "Get timestamp" + String.valueOf(longTimestamp));
+
             // If prefsGiang is not null, and both timestamp and double value are not 0
-            if (dbResponse != -100 && longTimestamp != -100) {
+            if (dbResponse != -100d && longTimestamp != -100L) {
                 switch (sensorID) {
                     case OurContract.SENSOR_ID_HUMIDITY:
                         prefsGiang.edit().putString(OurContract.PREF_HUMID_LATEST_TIME,
                                 String.valueOf(Utils.dateFormat.format(eventDate))).apply();
                         prefsGiang.edit().putString(OurContract.PREF_HUMID_LATEST_VALUE,
                                 String.valueOf(dbResponse) + " %").apply();
+
                         // If the value is less than the min value, notify the user
                         // only notify if the notification option is turned on
-                        if (dbResponse < prefsGiang.getInt(
-                                OurContract.INTENT_NAME_MIN_HUMIDITY_VALUE,
-                                OurContract.DEFAULT_MIN_HUMIDITY_VALUE) && prefsGiang.getBoolean(
+                        if ((dbResponse < prefsGiang.getInt(
+                                OurContract.PREF_MYHOME_MIN_HUMIDITY_VALUE,
+                                OurContract.DEFAULT_MIN_HUMIDITY_VALUE)) && prefsGiang.getBoolean(
                                 OurContract.PREF_MYHOME_NOTIFICATION_OPTION,
                                 OurContract.DEFAULT_NOTIFICATION_OPTION)) {
 
+                            Log.e("AAAAA", "Get value to send notification" + String.valueOf(dbResponse));
+                            Log.e("AAAAA", "Get timestamp" + String.valueOf(longTimestamp));
                             String strNotf = context.getString
                                     (R.string.notification_humidity, dbResponse);
                             strNotf += "%. " + Utils.shortDateFormat.format(longTimestamp);
@@ -597,11 +606,13 @@ public class MyHomeActivity extends AppCompatActivity {
 
                         // If the value is less than the min value, notify the user
                         // only notify if the notification option is turned on
-                        if (dbResponse < prefsGiang.getInt(
-                                OurContract.INTENT_NAME_MIN_LIGHT_VALUE,
-                                OurContract.DEFAULT_MIN_LIGHT_VALUE) && prefsGiang.getBoolean(
+                        if ((dbResponse < prefsGiang.getInt(
+                                OurContract.PREF_MYHOME_MIN_LIGHT_VALUE,
+                                OurContract.DEFAULT_MIN_LIGHT_VALUE)) && prefsGiang.getBoolean(
                                 OurContract.PREF_MYHOME_NOTIFICATION_OPTION,
                                 OurContract.DEFAULT_NOTIFICATION_OPTION)) {
+                            Log.e("AAAAA", "Get value to send notification light" + String.valueOf(dbResponse));
+                            Log.e("AAAAA", "Get timestamp light" + String.valueOf(longTimestamp));
 
                             String strNotf = context.getString
                                     (R.string.notification_luminance, dbResponse);
