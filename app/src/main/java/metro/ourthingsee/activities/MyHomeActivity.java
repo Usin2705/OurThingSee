@@ -37,9 +37,9 @@ import metro.ourthingsee.TCCloudRequestService;
 import metro.ourthingsee.Utils;
 
 /**
- * Created by Usin on 15-Feb-17.
+ * Activity to display sensor data (temp, humidity and light).
+ * As well as make notification settings
  */
-
 public class MyHomeActivity extends AppCompatActivity {
     private static final int MIN_VALUE = 1;
 
@@ -382,8 +382,10 @@ public class MyHomeActivity extends AppCompatActivity {
     private void setupToolBar() {
         Toolbar toolbar = (Toolbar) this.findViewById(R.id.tb_main);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

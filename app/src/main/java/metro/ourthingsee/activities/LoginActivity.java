@@ -82,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (edtEmail.getText().toString().length() == 0 || edtPassword.getText().toString().length() <4) {
+                if (edtEmail.getText().toString().length() == 0 || edtPassword.getText().toString().length() < 4) {
                     btnLogin.setEnabled(false);
                     btnLogin.setAlpha(0.5f);
                 } else {
@@ -158,7 +158,7 @@ public class LoginActivity extends AppCompatActivity {
                         break;
                     //Unauthorized
                     case 401:
-                        edtEmail.setError(getString(R.string.login_toast_login_failed),drawable);
+                        edtEmail.setError(getString(R.string.login_toast_login_failed), drawable);
                         //clear password and refocus to email edittext
                         edtPassword.setText("");
                         edtEmail.requestFocus();
@@ -167,19 +167,19 @@ public class LoginActivity extends AppCompatActivity {
                     case 400:
                         //check if email is in right format (contains @ and domain)
                         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(edtEmail.getText().toString()).matches()) {
-                            edtEmail.setError(getString(R.string.login_toast_invalid_email),drawable);
+                            edtEmail.setError(getString(R.string.login_toast_invalid_email), drawable);
                             edtEmail.requestFocus();
                         }
                         //check if password has any digit
                         else if (!edtPassword.getText().toString().matches(".*\\d+.*")) {
-                            edtPassword.setError(getString(R.string.login_toast_short_pw_miss_number),null);
+                            edtPassword.setError(getString(R.string.login_toast_short_pw_miss_number), null);
                             edtPassword.requestFocus();
                         }
                         //clear password and refocus to email edittext
                         edtPassword.setText("");
                         break;
                     case 503:
-                        sendPostAuth(email,password);
+                        sendPostAuth(email, password);
                         break;
                 }
             }
@@ -199,11 +199,6 @@ public class LoginActivity extends AppCompatActivity {
         prefs = getSharedPreferences(OurContract.SHARED_PREF, Context.MODE_PRIVATE);
         prefs.edit().putString(OurContract.PREF_USER_AUTH_TOKEN_NAME,
                 response.getAccountAuthToken()).apply();
-        prefs.edit().putString(OurContract.PREF_AUTH_EMAIL,
-                edtEmail.getText().toString()).apply();
-        prefs.edit().putString(OurContract.PREF_AUTH_PASSWORD,
-                edtEmail.getText().toString()).apply();
-
         getUserDevices();
     }
 
@@ -261,7 +256,7 @@ public class LoginActivity extends AppCompatActivity {
         try {
             InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

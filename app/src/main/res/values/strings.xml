@@ -80,7 +80,7 @@
     <string name="notification_luminance">"Current light level: %1$.0f"</string>
 
     <!-- General toast for fetch data if response is failed, blame everybody [CHAR LIMIT=NONE] -->
-    <string name="fetch_toast_response_failed_general">Failed to fetch data from Thingsee cloud server. Thanks, Obama!</string>
+    <string name="fetch_toast_response_failed_general">@string/login_toast_login_failed_nointernet</string>
 
     <string name="log_out">Log Out</string>
     <string name="about_us">About Us</string>

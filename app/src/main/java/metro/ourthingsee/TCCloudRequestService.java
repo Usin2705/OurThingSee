@@ -4,8 +4,6 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.util.Log;
-import android.widget.Toast;
 
 import metro.ourthingsee.RESTObjects.Events;
 import metro.ourthingsee.remote.APIService;
@@ -19,7 +17,6 @@ import retrofit2.Response;
  */
 
 public class TCCloudRequestService extends IntentService {
-    public static final String LOG_TAG = TCCloudRequestService.class.getSimpleName();
 
     /**
      * For the service to work in manifest, need to create the constructor this way
@@ -49,8 +46,8 @@ public class TCCloudRequestService extends IntentService {
      * If we call all data at the same time, ThingSee may return only one data, which may
      * make it complicate to get all require data. That why we need to fetch each data separately.
      *
-     * @param sensorID      the SensorID of the data we need. Refer to
-     *                      <a href="https://thingsee.zendesk.com/hc/en-us/articles/205133092-How-can-I-understand-the-info-displayed-in-senses-view-sensor-s-ID-">ThingSee documentation</a>
+     * @param sensorID the SensorID of the data we need. Refer to
+     *                 <a href="https://thingsee.zendesk.com/hc/en-us/articles/205133092-How-can-I-understand-the-info-displayed-in-senses-view-sensor-s-ID-">ThingSee documentation</a>
      */
     private void fetchDataFromThingSee(final String sensorID) {
         SharedPreferences prefs = getSharedPreferences(OurContract.SHARED_PREF,
@@ -77,8 +74,8 @@ public class TCCloudRequestService extends IntentService {
      * Handle the onResponse from apiService request
      * {@link APIService#getUserEvents(String, String, String, String, Integer, Long, Long)}
      *
-     * @param sensorID      the sensorID used to send the request
-     * @param response      the response return from the request. This is a success response.
+     * @param sensorID the sensorID used to send the request
+     * @param response the response return from the request. This is a success response.
      */
     private void handleOnResponse(String sensorID, Response<Events> response) {
         switch (response.code()) {

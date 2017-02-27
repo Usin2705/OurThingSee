@@ -20,7 +20,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
- * Created by Usin on 21-Feb-17.
+ * Utils class for handle some shared tasks of activities
  */
 
 public class Utils {

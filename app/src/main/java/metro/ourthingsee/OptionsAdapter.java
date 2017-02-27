@@ -1,4 +1,4 @@
-package metro.ourthingsee.adapters;
+package metro.ourthingsee;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -13,8 +13,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import metro.ourthingsee.R;
 
 /**
  * Created by giang on 2/14/17.

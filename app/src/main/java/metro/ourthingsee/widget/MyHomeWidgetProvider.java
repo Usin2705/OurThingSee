@@ -42,6 +42,7 @@ public class MyHomeWidgetProvider extends AppWidgetProvider {
 
             // Click on the widget will open the activity
             Intent myhomeIntent = new Intent(context, MyHomeActivity.class);
+            myhomeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             PendingIntent myhomePI = PendingIntent.getActivity(context, 0, myhomeIntent, 0);
             remoteViews.setOnClickPendingIntent(R.id.lnlWGMainLayout, myhomePI);
 
