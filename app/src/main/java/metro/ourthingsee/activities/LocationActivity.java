@@ -475,6 +475,7 @@ public class LocationActivity extends AppCompatActivity {
                     tv_distance.setText(df.format(distance * 6371) + " km");
             } else if (listLatLng.size() == 1) {
                 Log.e("Giang time", endTime + "");
+                tv_distance.setText("0 m");
                 mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(0))
                         .title(getString(R.string.only_location))
                         .snippet(sdfDate.format(endTime) + "\n"
@@ -484,6 +485,7 @@ public class LocationActivity extends AppCompatActivity {
         } else if (listLatLng.isEmpty()) {
             Toast.makeText(this, R.string.no_path, Toast.LENGTH_SHORT).show();
             mGoogleMap.setOnCameraMoveListener(null);
+            tv_distance.setText("0 m");
         }
     }
 
