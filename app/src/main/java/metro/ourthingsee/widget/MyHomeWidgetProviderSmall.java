@@ -29,38 +29,38 @@ import retrofit2.Response;
  * Display a widget with Humidity, temperature and luminance.
  * The widget is automatically update every 30min, which is stored in {@link metro.ourthingsee.R.xml#widget_myhome_info}
  * Each time the widget update, it will fetch data from the internet.
- *
  */
 public class MyHomeWidgetProviderSmall extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        for (int widgetId:appWidgetIds) {
+        for (int widgetId : appWidgetIds) {
             RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
                     R.layout.widget_myhome);
             SharedPreferences prefs = context.getSharedPreferences(OurContract.SHARED_PREF, Context.MODE_PRIVATE);
             String authToken = prefs.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, "");
             String authId = prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, "");
             if (!(authToken.equals("") || authId.equals(""))) {
-            fetchData(context, remoteViews, appWidgetManager, widgetId);
+                fetchData(context, remoteViews, appWidgetManager, widgetId);
 
-            // Click on the widget will open the activity
-            Intent myhomeIntent = new Intent(context, MyHomeActivity.class);
-            myhomeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            PendingIntent myhomePI = PendingIntent.getActivity(context, 0, myhomeIntent, 0);
-            remoteViews.setOnClickPendingIntent(R.id.lnlWGMainLayout, myhomePI);
+                // Click on the widget will open the activity
+                Intent myhomeIntent = new Intent(context, MyHomeActivity.class);
+                myhomeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                PendingIntent myhomePI = PendingIntent.getActivity(context, 0, myhomeIntent, 0);
+                remoteViews.setOnClickPendingIntent(R.id.lnlWGMainLayout, myhomePI);
 
-            Intent intent = new Intent(context, MyHomeWidgetProviderSmall.class);
-            intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(context,
-                    0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-            remoteViews.setOnClickPendingIntent(R.id.imgRefresh, pendingIntent);
+                Intent intent = new Intent(context, MyHomeWidgetProviderSmall.class);
+                intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+                intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(context,
+                        0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                remoteViews.setOnClickPendingIntent(R.id.imgRefresh, pendingIntent);
             } else {
                 setDefaultData(context, remoteViews);
             }
             appWidgetManager.updateAppWidget(widgetId, remoteViews);
         }
     }
+
     private void setDefaultData(Context context, RemoteViews remoteViews) {
         remoteViews.setTextViewText(R.id.txtWGHumid, context.getString(R.string.no_data));
         remoteViews.setTextViewText(R.id.txtWGTemp, context.getString(R.string.no_data));
@@ -78,10 +78,10 @@ public class MyHomeWidgetProviderSmall extends AppWidgetProvider {
      * The advantage of up date each data each time, is that is take at least 0.5s, so user can sometime
      * see the progress bar show up.
      *
-     * @param context               our app context
-     * @param remoteViews           the widget views that get update
-     * @param appWidgetManager      The manager to update the widget views
-     * @param widgetId              to know which widget is updated
+     * @param context          our app context
+     * @param remoteViews      the widget views that get update
+     * @param appWidgetManager The manager to update the widget views
+     * @param widgetId         to know which widget is updated
      */
 
     private void fetchData(Context context, final RemoteViews remoteViews,
@@ -97,10 +97,10 @@ public class MyHomeWidgetProviderSmall extends AppWidgetProvider {
      * Refer to {@link #fetchData(Context, RemoteViews, AppWidgetManager, int)}
      * We will update the value, and also timestamp in the widget is based on humid timestamp
      *
-     * @param context               our app context
-     * @param remoteViews           the widget views that get update
-     * @param appWidgetManager      The manager to update the widget views
-     * @param widgetId              to know which widget is updated
+     * @param context          our app context
+     * @param remoteViews      the widget views that get update
+     * @param appWidgetManager The manager to update the widget views
+     * @param widgetId         to know which widget is updated
      */
 
     private void fetchHumid(final Context context, final RemoteViews remoteViews,
@@ -161,10 +161,10 @@ public class MyHomeWidgetProviderSmall extends AppWidgetProvider {
     /**
      * Refer to {@link #fetchData(Context, RemoteViews, AppWidgetManager, int)}
      *
-     * @param context               our app context
-     * @param remoteViews           the widget views that get update
-     * @param appWidgetManager      The manager to update the widget views
-     * @param widgetId              to know which widget is updated
+     * @param context          our app context
+     * @param remoteViews      the widget views that get update
+     * @param appWidgetManager The manager to update the widget views
+     * @param widgetId         to know which widget is updated
      */
     private void fetchTemp(final Context context, final RemoteViews remoteViews,
                            final AppWidgetManager appWidgetManager, final int widgetId) {
@@ -209,10 +209,10 @@ public class MyHomeWidgetProviderSmall extends AppWidgetProvider {
      * After the luminance data updated, we need to make the progress bar gone, and display the
      * refresh image again.
      *
-     * @param context               our app context
-     * @param remoteViews           the widget views that get update
-     * @param appWidgetManager      The manager to update the widget views
-     * @param widgetId              to know which widget is updated
+     * @param context          our app context
+     * @param remoteViews      the widget views that get update
+     * @param appWidgetManager The manager to update the widget views
+     * @param widgetId         to know which widget is updated
      */
     private void fetchLight(final Context context, final RemoteViews remoteViews,
                             final AppWidgetManager appWidgetManager, final int widgetId) {

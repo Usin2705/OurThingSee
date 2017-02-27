@@ -72,7 +72,6 @@ public class MyHomeWidgetProvider extends AppWidgetProvider {
         remoteViews.setOnClickPendingIntent(R.id.imgRefresh, null);
     }
 
-
     /**
      * Fetch Data from Thingsee cloud, we will fetch each data each time, and update accordingly.
      * If we fetch all data at the same time, we still need to put "appWidgetManager.updateAppWidget(widgetId, remoteViews);"
