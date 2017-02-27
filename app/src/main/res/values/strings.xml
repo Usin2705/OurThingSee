@@ -115,4 +115,5 @@
     <string name="log_out_message">Are you sure you want to log out?\nYour username and password will be required to open the app again.</string>
     <string name="only_location">Only location</string>
     <string name="unknown_device">Unknown Device</string>
+    <string name="no_data">no data</string>
 </resources>

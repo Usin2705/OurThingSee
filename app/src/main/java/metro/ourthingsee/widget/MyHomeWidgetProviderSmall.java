@@ -37,7 +37,10 @@ public class MyHomeWidgetProviderSmall extends AppWidgetProvider {
         for (int widgetId:appWidgetIds) {
             RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
                     R.layout.widget_myhome);
-
+            SharedPreferences prefs = context.getSharedPreferences(OurContract.SHARED_PREF, Context.MODE_PRIVATE);
+            String authToken = prefs.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, "");
+            String authId = prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, "");
+            if (!(authToken.equals("") || authId.equals(""))) {
             fetchData(context, remoteViews, appWidgetManager, widgetId);
 
             // Click on the widget will open the activity
@@ -52,8 +55,19 @@ public class MyHomeWidgetProviderSmall extends AppWidgetProvider {
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context,
                     0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             remoteViews.setOnClickPendingIntent(R.id.imgRefresh, pendingIntent);
+            } else {
+                setDefaultData(context, remoteViews);
+            }
             appWidgetManager.updateAppWidget(widgetId, remoteViews);
         }
+    }
+    private void setDefaultData(Context context, RemoteViews remoteViews) {
+        remoteViews.setTextViewText(R.id.txtWGHumid, context.getString(R.string.no_data));
+        remoteViews.setTextViewText(R.id.txtWGTemp, context.getString(R.string.no_data));
+        remoteViews.setTextViewText(R.id.txtWGLight, context.getString(R.string.no_data));
+        remoteViews.setTextViewText(R.id.txtWGTime, context.getString(R.string.no_data));
+        remoteViews.setOnClickPendingIntent(R.id.lnlWGMainLayout, null);
+        remoteViews.setOnClickPendingIntent(R.id.imgRefresh, null);
     }
 
     /**

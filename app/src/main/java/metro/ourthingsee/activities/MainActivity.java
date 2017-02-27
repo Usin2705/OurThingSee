@@ -1,5 +1,7 @@
 package metro.ourthingsee.activities;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,13 +25,15 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
+import metro.ourthingsee.OptionsAdapter;
 import metro.ourthingsee.OurContract;
 import metro.ourthingsee.R;
 import metro.ourthingsee.RESTObjects.DeviceConfig;
 import metro.ourthingsee.Utils;
-import metro.ourthingsee.OptionsAdapter;
 import metro.ourthingsee.remote.APIService;
 import metro.ourthingsee.remote.AppUtils;
+import metro.ourthingsee.widget.MyHomeWidgetProvider;
+import metro.ourthingsee.widget.MyHomeWidgetProviderSmall;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -54,6 +58,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         prefs = getSharedPreferences(OurContract.SHARED_PREF, Context.MODE_PRIVATE);
+        updateAllWidgets();
         // If user did not login before, open login activity first
         Log.e("Giang", prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, ""));
         if (prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, "").isEmpty()) {
@@ -237,12 +242,29 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void delLoginData() {
+        //delete all shared preferences
         prefs = getSharedPreferences(OurContract.SHARED_PREF, Context.MODE_PRIVATE);
-        prefs.edit().putString(OurContract.PREF_USER_AUTH_TOKEN_NAME, "").apply();
-        prefs.edit().putString(OurContract.PREF_DEVICE_AUTH_ID_NAME, "").apply();
-        prefs.edit().putString(OurContract.PREF_DEVICE_TOKEN, "").apply();
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
+        prefs.edit().clear().commit();
+        updateAllWidgets();
+        //move back to log in screen
+        Intent intent2 = new Intent(this, LoginActivity.class);
+        startActivity(intent2);
         finish();
+    }
+
+    private void updateAllWidgets() {
+        Intent intent = new Intent(this,MyHomeWidgetProvider.class);
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        int[] ids = AppWidgetManager.getInstance(getApplication())
+                .getAppWidgetIds(new ComponentName(getApplication(), MyHomeWidgetProvider.class));
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,ids);
+        sendBroadcast(intent);
+
+        Intent intent1 = new Intent(this,MyHomeWidgetProviderSmall.class);
+        intent1.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        int[] ids1 = AppWidgetManager.getInstance(getApplication())
+                .getAppWidgetIds(new ComponentName(getApplication(), MyHomeWidgetProviderSmall.class));
+        intent1.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,ids1);
+        sendBroadcast(intent1);
     }
 }
