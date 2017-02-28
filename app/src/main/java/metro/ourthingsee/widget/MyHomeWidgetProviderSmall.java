@@ -50,7 +50,7 @@ public class MyHomeWidgetProviderSmall extends AppWidgetProvider {
                 PendingIntent myhomePI = PendingIntent.getActivity(context, 0, myhomeIntent, 0);
                 remoteViews.setOnClickPendingIntent(R.id.lnlWGMainLayout, myhomePI);
 
-                Intent intent = new Intent(context, MyHomeWidgetProvider.class);
+                Intent intent = new Intent(context, MyHomeWidgetProviderSmall.class);
                 intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
                 intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(context,
