@@ -123,16 +123,21 @@ public class MyHomeWidgetProvider extends AppWidgetProvider {
 
                         // Remove the unit
                         strHumid = strHumid.replaceAll("%", "");
-                        // Convert it back to double
-                        Double dbHumid = Double.parseDouble(strHumid);
+                        try {
+                            // Convert it back to double
+                            Double dbHumid = Double.parseDouble(strHumid);
                         /*Subtitle text for Catalog display, price and quantity
                         http://stackoverflow.com/questions/3656371/dynamic-string-using-string-xml
                         String format replacement markers in xml are in the form of
                             %[parameter index]$[flags][width][.precision]conversion
                         format type: There are a lot of ways that you can format things (see the documentation).
                             http://docs.oracle.com/javase/1.5.0/docs/api/java/util/Formatter.html*/
-                        remoteViews.setTextViewText(R.id.txtWGHumid,
-                                String.format(Locale.US, "%.0f", dbHumid) + "%");
+                            remoteViews.setTextViewText(R.id.txtWGHumid,
+                                    String.format(Locale.US, "%.0f", dbHumid) + "%");
+                        } catch (Exception e) {
+                            remoteViews.setTextViewText(R.id.txtWGHumid,
+                                    context.getString(R.string.no_data));
+                        }
 
                         String longDateString = prefs.getString(
                                 OurContract.PREF_HUMID_LATEST_TIME, " ");
@@ -187,9 +192,24 @@ public class MyHomeWidgetProvider extends AppWidgetProvider {
                         // Remove the unit
                         strTemp = strTemp.replaceAll("\u2103", "");
                         // Convert it back to double
-                        Double dbTemp = Double.parseDouble(strTemp);
-                        remoteViews.setTextViewText(R.id.txtWGTemp,
-                                String.format(Locale.US, "%.0f", dbTemp) + "\u2103");
+                        try {
+                            Double dbTemp = Double.parseDouble(strTemp);
+                            remoteViews.setTextViewText(R.id.txtWGTemp,
+                                    String.format(Locale.US, "%.0f", dbTemp) + "\u2103");
+                        } catch (Exception e) {
+                            remoteViews.setTextViewText(R.id.txtWGHumid,
+                                    context.getString(R.string.no_data));
+                        }
+                        String longDateString = prefs.getString(
+                                OurContract.PREF_TEMP_LATEST_TIME, " ");
+                        // Convert long date stored in prefs to short day
+                        try {
+                            Date date = Utils.dateFormat.parse(longDateString);
+                            remoteViews.setTextViewText(R.id.txtWGTime,
+                                    Utils.shortDateFormat.format(date));
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
 
                         appWidgetManager.updateAppWidget(widgetId, remoteViews);
 
@@ -234,10 +254,26 @@ public class MyHomeWidgetProvider extends AppWidgetProvider {
                                 OurContract.PREF_LIGHT_LATEST_VALUE, " ");
                         // Remove the unit
                         strLight = strLight.replaceAll("lux", "");
-                        // Convert it back to double
-                        Double dbLight = Double.parseDouble(strLight);
-                        remoteViews.setTextViewText(R.id.txtWGLight,
-                                String.format(Locale.US, "%.0f", dbLight) + "lx");
+                        try {
+                            // Convert it back to double
+                            Double dbLight = Double.parseDouble(strLight);
+                            remoteViews.setTextViewText(R.id.txtWGLight,
+                                    String.format(Locale.US, "%.0f", dbLight) + "lx");
+                        } catch (Exception e) {
+                            remoteViews.setTextViewText(R.id.txtWGLight,
+                                    context.getString(R.string.no_data));
+                        }
+                        String longDateString = prefs.getString(
+                                OurContract.PREF_LIGHT_LATEST_TIME, " ");
+                        // Convert long date stored in prefs to short day
+                        try {
+                            Date date = Utils.dateFormat.parse(longDateString);
+                            remoteViews.setTextViewText(R.id.txtWGTime,
+                                    Utils.shortDateFormat.format(date));
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
 
                         remoteViews.setViewVisibility(R.id.imgRefresh, View.VISIBLE);
                         remoteViews.setViewVisibility(R.id.pgbWidget, View.GONE);

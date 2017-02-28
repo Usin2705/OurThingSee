@@ -6,6 +6,7 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
@@ -39,6 +40,7 @@ public class MyHomeWidgetProviderSmall extends AppWidgetProvider {
             SharedPreferences prefs = context.getSharedPreferences(OurContract.SHARED_PREF, Context.MODE_PRIVATE);
             String authToken = prefs.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, "");
             String authId = prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, "");
+            Log.e("Giang", authToken + authId);
             if (!(authToken.equals("") || authId.equals(""))) {
                 fetchData(context, remoteViews, appWidgetManager, widgetId);
 
@@ -48,7 +50,7 @@ public class MyHomeWidgetProviderSmall extends AppWidgetProvider {
                 PendingIntent myhomePI = PendingIntent.getActivity(context, 0, myhomeIntent, 0);
                 remoteViews.setOnClickPendingIntent(R.id.lnlWGMainLayout, myhomePI);
 
-                Intent intent = new Intent(context, MyHomeWidgetProviderSmall.class);
+                Intent intent = new Intent(context, MyHomeWidgetProvider.class);
                 intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
                 intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(context,
@@ -121,16 +123,21 @@ public class MyHomeWidgetProviderSmall extends AppWidgetProvider {
 
                         // Remove the unit
                         strHumid = strHumid.replaceAll("%", "");
-                        // Convert it back to double
-                        Double dbHumid = Double.parseDouble(strHumid);
+                        try {
+                            // Convert it back to double
+                            Double dbHumid = Double.parseDouble(strHumid);
                         /*Subtitle text for Catalog display, price and quantity
                         http://stackoverflow.com/questions/3656371/dynamic-string-using-string-xml
                         String format replacement markers in xml are in the form of
                             %[parameter index]$[flags][width][.precision]conversion
                         format type: There are a lot of ways that you can format things (see the documentation).
                             http://docs.oracle.com/javase/1.5.0/docs/api/java/util/Formatter.html*/
-                        remoteViews.setTextViewText(R.id.txtWGHumid,
-                                String.format(Locale.US, "%.0f", dbHumid) + "%");
+                            remoteViews.setTextViewText(R.id.txtWGHumid,
+                                    String.format(Locale.US, "%.0f", dbHumid) + "%");
+                        } catch (Exception e) {
+                            remoteViews.setTextViewText(R.id.txtWGHumid,
+                                    context.getString(R.string.no_data));
+                        }
 
                         String longDateString = prefs.getString(
                                 OurContract.PREF_HUMID_LATEST_TIME, " ");
@@ -185,9 +192,24 @@ public class MyHomeWidgetProviderSmall extends AppWidgetProvider {
                         // Remove the unit
                         strTemp = strTemp.replaceAll("\u2103", "");
                         // Convert it back to double
-                        Double dbTemp = Double.parseDouble(strTemp);
-                        remoteViews.setTextViewText(R.id.txtWGTemp,
-                                String.format(Locale.US, "%.0f", dbTemp) + "\u2103");
+                        try {
+                            Double dbTemp = Double.parseDouble(strTemp);
+                            remoteViews.setTextViewText(R.id.txtWGTemp,
+                                    String.format(Locale.US, "%.0f", dbTemp) + "\u2103");
+                        } catch (Exception e) {
+                            remoteViews.setTextViewText(R.id.txtWGHumid,
+                                    context.getString(R.string.no_data));
+                        }
+                        String longDateString = prefs.getString(
+                                OurContract.PREF_TEMP_LATEST_TIME, " ");
+                        // Convert long date stored in prefs to short day
+                        try {
+                            Date date = Utils.dateFormat.parse(longDateString);
+                            remoteViews.setTextViewText(R.id.txtWGTime,
+                                    Utils.shortDateFormat.format(date));
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
 
                         appWidgetManager.updateAppWidget(widgetId, remoteViews);
 
@@ -232,10 +254,26 @@ public class MyHomeWidgetProviderSmall extends AppWidgetProvider {
                                 OurContract.PREF_LIGHT_LATEST_VALUE, " ");
                         // Remove the unit
                         strLight = strLight.replaceAll("lux", "");
-                        // Convert it back to double
-                        Double dbLight = Double.parseDouble(strLight);
-                        remoteViews.setTextViewText(R.id.txtWGLight,
-                                String.format(Locale.US, "%.0f", dbLight) + "lx");
+                        try {
+                            // Convert it back to double
+                            Double dbLight = Double.parseDouble(strLight);
+                            remoteViews.setTextViewText(R.id.txtWGLight,
+                                    String.format(Locale.US, "%.0f", dbLight) + "lx");
+                        } catch (Exception e) {
+                            remoteViews.setTextViewText(R.id.txtWGLight,
+                                    context.getString(R.string.no_data));
+                        }
+                        String longDateString = prefs.getString(
+                                OurContract.PREF_LIGHT_LATEST_TIME, " ");
+                        // Convert long date stored in prefs to short day
+                        try {
+                            Date date = Utils.dateFormat.parse(longDateString);
+                            remoteViews.setTextViewText(R.id.txtWGTime,
+                                    Utils.shortDateFormat.format(date));
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
 
                         remoteViews.setViewVisibility(R.id.imgRefresh, View.VISIBLE);
                         remoteViews.setViewVisibility(R.id.pgbWidget, View.GONE);
