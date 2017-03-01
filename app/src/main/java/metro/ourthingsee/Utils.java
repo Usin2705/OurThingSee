@@ -101,6 +101,10 @@ public class Utils {
                     Double dbValue = response.body().getEvents().
                             get(0).getCause().getSenses().get(0).getVal();
 
+                    dbValue = dbValue*100;
+                    dbValue = (double) Math.round(dbValue);
+                    dbValue = dbValue/100;
+
                     Date eventDate = new Date(longTimestamp);
 
                     switch (sensorID) {

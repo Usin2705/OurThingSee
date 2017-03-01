@@ -87,6 +87,10 @@ public class TCCloudRequestService extends IntentService {
                     Double dbValue = response.body().getEvents().
                             get(0).getCause().getSenses().get(0).getVal();
 
+                    dbValue = dbValue*100;
+                    dbValue = (double) Math.round(dbValue);
+                    dbValue = dbValue/100;
+
                     /*
                     * Creates a new Intent containing a Uri object
                     * BROADCAST_ACTION is a custom Intent action
