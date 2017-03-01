@@ -44,10 +44,6 @@ import static metro.ourthingsee.OurContract.PREF_DEVICE_AUTH_ID_NAME;
 import static metro.ourthingsee.OurContract.PREF_USER_AUTH_TOKEN_NAME;
 
 public class MainActivity extends AppCompatActivity {
-    /**
-     * Tag for the log messages
-     */
-    public static final String LOG_TAG = MainActivity.class.getSimpleName();
     SharedPreferences prefs;
     private NavigationView nav_view;
     private DrawerLayout drawer;
@@ -62,9 +58,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG_ENVIRONMENT = "Environment sensors";
     public static String CURRENT_TAG = TAG_LOCATION;
 
-
-    // flag to load home fragment when user presses back key
-    private boolean shouldLoadHomeFragOnBackPress = true;
     private Handler mHandler;
 
     @Override
@@ -74,25 +67,19 @@ public class MainActivity extends AppCompatActivity {
         prefs = getSharedPreferences(OurContract.SHARED_PREF, Context.MODE_PRIVATE);
         updateAllWidgets();
         // If user did not login before, open login activity first
-        Log.e("Giang", prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, ""));
         if (prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, "").isEmpty()) {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();
         } else {
-            Log.e(LOG_TAG, prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, ""));
-            Log.e(LOG_TAG, prefs.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, ""));
-
             //Update the name of device on UI
             APIService apiService = AppUtils.getAPIService();
             apiService.getDeviceName("Bearer " + prefs.getString(PREF_USER_AUTH_TOKEN_NAME, "")
                     , prefs.getString(PREF_DEVICE_AUTH_ID_NAME, "")).enqueue(new Callback<DeviceConfig>() {
                 @Override
                 public void onResponse(Call<DeviceConfig> call, Response<DeviceConfig> response) {
-                    Log.e(LOG_TAG, response.code() + "");
                     if (response.code() == 200) {
                         try {
-                            Log.e(LOG_TAG, response.body().getDevice().getName());
                             prefs.edit().putString(OurContract.PREF_DEVICE_NAME,
                                     response.body().getDevice().getName()).apply();
                             tv_name.setText(response.body().getDevice().getName());

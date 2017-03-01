@@ -187,7 +187,6 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Authentication> call, Throwable t) {
                 progressDialog.dismiss();
-                Log.e(LOG_TAG, t.toString());
                 Toast.makeText(LoginActivity.this,
                         getString(R.string.login_toast_login_failed_nointernet),
                         Toast.LENGTH_SHORT).show();
@@ -209,11 +208,9 @@ public class LoginActivity extends AppCompatActivity {
     private void getUserDevices() {
         String auth = "Bearer ";
         auth += prefs.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, "");
-        Log.e(LOG_TAG, auth);
         apiService.getUserDevices(auth).enqueue(new Callback<Devices>() {
             @Override
             public void onResponse(Call<Devices> call, Response<Devices> response) {
-                Log.e("Giang", response.code() + "");
                 progressDialog.dismiss();
                 if (response.isSuccessful()) {
                     // store pin code of device
@@ -223,7 +220,6 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Devices> call, Throwable t) {
-                Log.e(LOG_TAG, t.toString());
                 progressDialog.dismiss();
                 Toast.makeText(LoginActivity.this,
                         getString(R.string.login_toast_login_failed_nointernet),
