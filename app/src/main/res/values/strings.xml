@@ -98,12 +98,15 @@
 
     <!-- The basic information about our app-->
     <string name="information_about_app">    This application is used for storing wine and delivering wine.
-    We use Thingsee to monitor the temperature, pressure and humidity in the wine cellar to keep the environment being the most suitable for wine.
+    We use Thingsee to monitor the temperature, pressure and humidity in the wine cellar to keep the
+        environment being the most suitable for wine.
     We also use the position service to check the path when the staffs deliver wine to shops. \n\n
-    We also use the app to monitoring our own room environment, checking the ideal humidity level for the room,
-        as well as the correct light level depend on working condition (play game, study or office work). \n\n
-    For the app to work, you need to set up your own Thingsee device, and allow it to measure Location (for map),
-        Humidity, Temperature, Luminance (Light). The app was tested location sensor interval at 10 second, and other measurements at 15 minutes.</string>
+    We also use the application to monitor our own room environment, check the ideal humidity level for the room,
+        as well as the suitable light level depend on working condition (play game, study or office work). \n\n
+    To make the application work properly, you need to set up your own Thingsee unit, and allow it to
+        measure Location (for map), Humidity, Temperature, Luminance (Light). The application was
+        tested with a Thingsee unit that has location sensor update time interval of 10 second, and
+        other sensors update time interval of 15 minutes.</string>
     <string name="getting_current_location">Getting last location</string>
     <string name="drawing_path">Drawing path</string>
     <string name="no_path">No path found in given time interval!</string>
@@ -116,7 +119,7 @@
     <string name="origin">Origin</string>
 
     <!-- The confirmation message if user click on the log out button [CHAR LIMIT=NONE] -->
-    <string name="log_out_message">Are you sure you want to log out?\nYour username and password will be required to open the app again.</string>
+    <string name="log_out_message">Are you sure you want to log out?\nYour username and password will be required to open the application again.</string>
     <string name="only_location">Only location</string>
     <string name="unknown_device">Unknown Device</string>
     <string name="no_data">no data</string>

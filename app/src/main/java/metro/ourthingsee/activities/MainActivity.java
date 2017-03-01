@@ -165,6 +165,9 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        //Closing drawer on item click
+        drawer.closeDrawers();
+
         // Sometimes, when fragment has huge data, screen seems hanging
         // when switching between navigation menus
         // So using runnable, the fragment is loaded with cross fade effect
@@ -186,10 +189,6 @@ public class MainActivity extends AppCompatActivity {
         if (mPendingRunnable != null) {
             mHandler.post(mPendingRunnable);
         }
-
-        //Closing drawer on item click
-        drawer.closeDrawers();
-
         // refresh toolbar menu
         invalidateOptionsMenu();
     }
@@ -273,7 +272,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawer, tb_main, R.string.openDrawer, R.string.closeDrawer) {
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawer, tb_main,
+                R.string.openDrawer, R.string.closeDrawer) {
 
             @Override
             public void onDrawerClosed(View drawerView) {
