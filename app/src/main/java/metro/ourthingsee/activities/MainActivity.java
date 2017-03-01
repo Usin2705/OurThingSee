@@ -1,5 +1,6 @@
 package metro.ourthingsee.activities;
 
+import android.app.ProgressDialog;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawer;
     private Toolbar tb_main;
     private TextView tv_name;
+    public ProgressDialog progressDialog;
 
     // index to identify current nav menu item
     public static int navItemIndex = 0;
@@ -101,6 +103,11 @@ public class MainActivity extends AppCompatActivity {
             });
 
         }
+        progressDialog = new ProgressDialog(MainActivity.this);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage(getString(R.string.getting_data));
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCanceledOnTouchOutside(false);
 
         //Set up toolbar
         tb_main = (Toolbar) findViewById(R.id.tb_main);
@@ -147,8 +154,6 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        //Closing drawer on item click
-        drawer.closeDrawers();
 
         // Sometimes, when fragment has huge data, screen seems hanging
         // when switching between navigation menus
@@ -248,7 +253,9 @@ public class MainActivity extends AppCompatActivity {
                     menuItem.setChecked(true);
                 }
                 menuItem.setChecked(true);
-                loadHomeFragment();
+                progressDialog.show();
+                //Closing drawer on item click
+                drawer.closeDrawers();
                 return true;
             }
         });
@@ -261,6 +268,7 @@ public class MainActivity extends AppCompatActivity {
             public void onDrawerClosed(View drawerView) {
                 // Code here will be triggered once the drawer closes as we dont want anything to happen so we leave this blank
                 super.onDrawerClosed(drawerView);
+                loadHomeFragment();
             }
 
             @Override

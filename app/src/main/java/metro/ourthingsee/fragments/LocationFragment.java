@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +43,7 @@ import metro.ourthingsee.OurContract;
 import metro.ourthingsee.R;
 import metro.ourthingsee.RESTObjects.Events;
 import metro.ourthingsee.Utils;
+import metro.ourthingsee.activities.MainActivity;
 import metro.ourthingsee.remote.APIService;
 import metro.ourthingsee.remote.AppUtils;
 import retrofit2.Call;
@@ -81,19 +81,18 @@ public class LocationFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view =  inflater.inflate(R.layout.fragment_location, container, false);
-        mMapView = (MapView) view.findViewById(R.id.fragment_map);
-        mMapView.onCreate(savedInstanceState);
-        addControls();
+        view = inflater.inflate(R.layout.fragment_location, container, false);
+        addControls(savedInstanceState);
         // Inflate the layout for this fragment
         return view;
     }
 
-    private void addControls() {
+    private void addControls(final Bundle bundle) {
+
+        mMapView = (MapView) view.findViewById(R.id.fragment_map);
+        mMapView.onCreate(bundle);
         //get map fragment
-
         mMapView.onResume();// needed to get the map to display immediately
-
         try {
             MapsInitializer.initialize(getActivity().getApplicationContext());
         } catch (Exception e) {
@@ -107,6 +106,7 @@ public class LocationFragment extends Fragment {
                 mGoogleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
                     @Override
                     public void onMapLoaded() {
+                        ((MainActivity)getActivity()).progressDialog.dismiss();
                         mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                         mGoogleMap.getUiSettings().setZoomGesturesEnabled(true);
                         //Simple way to custom info window of markers
@@ -141,6 +141,7 @@ public class LocationFragment extends Fragment {
                 });
             }
         });
+
         //set up progress dialog showing when getting current location
         progressDialog = new ProgressDialog(getContext());
         progressDialog.setIndeterminate(true);
@@ -264,7 +265,7 @@ public class LocationFragment extends Fragment {
             , final String authen, final String deviceAuthen) {
 
         apiService.getUserEvents(authen, deviceAuthen, "sense",
-                OurContract.SENSOR_ID_LOCATION_LATITUDE +"," +
+                OurContract.SENSOR_ID_LOCATION_LATITUDE + "," +
                         OurContract.SENSOR_ID_LOCATION_LONGITUDE, 50, start, end)
                 .enqueue(new Callback<Events>() {
                     @Override
@@ -322,7 +323,7 @@ public class LocationFragment extends Fragment {
             , final String string, final Long endTimestamp) {
 
         apiService.getUserEvents(s, string, "sense",
-                OurContract.SENSOR_ID_LOCATION_LATITUDE +"," +
+                OurContract.SENSOR_ID_LOCATION_LATITUDE + "," +
                         OurContract.SENSOR_ID_LOCATION_LONGITUDE, 2, null, endTimestamp)
                 .enqueue(new Callback<Events>() {
                     @Override
@@ -381,7 +382,6 @@ public class LocationFragment extends Fragment {
                                 requestDeviceCurrentLocation(apiService, s, string, endTimestamp);
                                 break;
                         }
-
                     }
 
                     @Override
@@ -415,16 +415,16 @@ public class LocationFragment extends Fragment {
             //if there are both lat and lng then finish
             if (sIds.contains(OurContract.SENSOR_ID_LOCATION_LATITUDE) && sIds.contains(OurContract.SENSOR_ID_LOCATION_LONGITUDE)) {
                 listLatLng.add(new LatLng(lat, lng));
-                if(listLatLng.size()==1){
-                    endTime=comparingTimestamp;
+                if (listLatLng.size() == 1) {
+                    endTime = comparingTimestamp;
                 }
-                startTime=comparingTimestamp;
+                startTime = comparingTimestamp;
                 //if there are one missing value then check the next event
             } else if ((sIds.contains(OurContract.SENSOR_ID_LOCATION_LATITUDE) && !sIds.contains(OurContract.SENSOR_ID_LOCATION_LONGITUDE)) ||
                     !sIds.contains(OurContract.SENSOR_ID_LOCATION_LATITUDE) && sIds.contains(OurContract.SENSOR_ID_LOCATION_LONGITUDE)) {
                 //if the next event has the same timestamp with the previous
                 //then check if it contains the missing value
-                if (eventList.size()>(i+1) && eventList.get(i + 1).getTimestamp() == comparingTimestamp) {
+                if (eventList.size() > (i + 1) && eventList.get(i + 1).getTimestamp() == comparingTimestamp) {
                     senses.clear();
                     senses.addAll(eventList.get(i + 1).getCause().getSenses());
                     for (int j = 0; j < senses.size(); j++) {
@@ -439,16 +439,16 @@ public class LocationFragment extends Fragment {
                     //because we don't have to check it again
                     if (sIds.contains(OurContract.SENSOR_ID_LOCATION_LATITUDE) && sIds.contains(OurContract.SENSOR_ID_LOCATION_LONGITUDE)) {
                         listLatLng.add(new LatLng(lat, lng));
-                        if(listLatLng.size()==1){
-                            endTime=comparingTimestamp;
+                        if (listLatLng.size() == 1) {
+                            endTime = comparingTimestamp;
                         }
-                        startTime=comparingTimestamp;
+                        startTime = comparingTimestamp;
                         i++;
                     }
                 }
             }
         }
-        if(!listLatLng.isEmpty()) {
+        if (!listLatLng.isEmpty()) {
             if (listLatLng.size() > 1) {
                 double distance = 0;
                 PolylineOptions polylineOptions = new PolylineOptions();

@@ -130,6 +130,8 @@
     <string name="starttime">StartTime</string>
     <string name="startdate">StartDate</string>
     <string name="other">Other</string>
+    <string name="getting_data">Getting data...</string>
+    <string name="logging_in">Logging in...</string>
     <string-array name="nav_item_activity_titles">
         <item>Location</item>
         <item>Environment Sensors</item>

@@ -192,7 +192,6 @@ public class EnvironmentSensorFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         //Get the latest humidity, temperature and luminance
         Utils.fetchDataFromThingSee(OurContract.SENSOR_ID_HUMIDITY, getContext());
         Utils.fetchDataFromThingSee(OurContract.SENSOR_ID_TEMPERATURE, getContext());
@@ -207,6 +206,8 @@ public class EnvironmentSensorFragment extends Fragment {
         // Update all the display texts with latest value. Call after prefs since we will update
         // from prefs.
         updateDisplayTV(getContext());
+
+        ((MainActivity)getActivity()).progressDialog.dismiss();
 
         final LinearLayout lnlMyHomeOpt = (LinearLayout) view.findViewById(R.id.lnlMyHomeOption);
 
