@@ -219,10 +219,12 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.nav_location:
                         navItemIndex = 1;
                         CURRENT_TAG = TAG_LOCATION;
+                        progressDialog.show();
                         break;
                     case R.id.nav_environment:
                         navItemIndex =0;
                         CURRENT_TAG = TAG_ENVIRONMENT;
+                        progressDialog.show();
                         break;
                     case R.id.log_out:
                         // Because Giang use a Toolbar not default ActionBar, we can't use getApplicationContext()
@@ -253,7 +255,6 @@ public class MainActivity extends AppCompatActivity {
                     menuItem.setChecked(true);
                 }
                 menuItem.setChecked(true);
-                progressDialog.show();
                 //Closing drawer on item click
                 drawer.closeDrawers();
                 return true;
