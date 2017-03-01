@@ -232,55 +232,97 @@
                 android:id="@+id/txtTemperatureLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/temperature_option" />
+                android:text="@string/temperature_option"
+                android:textColor="?attr/colorControlNormal"
+                android:textSize="18sp"
+                android:textStyle="normal|italic"
+                android:background="@color/common_google_signin_btn_text_dark_disabled" />
 
+            <ImageView
+                android:layout_width="27dp"
+                android:layout_height="19dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/img_temperature"
+                android:id="@+id/image_tem"
+                />
             <TextView
                 android:id="@+id/txtTemperatureTime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:text="22-Feb-2017 04:59:51" />
+                tools:text="22-Feb-2017 04:59:51"
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/txtTemperatureValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:text="22 \u2103" />
+                tools:text="22 \u2103"
+                android:textSize="16sp" />
+
+
+
 
             <TextView
                 android:id="@+id/txtHumidityLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/humidity_option"/>
+                android:text="@string/humidity_option"
+                android:textSize="18sp"
+                android:textStyle="normal|italic"
+                android:background="@color/common_google_signin_btn_text_light_disabled"/>
+
+            <ImageView
+                android:layout_width="27dp"
+                android:layout_height="19dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/img_humidity"
+                android:id="@+id/image_hum"
+                />
+
+
 
             <TextView
                 android:id="@+id/txtHumidityTime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:text="22-Feb-2017 04:59:51"/>
+                tools:text="22-Feb-2017 04:59:51"
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/txtHumidityValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:text="22 %" />
+                tools:text="22 %"
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/txtLightLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/luminance_option" />
-
+                android:text="@string/luminance_option"
+                android:textSize="18sp"
+                android:textStyle="normal|italic"
+                android:background="@color/common_google_signin_btn_text_dark_disabled" />
+            <ImageView
+                android:layout_width="27dp"
+                android:layout_height="19dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/image_bulb"
+                android:id="@+id/image_lig"
+                />
             <TextView
                 android:id="@+id/txtLightTime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:text="22-Feb-2017 04:59:51"/>
+                tools:text="22-Feb-2017 04:59:51"
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/txtLightValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:text="22 lux" />
+                tools:text="22 lux"
+                android:textSize="16sp" />
         </LinearLayout>
 
         <LinearLayout
