@@ -120,4 +120,15 @@
     <string name="only_location">Only location</string>
     <string name="unknown_device">Unknown Device</string>
     <string name="no_data">no data</string>
+    <string name="location">Location</string>
+
+    <string name="endtime">EndTime</string>
+    <string name="enddate">EndDate</string>
+    <string name="starttime">StartTime</string>
+    <string name="startdate">StartDate</string>
+    <string name="other">Other</string>
+    <string-array name="nav_item_activity_titles">
+        <item>Location</item>
+        <item>Environment Sensors</item>
+    </string-array>
 </resources>

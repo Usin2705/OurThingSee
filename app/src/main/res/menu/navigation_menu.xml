@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
         <item
-            android:id="@+id/log_out"
-            android:icon="@drawable/arrow"
-            android:title="@string/log_out" />
+            android:id="@+id/nav_environment"
+            android:icon="@drawable/ic_face_24dp"
+            android:title="@string/myhome_option" />
+
         <item
-            android:id="@+id/about_us"
-            android:icon="@drawable/aboutus"
-            android:title="@string/about_us" />
+            android:id="@+id/nav_location"
+            android:icon="@drawable/pin"
+            android:title="@string/location" />
+    </group>
+
+    <item android:title="@string/other">
+        <menu>
+            <item
+                android:id="@+id/log_out"
+                android:icon="@drawable/arrow"
+                android:title="@string/log_out" />
+            <item
+                android:id="@+id/about_us"
+                android:icon="@drawable/aboutus"
+                android:title="@string/about_us" />
+        </menu>
+    </item>
 </menu>

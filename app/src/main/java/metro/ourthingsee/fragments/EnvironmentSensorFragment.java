@@ -1,4 +1,4 @@
-package metro.ourthingsee.activities;
+package metro.ourthingsee.fragments;
 
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -12,13 +12,14 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
@@ -35,12 +36,13 @@ import metro.ourthingsee.OurContract;
 import metro.ourthingsee.R;
 import metro.ourthingsee.TCCloudRequestService;
 import metro.ourthingsee.Utils;
+import metro.ourthingsee.activities.MainActivity;
 
-/**
- * Activity to display sensor data (temp, humidity and light).
- * As well as make notification settings
- */
-public class MyHomeActivity extends AppCompatActivity {
+import static android.content.Context.MODE_PRIVATE;
+
+
+public class EnvironmentSensorFragment extends Fragment {
+    View view;
     private static final int MIN_VALUE = 1;
 
     /**
@@ -53,12 +55,12 @@ public class MyHomeActivity extends AppCompatActivity {
     static SharedPreferences prefs;
     static TextView txtTemperatureTime, txtTemperatureValue, txtHumidityTime, txtHumidityValue,
             txtLightTime, txtLightValue;
-    TCCLoudRequestReceiver receiver;
+    EnvironmentSensorFragment.TCCLoudRequestReceiver receiver;
     AlarmManager alarmManager;
 
     /**
      * Send the notification to user. It need to be static so it can be called by our
-     * static receiver {@link TCCLoudRequestReceiver}.
+     * static receiver {@link EnvironmentSensorFragment.TCCLoudRequestReceiver}.
      *
      * @param context       the context of the app, used to get resources
      * @param longTimestamp the Timestamp of the sensor value, in Long milliseconds
@@ -67,7 +69,7 @@ public class MyHomeActivity extends AppCompatActivity {
      */
     public static void sendNotification(Context context, Long longTimestamp, String strContent,
                                         int sensorType) {
-        Intent ntfIntent = new Intent(context, MyHomeActivity.class);
+        Intent ntfIntent = new Intent(context, MainActivity.class);
         ntfIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
@@ -186,28 +188,30 @@ public class MyHomeActivity extends AppCompatActivity {
         }
     }
 
+    public EnvironmentSensorFragment() {
+        // Required empty public constructor
+    }
+
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_myhome);
-
-        prefs = getSharedPreferences(OurContract.SHARED_PREF, Context.MODE_PRIVATE);
-
-        // Setup the toolbar
-        setupToolBar();
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.fragment_environment, container, false);
+        // Inflate the layout for this fragment
+        prefs = getContext().getSharedPreferences(OurContract.SHARED_PREF, MODE_PRIVATE);
 
         // Cast all the display texts
         castDisplayTV();
 
         // Update all the display texts with latest value. Call after prefs since we will update
         // from prefs.
-        updateDisplayTV(MyHomeActivity.this);
+        updateDisplayTV(getContext());
 
-        final LinearLayout lnlMyHomeOpt = (LinearLayout) findViewById(R.id.lnlMyHomeOption);
+        final LinearLayout lnlMyHomeOpt = (LinearLayout) view.findViewById(R.id.lnlMyHomeOption);
 
         //************************************ NOTIFICATION OPTION *********************************
         // Find the switch button, set it according to prefs, and set onCheckChangeListener
-        final Switch swtMyHome = (Switch) findViewById(R.id.swtMyHome);
+        final Switch swtMyHome = (Switch) view.findViewById(R.id.swtMyHome);
         swtMyHome.setChecked(prefs.getBoolean(OurContract.PREF_MYHOME_NOTIFICATION_OPTION, false));
         swtMyHome.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -220,7 +224,7 @@ public class MyHomeActivity extends AppCompatActivity {
         lnlMyHomeOpt.setVisibility(swtMyHome.isChecked() ? View.VISIBLE : View.GONE);
 
         // Find the layout of switch button, and set onClick
-        LinearLayout lnlMyHomeSwt = (LinearLayout) findViewById(R.id.lnlMyHomeSwt);
+        LinearLayout lnlMyHomeSwt = (LinearLayout) view.findViewById(R.id.lnlMyHomeSwt);
         lnlMyHomeSwt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -239,7 +243,7 @@ public class MyHomeActivity extends AppCompatActivity {
         calendarEnd.set(Calendar.HOUR_OF_DAY, 19);
         calendarEnd.set(Calendar.MINUTE, 0);
 
-        final TextView txtMyHomeEndTime = (TextView) findViewById(R.id.txtMyHomeEndTime);
+        final TextView txtMyHomeEndTime = (TextView) view.findViewById(R.id.txtMyHomeEndTime);
         txtMyHomeEndTime.setText(
                 (Utils.shortTimeFormat.format(prefs.getLong(OurContract.PREF_MYHOME_END_TIME,
                         calendarEnd.getTimeInMillis()))));
@@ -247,15 +251,15 @@ public class MyHomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Utils.setUpTimePicker(txtMyHomeEndTime, calendarEnd,
-                        MyHomeActivity.this, Utils.TIMEPICKER_CODE_RECORD_END);
+                        getContext(), Utils.TIMEPICKER_CODE_RECORD_END);
             }
         });
-        LinearLayout lnlMyHomeEndTime = (LinearLayout) findViewById(R.id.lnlMyHomeEndTime);
+        LinearLayout lnlMyHomeEndTime = (LinearLayout) view.findViewById(R.id.lnlMyHomeEndTime);
         lnlMyHomeEndTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Utils.setUpTimePicker(txtMyHomeEndTime, calendarEnd,
-                        MyHomeActivity.this, Utils.TIMEPICKER_CODE_RECORD_END);
+                        getContext(), Utils.TIMEPICKER_CODE_RECORD_END);
                 prefs.edit().putLong(OurContract.PREF_MYHOME_END_TIME,
                         calendarEnd.getTimeInMillis()).apply();
             }
@@ -263,7 +267,7 @@ public class MyHomeActivity extends AppCompatActivity {
 
         //************************************ LUMINANCE ********************************************
         // Find and cast the onClick for Humidity Level
-        final TextView txtMyHomeLightLevel = (TextView) findViewById(R.id.txtMyHomeLightLevel);
+        final TextView txtMyHomeLightLevel = (TextView) view.findViewById(R.id.txtMyHomeLightLevel);
         txtMyHomeLightLevel.setText(
                 String.valueOf(prefs.getInt(OurContract.PREF_MYHOME_MIN_LIGHT_VALUE,
                         OurContract.DEFAULT_MIN_LIGHT_VALUE)));
@@ -273,7 +277,7 @@ public class MyHomeActivity extends AppCompatActivity {
                 setupSpinnerPicker(txtMyHomeLightLevel);
             }
         });
-        LinearLayout lnlMyHomeLightLevel = (LinearLayout) findViewById(R.id.lnlMyHomeLightLevel);
+        LinearLayout lnlMyHomeLightLevel = (LinearLayout) view.findViewById(R.id.lnlMyHomeLightLevel);
         lnlMyHomeLightLevel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -283,7 +287,7 @@ public class MyHomeActivity extends AppCompatActivity {
 
         //************************************ HUMIDITY ********************************************
         // Find and cast the onClick for Humidity Level
-        final TextView txtMyHomeHumidityLevel = (TextView) findViewById(R.id.txtMyHomeHumidityLevel);
+        final TextView txtMyHomeHumidityLevel = (TextView) view.findViewById(R.id.txtMyHomeHumidityLevel);
         txtMyHomeHumidityLevel.setText(
                 String.valueOf(prefs.getInt(OurContract.PREF_MYHOME_MIN_HUMIDITY_VALUE,
                         OurContract.DEFAULT_MIN_HUMIDITY_VALUE)));
@@ -294,7 +298,7 @@ public class MyHomeActivity extends AppCompatActivity {
                         OurContract.MYHOME_MIN_HUMIDITY_MAXVALUE);
             }
         });
-        LinearLayout lnlMyHomeHumidityLevel = (LinearLayout) findViewById(R.id.lnlMyHomeHumidityLevel);
+        LinearLayout lnlMyHomeHumidityLevel = (LinearLayout) view.findViewById(R.id.lnlMyHomeHumidityLevel);
         lnlMyHomeHumidityLevel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -305,7 +309,7 @@ public class MyHomeActivity extends AppCompatActivity {
 
         //************************************ UPDATE INTERVAL *************************************
         // Find and cast the onClick for Update interval
-        final TextView txtMyHomeNotfInterval = (TextView) findViewById(R.id.txtMyHomeNotfInterval);
+        final TextView txtMyHomeNotfInterval = (TextView) view.findViewById(R.id.txtMyHomeNotfInterval);
         txtMyHomeNotfInterval.setText(
                 String.valueOf(prefs.getInt(OurContract.PREF_MYHOME_NOTIFICATION_INTERVAL,
                         OurContract.DEFAULT_NOTIFICATION_INTERVAL_VALUE)));
@@ -316,7 +320,7 @@ public class MyHomeActivity extends AppCompatActivity {
                         OurContract.MYHOME_NOTIFICATION_INTERVAL_MAXVALUE);
             }
         });
-        LinearLayout lnlMyHomeNotfInterval = (LinearLayout) findViewById(R.id.lnlMyHomeNotfInterval);
+        LinearLayout lnlMyHomeNotfInterval = (LinearLayout) view.findViewById(R.id.lnlMyHomeNotfInterval);
         lnlMyHomeNotfInterval.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -324,6 +328,13 @@ public class MyHomeActivity extends AppCompatActivity {
                         OurContract.MYHOME_NOTIFICATION_INTERVAL_MAXVALUE);
             }
         });
+        return view;
+    }
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+
     }
 
     /**
@@ -338,16 +349,16 @@ public class MyHomeActivity extends AppCompatActivity {
         final String[] lightValues =
                 getResources().getStringArray(R.array.recommend_luminance_level_values);
 
-        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
         dialogBuilder.setTitle(getString(R.string.myhome_dialog_title_light));
         dialogBuilder.setIcon(R.drawable.ic_lightbulb_outline_24dp);
 
-        View dialogView = View.inflate(this, R.layout.listview_spinner_dialog, null);
+        View dialogView = View.inflate(getContext(), R.layout.listview_spinner_dialog, null);
         dialogBuilder.setView(dialogView);
         final AlertDialog alertDialog = dialogBuilder.create();
 
         ListView listView = (ListView) dialogView.findViewById(R.id.myhome_listview);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(MyHomeActivity.this,
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_selectable_list_item, lightLabels);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -367,42 +378,22 @@ public class MyHomeActivity extends AppCompatActivity {
      * Each sensor have both time update and value
      */
     private void castDisplayTV() {
-        txtTemperatureTime = (TextView) this.findViewById(R.id.txtTemperatureTime);
-        txtTemperatureValue = (TextView) this.findViewById(R.id.txtTemperatureValue);
-        txtHumidityTime = (TextView) this.findViewById(R.id.txtHumidityTime);
-        txtHumidityValue = (TextView) this.findViewById(R.id.txtHumidityValue);
-        txtLightTime = (TextView) this.findViewById(R.id.txtLightTime);
-        txtLightValue = (TextView) this.findViewById(R.id.txtLightValue);
+        txtTemperatureTime = (TextView) view.findViewById(R.id.txtTemperatureTime);
+        txtTemperatureValue = (TextView) view.findViewById(R.id.txtTemperatureValue);
+        txtHumidityTime = (TextView) view.findViewById(R.id.txtHumidityTime);
+        txtHumidityValue = (TextView) view.findViewById(R.id.txtHumidityValue);
+        txtLightTime = (TextView) view.findViewById(R.id.txtLightTime);
+        txtLightValue = (TextView) view.findViewById(R.id.txtLightValue);
     }
 
-    /**
-     * Set up the toolbar, with a Navigation button which return to previous activity
-     * (similar to onBackPress)
-     */
-    private void setupToolBar() {
-        Toolbar toolbar = (Toolbar) this.findViewById(R.id.tb_main);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onBackPressed();
-            }
-        });
-        toolbar.setTitle(prefs.getString(OurContract.PREF_DEVICE_NAME,
-                getString(R.string.unknown_device)));
 
-    }
 
     @Override
     public void onResume() {
         super.onResume();
 
         // Call the updateDisplayTV() again in case of new data
-        updateDisplayTV(MyHomeActivity.this);
+        updateDisplayTV(getContext());
 
         // Create the receiver again, since we unregister it in onPause
 //        IntentFilter filter = new IntentFilter(OurContract.BROADCAST_ACTION);
@@ -443,8 +434,8 @@ public class MyHomeActivity extends AppCompatActivity {
      */
 
     private void setupNumberPicker(final TextView textView, final int maxValue) {
-        final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        View dialogView = View.inflate(this, R.layout.number_picker_dialog, null);
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
+        View dialogView = View.inflate(getContext(), R.layout.number_picker_dialog, null);
         dialog.setView(dialogView);
 
         final NumberPicker numberPicker = (NumberPicker) dialogView.findViewById(R.id.numberPicker);
@@ -497,16 +488,16 @@ public class MyHomeActivity extends AppCompatActivity {
         * Creates a new Intent to start the TCCloudRequestService
         * IntentService.
         */
-        Intent serviceIntent = new Intent(getBaseContext(), TCCloudRequestService.class);
+        Intent serviceIntent = new Intent(getContext(), TCCloudRequestService.class);
 
         // Create a PendingIntent to send the service
         // Set the flag update current to update with new setting
-        PendingIntent pendingIntent = PendingIntent.getService(this,
+        PendingIntent pendingIntent = PendingIntent.getService(getContext(),
                 OurContract.INTENT_REQUEST_CODE_MYHOMESERVICE, serviceIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
         // Get the alarmManager to set the repeating task
-        alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
 
         // Wake up the device to fire the alarm in 15 minutes, and every 15 minutes after that:
         alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
@@ -519,8 +510,8 @@ public class MyHomeActivity extends AppCompatActivity {
 
         IntentFilter filter = new IntentFilter(OurContract.BROADCAST_ACTION);
         filter.addCategory(Intent.CATEGORY_DEFAULT);
-        receiver = new TCCLoudRequestReceiver();
-        registerReceiver(receiver, filter);
+        receiver = new EnvironmentSensorFragment.TCCLoudRequestReceiver();
+        getActivity().registerReceiver(receiver, filter);
     }
 
     /**

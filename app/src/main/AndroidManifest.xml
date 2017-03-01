@@ -31,10 +31,7 @@
             android:name=".TCCloudRequestService"
             android:exported="false"/>
 
-        <receiver android:name=".activities.MyHomeActivity$TCCLoudRequestReceiver">
-            <intent-filter>
-                <action android:name="com.metro.ourthingsee.BROADCAST"/>
-            </intent-filter>
+        <receiver android:name=".fragments.EnvironmentSensorFragment$TCCLoudRequestReceiver">
         </receiver>
 
         <receiver android:name=".widget.MyHomeWidgetProvider">
@@ -67,15 +64,7 @@
         </activity>
         <activity android:name=".activities.LoginActivity"/>
 
-        <activity
-            android:name=".activities.MyHomeActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainActivity"/>
-        </activity>
-
         <activity android:name=".activities.AboutUs"/>
-        <activity android:name=".activities.LocationActivity"/>
 
     </application>
 

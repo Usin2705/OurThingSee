@@ -18,7 +18,7 @@ import metro.ourthingsee.OurContract;
 import metro.ourthingsee.R;
 import metro.ourthingsee.RESTObjects.Events;
 import metro.ourthingsee.Utils;
-import metro.ourthingsee.activities.MyHomeActivity;
+import metro.ourthingsee.activities.MainActivity;
 import metro.ourthingsee.remote.APIService;
 import metro.ourthingsee.remote.AppUtils;
 import retrofit2.Call;
@@ -45,7 +45,7 @@ public class MyHomeWidgetProvider extends AppWidgetProvider {
                 fetchData(context, remoteViews, appWidgetManager, widgetId);
 
                 // Click on the widget will open the activity
-                Intent myhomeIntent = new Intent(context, MyHomeActivity.class);
+                Intent myhomeIntent = new Intent(context, MainActivity.class);
                 myhomeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 PendingIntent myhomePI = PendingIntent.getActivity(context, 0, myhomeIntent, 0);
                 remoteViews.setOnClickPendingIntent(R.id.lnlWGMainLayout, myhomePI);

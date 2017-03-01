@@ -1,4 +1,4 @@
-package metro.ourthingsee.activities;
+package metro.ourthingsee.fragments;
 
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
@@ -6,11 +6,14 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
@@ -19,7 +22,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
@@ -46,7 +50,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class LocationActivity extends AppCompatActivity {
+import static android.content.Context.MODE_PRIVATE;
+
+public class LocationFragment extends Fragment {
+    private View view;
     Calendar calendar = Calendar.getInstance(), calendarEnd = Calendar.getInstance();
     long startTime, endTime;
     boolean currentLocationState = true;
@@ -55,48 +62,45 @@ public class LocationActivity extends AppCompatActivity {
     DecimalFormat df = new DecimalFormat("0.#");
     public static SimpleDateFormat sdfDate = new SimpleDateFormat("dd MMM yyyy");
     GoogleMap mGoogleMap;
+    MapView mMapView;
     ProgressDialog progressDialog;
     View query_view;
     FloatingActionButton fab_show_path, fab_current_location;
     TextView tv_startDate, tv_startTime, tv_endDate, tv_endTime, tv_distance;
     Button btn_showPath;
 
+    public LocationFragment() {
+        // Required empty public constructor
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_location);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        view =  inflater.inflate(R.layout.fragment_location, container, false);
+        mMapView = (MapView) view.findViewById(R.id.fragment_map);
+        mMapView.onCreate(savedInstanceState);
         addControls();
+        // Inflate the layout for this fragment
+        return view;
     }
 
     private void addControls() {
         //get map fragment
-        MapFragment mapFragment = (MapFragment)
-                getFragmentManager().findFragmentById(R.id.fragment_map);
-        //set up progress dialog showing when getting current location
-        progressDialog = new ProgressDialog(LocationActivity.this);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setCanceledOnTouchOutside(false);
-        //hide query view when first enter activity
-        query_view = findViewById(R.id.query_view);
-        query_view.setVisibility(View.INVISIBLE);
-        //2 fabs show and hide base on each other's state
-        fab_show_path = (FloatingActionButton) findViewById(R.id.fab_show_path);
-        fab_current_location = (FloatingActionButton) findViewById(R.id.fab_current_location);
-        fab_current_location.hide();
-        //set up every views on query view
-        tv_startDate = (TextView) findViewById(R.id.tv_startDate);
-        tv_startDate.setText(sdfDate.format(calendar.getTime()));
-        tv_startTime = (TextView) findViewById(R.id.tv_startTime);
-        tv_startTime.setText(Utils.shortTimeFormat.format(calendar.getTime()));
-        tv_endDate = (TextView) findViewById(R.id.tv_endDate);
-        tv_endDate.setText(sdfDate.format(calendar.getTime()));
-        tv_endTime = (TextView) findViewById(R.id.tv_endTime);
-        tv_endTime.setText(Utils.shortTimeFormat.format(calendar.getTime()));
-        tv_distance = (TextView) findViewById(R.id.tv_distance);
-        btn_showPath = (Button) findViewById(R.id.btn_showPath);
-        //load map when first enter
-        mapFragment.getMapAsync(new OnMapReadyCallback() {
+
+        mMapView.onResume();// needed to get the map to display immediately
+
+        try {
+            MapsInitializer.initialize(getActivity().getApplicationContext());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        mMapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
                 mGoogleMap = googleMap;
@@ -114,14 +118,14 @@ public class LocationActivity extends AppCompatActivity {
 
                             @Override
                             public View getInfoContents(Marker marker) {
-                                LinearLayout info = new LinearLayout(LocationActivity.this);
+                                LinearLayout info = new LinearLayout(getContext());
                                 info.setOrientation(LinearLayout.VERTICAL);
-                                TextView title = new TextView(LocationActivity.this);
+                                TextView title = new TextView(getContext());
                                 title.setTextColor(Color.BLACK);
                                 title.setGravity(Gravity.CENTER);
                                 title.setTypeface(null, Typeface.BOLD);
                                 title.setText(marker.getTitle());
-                                TextView snippet = new TextView(LocationActivity.this);
+                                TextView snippet = new TextView(getContext());
                                 snippet.setTextColor(Color.GRAY);
                                 snippet.setGravity(Gravity.CENTER);
                                 snippet.setTextSize(10f);
@@ -137,6 +141,30 @@ public class LocationActivity extends AppCompatActivity {
                 });
             }
         });
+        //set up progress dialog showing when getting current location
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setIndeterminate(true);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCanceledOnTouchOutside(false);
+        //hide query view when first enter activity
+        query_view = view.findViewById(R.id.query_view);
+        query_view.setVisibility(View.INVISIBLE);
+        //2 fabs show and hide base on each other's state
+        fab_show_path = (FloatingActionButton) view.findViewById(R.id.fab_show_path);
+        fab_current_location = (FloatingActionButton) view.findViewById(R.id.fab_current_location);
+        fab_current_location.hide();
+        //set up every views on query view
+        tv_startDate = (TextView) view.findViewById(R.id.tv_startDate);
+        tv_startDate.setText(sdfDate.format(calendar.getTime()));
+        tv_startTime = (TextView) view.findViewById(R.id.tv_startTime);
+        tv_startTime.setText(Utils.shortTimeFormat.format(calendar.getTime()));
+        tv_endDate = (TextView) view.findViewById(R.id.tv_endDate);
+        tv_endDate.setText(sdfDate.format(calendar.getTime()));
+        tv_endTime = (TextView) view.findViewById(R.id.tv_endTime);
+        tv_endTime.setText(Utils.shortTimeFormat.format(calendar.getTime()));
+        tv_distance = (TextView) view.findViewById(R.id.tv_distance);
+        btn_showPath = (Button) view.findViewById(R.id.btn_showPath);
+        //load map when first enter
     }
 
     private void addEvents() {
@@ -195,14 +223,14 @@ public class LocationActivity extends AppCompatActivity {
         tv_startTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utils.setUpTimePicker(tv_startTime, calendar, LocationActivity.this,
+                Utils.setUpTimePicker(tv_startTime, calendar, getContext(),
                         Utils.TIMEPICKER_CODE_NO_RECORD);
             }
         });
         tv_endTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utils.setUpTimePicker(tv_endTime, calendarEnd, LocationActivity.this,
+                Utils.setUpTimePicker(tv_endTime, calendarEnd, getContext(),
                         Utils.TIMEPICKER_CODE_NO_RECORD);
             }
         });
@@ -216,7 +244,7 @@ public class LocationActivity extends AppCompatActivity {
                 calendar.set(Calendar.MILLISECOND, 0);
                 calendarEnd.set(Calendar.SECOND, 59);
                 calendarEnd.set(Calendar.MILLISECOND, 999);
-                SharedPreferences sharedPreferences = getSharedPreferences(OurContract.SHARED_PREF, MODE_PRIVATE);
+                SharedPreferences sharedPreferences = getContext().getSharedPreferences(OurContract.SHARED_PREF, MODE_PRIVATE);
                 String authen = "Bearer " + sharedPreferences.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, "");
                 String deviceAuthen = sharedPreferences.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, "");
                 APIService apiService = AppUtils.getAPIService();
@@ -237,7 +265,7 @@ public class LocationActivity extends AppCompatActivity {
 
         apiService.getUserEvents(authen, deviceAuthen, "sense",
                 OurContract.SENSOR_ID_LOCATION_LATITUDE +"," +
-                OurContract.SENSOR_ID_LOCATION_LONGITUDE, 50, start, end)
+                        OurContract.SENSOR_ID_LOCATION_LONGITUDE, 50, start, end)
                 .enqueue(new Callback<Events>() {
                     @Override
                     public void onResponse(Call<Events> call, Response<Events> response) {
@@ -246,22 +274,22 @@ public class LocationActivity extends AppCompatActivity {
                                     /*
                                     STEP 1: take out a list of events
                                     */
-                                    eventList.addAll(response.body().getEvents());
+                                eventList.addAll(response.body().getEvents());
                                     /*
                                     STEP 2: if the response has 50 events, maybe there are more
                                     than 50 events happened in the time interval, so check it
                                     by a recursion method
                                     */
-                                    if (response.body().getEvents().size() == 50)
-                                        getPathInTimeInterval(start, response.body().getEvents().get(49)
-                                                .getTimestamp() - 1, apiService, authen, deviceAuthen);
+                                if (response.body().getEvents().size() == 50)
+                                    getPathInTimeInterval(start, response.body().getEvents().get(49)
+                                            .getTimestamp() - 1, apiService, authen, deviceAuthen);
                                     /*
                                     STEP 3: if the response has less than 50 events, draw the path
                                     */
-                                    else {
-                                        showingPathOnMap();
-                                        progressDialog.dismiss();
-                                    }
+                                else {
+                                    showingPathOnMap();
+                                    progressDialog.dismiss();
+                                }
                                 break;
                             case 503:
                                 getPathInTimeInterval(start, end, apiService, authen, deviceAuthen);
@@ -271,7 +299,7 @@ public class LocationActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(Call<Events> call, Throwable t) {
                         Log.e("Giang loi events", t.toString());
-                        Toast.makeText(LocationActivity.this,
+                        Toast.makeText(getContext(),
                                 getString(R.string.login_toast_login_failed_nointernet),
                                 Toast.LENGTH_SHORT).show();
                         progressDialog.dismiss();
@@ -283,7 +311,7 @@ public class LocationActivity extends AppCompatActivity {
     Method for getting current location
      */
     private void getDeviceCurrentLocation() {
-        SharedPreferences sharedPreferences = getSharedPreferences(OurContract.SHARED_PREF, MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences(OurContract.SHARED_PREF, MODE_PRIVATE);
         APIService apiService = AppUtils.getAPIService();
         progressDialog.setMessage(getString(R.string.getting_current_location));
         progressDialog.show();
@@ -296,7 +324,7 @@ public class LocationActivity extends AppCompatActivity {
 
         apiService.getUserEvents(s, string, "sense",
                 OurContract.SENSOR_ID_LOCATION_LATITUDE +"," +
-                OurContract.SENSOR_ID_LOCATION_LONGITUDE, 2, null, endTimestamp)
+                        OurContract.SENSOR_ID_LOCATION_LONGITUDE, 2, null, endTimestamp)
                 .enqueue(new Callback<Events>() {
                     @Override
                     public void onResponse(Call<Events> call, Response<Events> response) {
@@ -345,7 +373,7 @@ public class LocationActivity extends AppCompatActivity {
                                     }
                                 } else if (response.body().getEvents().size() == 0) {
                                     //If there is no event contains the location, show a toast
-                                    Toast.makeText(LocationActivity.this, R.string.no_location
+                                    Toast.makeText(getContext(), R.string.no_location
                                             , Toast.LENGTH_SHORT).show();
                                     progressDialog.dismiss();
                                 }
@@ -360,7 +388,7 @@ public class LocationActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(Call<Events> call, Throwable t) {
                         Log.e("Giang loi events", t.toString());
-                        Toast.makeText(LocationActivity.this,
+                        Toast.makeText(getContext(),
                                 getString(R.string.login_toast_login_failed_nointernet),
                                 Toast.LENGTH_SHORT).show();
                         progressDialog.dismiss();
@@ -483,7 +511,7 @@ public class LocationActivity extends AppCompatActivity {
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(listLatLng.get(0), 15));
             }
         } else if (listLatLng.isEmpty()) {
-            Toast.makeText(this, R.string.no_path, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.no_path, Toast.LENGTH_SHORT).show();
             mGoogleMap.setOnCameraMoveListener(null);
             tv_distance.setText("0 m");
         }
@@ -500,7 +528,7 @@ public class LocationActivity extends AppCompatActivity {
             }
         };
         DatePickerDialog datePickerDialog = new DatePickerDialog(
-                LocationActivity.this,
+                getContext(),
                 callback,
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),

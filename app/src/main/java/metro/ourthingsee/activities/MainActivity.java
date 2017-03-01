@@ -7,14 +7,15 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -25,11 +26,12 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
-import metro.ourthingsee.OptionsAdapter;
 import metro.ourthingsee.OurContract;
 import metro.ourthingsee.R;
 import metro.ourthingsee.RESTObjects.DeviceConfig;
 import metro.ourthingsee.Utils;
+import metro.ourthingsee.fragments.EnvironmentSensorFragment;
+import metro.ourthingsee.fragments.LocationFragment;
 import metro.ourthingsee.remote.APIService;
 import metro.ourthingsee.remote.AppUtils;
 import metro.ourthingsee.widget.MyHomeWidgetProvider;
@@ -41,8 +43,7 @@ import retrofit2.Response;
 import static metro.ourthingsee.OurContract.PREF_DEVICE_AUTH_ID_NAME;
 import static metro.ourthingsee.OurContract.PREF_USER_AUTH_TOKEN_NAME;
 
-public class MainActivity extends AppCompatActivity
-        implements OptionsAdapter.PurposeItemClickListener {
+public class MainActivity extends AppCompatActivity {
     /**
      * Tag for the log messages
      */
@@ -52,6 +53,19 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout drawer;
     private Toolbar tb_main;
     private TextView tv_name;
+
+    // index to identify current nav menu item
+    public static int navItemIndex = 0;
+
+    // tags used to attach the fragments
+    private static final String TAG_LOCATION = "Location";
+    private static final String TAG_ENVIRONMENT = "Environment sensors";
+    public static String CURRENT_TAG = TAG_LOCATION;
+
+
+    // flag to load home fragment when user presses back key
+    private boolean shouldLoadHomeFragOnBackPress = true;
+    private Handler mHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,13 +124,8 @@ public class MainActivity extends AppCompatActivity
         tb_main = (Toolbar) findViewById(R.id.tb_main);
         setSupportActionBar(tb_main);
 
-        //Set up recycler view for user's options
-        RecyclerView recv_options = (RecyclerView) findViewById(R.id.recv_options);
-        OptionsAdapter optionsAdapter = new OptionsAdapter(this, this);
-        recv_options.setAdapter(optionsAdapter);
-        LinearLayoutManager linearLayoutManager = new
-                LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        recv_options.setLayoutManager(linearLayoutManager);
+        mHandler = new Handler();
+
 
         //Set up navigation bar
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -129,42 +138,78 @@ public class MainActivity extends AppCompatActivity
         ImageView imgv = (ImageView) navHeader.findViewById(R.id.imgv);
         Glide.with(this).load(R.drawable.navheader).asBitmap().diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true).centerCrop().animate(android.R.anim.fade_in).approximate().into(imgv);
+
+        // initializing navigation menu
+        setUpNavigationView();
+
+        if (savedInstanceState == null) {
+            navItemIndex = 0;
+            CURRENT_TAG = TAG_ENVIRONMENT;
+            loadHomeFragment();
+        }
     }
 
-    /**
-     * This is where we receive our callback from
-     * {@link OptionsAdapter.PurposeItemClickListener}
-     * <p>
-     * This callback is invoked when you click on an item in the list.
-     *
-     * @param clickedItemIndex Index in the list of the item that was clicked.
+    /***
+     * Returns respected fragment that user
+     * selected from navigation menu
      */
-    @Override
-    public void onListItemClick(int clickedItemIndex) {
-        switch (clickedItemIndex) {
-            case OurContract.INDEX_OPTION_LOCATION:
-                Intent intent_location = new Intent(this, LocationActivity.class);
-                startActivity(intent_location);
-                break;
-            case OurContract.INDEX_OPTION_TEMPERATURE:
-                // TODO Handle the click for location purpose here
-                break;
+    private void loadHomeFragment() {
+        // selecting appropriate nav menu item
+        selectNavMenu();
 
-            case OurContract.INDEX_OPTION_HUMIDITY:
-                // TODO Handle the click for location purpose here
-                break;
+        // if user select the current navigation menu again, don't do anything
+        // just close the navigation drawer
+        if (getSupportFragmentManager().findFragmentByTag(CURRENT_TAG) != null) {
+            drawer.closeDrawers();
 
-            // Open activity MyThingsee, this activity will measure humidity and light level (luminance)
-            case OurContract.INDEX_OPTION_MYTHINGSEE:
-                Intent intentMyHome = new Intent(this, MyHomeActivity.class);
-                startActivity(intentMyHome);
-                break;
-
-            default:
-                break;
+            return;
         }
 
+        // Sometimes, when fragment has huge data, screen seems hanging
+        // when switching between navigation menus
+        // So using runnable, the fragment is loaded with cross fade effect
+        // This effect can be seen in GMail app
+        Runnable mPendingRunnable = new Runnable() {
+            @Override
+            public void run() {
+                // update the main content by replacing fragments
+                Fragment fragment = getHomeFragment();
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.setCustomAnimations(android.R.anim.fade_in,
+                        android.R.anim.fade_out);
+                fragmentTransaction.replace(R.id.frame, fragment, CURRENT_TAG);
+                fragmentTransaction.commitAllowingStateLoss();
+            }
+        };
+
+        // If mPendingRunnable is not null, then add to the message queue
+        if (mPendingRunnable != null) {
+            mHandler.post(mPendingRunnable);
+        }
+
+        //Closing drawer on item click
+        drawer.closeDrawers();
+
+        // refresh toolbar menu
+        invalidateOptionsMenu();
     }
+    private Fragment getHomeFragment() {
+        switch (navItemIndex) {
+            case 1:
+                // location
+                return new LocationFragment();
+            case 0:
+                // environment sensors
+                return new EnvironmentSensorFragment();
+            default:
+                return new LocationFragment();
+        }
+    }
+
+    private void selectNavMenu() {
+        nav_view.getMenu().getItem(navItemIndex).setChecked(true);
+    }
+
 
     @Override
     public void onBackPressed() {
@@ -185,6 +230,14 @@ public class MainActivity extends AppCompatActivity
 
                 //Check to see which item was being clicked and perform appropriate action
                 switch (menuItem.getItemId()) {
+                    case R.id.nav_location:
+                        navItemIndex = 1;
+                        CURRENT_TAG = TAG_LOCATION;
+                        break;
+                    case R.id.nav_environment:
+                        navItemIndex =0;
+                        CURRENT_TAG = TAG_ENVIRONMENT;
+                        break;
                     case R.id.log_out:
                         // Because Giang use a Toolbar not default ActionBar, we can't use getApplicationContext()
                         // to get the context for this AlertDialog, we have to call our activity.this
@@ -214,6 +267,7 @@ public class MainActivity extends AppCompatActivity
                     menuItem.setChecked(true);
                 }
                 menuItem.setChecked(true);
+                loadHomeFragment();
                 return true;
             }
         });
