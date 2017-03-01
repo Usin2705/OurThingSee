@@ -3,7 +3,6 @@ package metro.ourthingsee;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -13,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import metro.ourthingsee.RESTObjects.Events;
+import metro.ourthingsee.fragments.EnvironmentSensorFragment;
 import metro.ourthingsee.remote.APIService;
 import metro.ourthingsee.remote.AppUtils;
 import retrofit2.Call;
@@ -69,6 +69,7 @@ public class Utils {
                     @Override
                     public void onResponse(Call<Events> call, Response<Events> response) {
                         handleOnResponse(sensorID, response, prefs);
+                        EnvironmentSensorFragment.updateDisplayTV(context);
                     }
 
                     @Override

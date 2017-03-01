@@ -17,7 +17,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -101,10 +100,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            //Get the latest humidity, temperature and luminance
-            Utils.fetchDataFromThingSee(OurContract.SENSOR_ID_HUMIDITY, MainActivity.this);
-            Utils.fetchDataFromThingSee(OurContract.SENSOR_ID_TEMPERATURE, MainActivity.this);
-            Utils.fetchDataFromThingSee(OurContract.SENSOR_ID_LUMINANCE, MainActivity.this);
         }
 
         //Set up toolbar

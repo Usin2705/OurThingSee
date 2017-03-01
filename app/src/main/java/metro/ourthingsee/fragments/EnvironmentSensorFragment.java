@@ -164,7 +164,7 @@ public class EnvironmentSensorFragment extends Fragment {
      *
      * @param context the context of the activity
      */
-    private static void updateDisplayTV(Context context) {
+    public static void updateDisplayTV(Context context) {
         if (context != null && txtHumidityTime != null) {
             try {
 
@@ -192,6 +192,11 @@ public class EnvironmentSensorFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        //Get the latest humidity, temperature and luminance
+        Utils.fetchDataFromThingSee(OurContract.SENSOR_ID_HUMIDITY, getContext());
+        Utils.fetchDataFromThingSee(OurContract.SENSOR_ID_TEMPERATURE, getContext());
+        Utils.fetchDataFromThingSee(OurContract.SENSOR_ID_LUMINANCE, getContext());
         view = inflater.inflate(R.layout.fragment_environment, container, false);
         // Inflate the layout for this fragment
         prefs = getContext().getSharedPreferences(OurContract.SHARED_PREF, MODE_PRIVATE);
