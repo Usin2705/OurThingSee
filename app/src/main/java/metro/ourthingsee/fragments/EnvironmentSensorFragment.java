@@ -16,7 +16,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,21 +41,23 @@ import static android.content.Context.MODE_PRIVATE;
 
 
 public class EnvironmentSensorFragment extends Fragment {
-    View view;
     private static final int MIN_VALUE = 1;
-
     /**
      * If the sensor timestamp is older than the current time with this amount, no notification
      * will be send.
      * Set at 2 hours
      */
     private static final int ELAPSE_TIME = 1000 * 60 * 60 * 2;
-
     static SharedPreferences prefs;
     static TextView txtTemperatureTime, txtTemperatureValue, txtHumidityTime, txtHumidityValue,
             txtLightTime, txtLightValue;
+    View view;
     EnvironmentSensorFragment.TCCLoudRequestReceiver receiver;
     AlarmManager alarmManager;
+
+    public EnvironmentSensorFragment() {
+        // Required empty public constructor
+    }
 
     /**
      * Send the notification to user. It need to be static so it can be called by our
@@ -187,11 +188,6 @@ public class EnvironmentSensorFragment extends Fragment {
             }
         }
     }
-
-    public EnvironmentSensorFragment() {
-        // Required empty public constructor
-    }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -330,6 +326,7 @@ public class EnvironmentSensorFragment extends Fragment {
         });
         return view;
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -385,7 +382,6 @@ public class EnvironmentSensorFragment extends Fragment {
         txtLightTime = (TextView) view.findViewById(R.id.txtLightTime);
         txtLightValue = (TextView) view.findViewById(R.id.txtLightValue);
     }
-
 
 
     @Override
@@ -553,9 +549,6 @@ public class EnvironmentSensorFragment extends Fragment {
             SharedPreferences prefsGiang = context.getSharedPreferences
                     (OurContract.SHARED_PREF, MODE_PRIVATE);
 
-            Log.e("AAAAA", "Get value" + String.valueOf(dbResponse));
-            Log.e("AAAAA", "Get timestamp" + String.valueOf(longTimestamp));
-
             // If prefsGiang is not null, and both timestamp and double value are not 0
             if (dbResponse != -100d && longTimestamp != -100L) {
                 switch (sensorID) {
@@ -573,8 +566,6 @@ public class EnvironmentSensorFragment extends Fragment {
                                 OurContract.PREF_MYHOME_NOTIFICATION_OPTION,
                                 OurContract.DEFAULT_NOTIFICATION_OPTION)) {
 
-                            Log.e("AAAAA", "Get value to send notification" + String.valueOf(dbResponse));
-                            Log.e("AAAAA", "Get timestamp" + String.valueOf(longTimestamp));
                             String strNotf = context.getString
                                     (R.string.notification_humidity, dbResponse);
                             strNotf += "%. " + Utils.shortDateFormat.format(longTimestamp);
@@ -604,8 +595,6 @@ public class EnvironmentSensorFragment extends Fragment {
                                 OurContract.DEFAULT_MIN_LIGHT_VALUE)) && prefsGiang.getBoolean(
                                 OurContract.PREF_MYHOME_NOTIFICATION_OPTION,
                                 OurContract.DEFAULT_NOTIFICATION_OPTION)) {
-                            Log.e("AAAAA", "Get value to send notification light" + String.valueOf(dbResponse));
-                            Log.e("AAAAA", "Get timestamp light" + String.valueOf(longTimestamp));
 
                             String strNotf = context.getString
                                     (R.string.notification_luminance, dbResponse);

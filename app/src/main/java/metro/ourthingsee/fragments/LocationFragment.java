@@ -298,7 +298,6 @@ public class LocationFragment extends Fragment {
 
                     @Override
                     public void onFailure(Call<Events> call, Throwable t) {
-                        Log.e("Giang loi events", t.toString());
                         Toast.makeText(getContext(),
                                 getString(R.string.login_toast_login_failed_nointernet),
                                 Toast.LENGTH_SHORT).show();
@@ -387,7 +386,6 @@ public class LocationFragment extends Fragment {
 
                     @Override
                     public void onFailure(Call<Events> call, Throwable t) {
-                        Log.e("Giang loi events", t.toString());
                         Toast.makeText(getContext(),
                                 getString(R.string.login_toast_login_failed_nointernet),
                                 Toast.LENGTH_SHORT).show();
@@ -502,7 +500,6 @@ public class LocationFragment extends Fragment {
                 else
                     tv_distance.setText(df.format(distance * 6371) + " km");
             } else if (listLatLng.size() == 1) {
-                Log.e("Giang time", endTime + "");
                 tv_distance.setText("0 m");
                 mGoogleMap.addMarker(new MarkerOptions().position(listLatLng.get(0))
                         .title(getString(R.string.only_location))

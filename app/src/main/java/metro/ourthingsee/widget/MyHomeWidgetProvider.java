@@ -40,7 +40,6 @@ public class MyHomeWidgetProvider extends AppWidgetProvider {
             SharedPreferences prefs = context.getSharedPreferences(OurContract.SHARED_PREF, Context.MODE_PRIVATE);
             String authToken = prefs.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, "");
             String authId = prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, "");
-            Log.e("Giang", authToken + authId);
             if (!(authToken.equals("") || authId.equals(""))) {
                 fetchData(context, remoteViews, appWidgetManager, widgetId);
 
