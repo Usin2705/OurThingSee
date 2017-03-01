@@ -106,9 +106,11 @@ public class Utils {
                     dbValue = dbValue/100;
 
                     Date eventDate = new Date(longTimestamp);
+                    Log.e("AAAAA", sensorID + String.valueOf(dateFormat.format(eventDate)) );
 
                     switch (sensorID) {
                         case OurContract.SENSOR_ID_HUMIDITY:
+                            Log.e("AAAAA", "humid:" + String.valueOf(dateFormat.format(eventDate)) );
                             prefs.edit().putString(OurContract.PREF_HUMID_LATEST_TIME,
                                     String.valueOf(dateFormat.format(eventDate))).apply();
                             prefs.edit().putString(OurContract.PREF_HUMID_LATEST_VALUE,
@@ -116,6 +118,7 @@ public class Utils {
                             break;
 
                         case OurContract.SENSOR_ID_TEMPERATURE:
+                            Log.e("AAAAA", "temp:" + String.valueOf(dateFormat.format(eventDate)));
                             prefs.edit().putString(OurContract.PREF_TEMP_LATEST_TIME,
                                     String.valueOf(dateFormat.format(eventDate))).apply();
                             prefs.edit().putString(OurContract.PREF_TEMP_LATEST_VALUE,
@@ -123,6 +126,7 @@ public class Utils {
                             break;
 
                         case OurContract.SENSOR_ID_LUMINANCE:
+                            Log.e("AAAAA", "light:" + String.valueOf(dateFormat.format(eventDate)) );
                             prefs.edit().putString(OurContract.PREF_LIGHT_LATEST_TIME,
                                     String.valueOf(dateFormat.format(eventDate))).apply();
                             prefs.edit().putString(OurContract.PREF_LIGHT_LATEST_VALUE,

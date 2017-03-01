@@ -185,7 +185,7 @@ public class MyHomeWidgetProvider extends AppWidgetProvider {
                 enqueue(new Callback<Events>() {
                     @Override
                     public void onResponse(Call<Events> call, Response<Events> response) {
-                        Utils.handleOnResponse(OurContract.SENSOR_ID_HUMIDITY, response, prefs);
+                        Utils.handleOnResponse(OurContract.SENSOR_ID_TEMPERATURE, response, prefs);
 
                         String strTemp = prefs.getString(
                                 OurContract.PREF_TEMP_LATEST_VALUE, " ");
@@ -197,7 +197,7 @@ public class MyHomeWidgetProvider extends AppWidgetProvider {
                             remoteViews.setTextViewText(R.id.txtWGTemp,
                                     String.format(Locale.US, "%.0f", dbTemp) + "\u2103");
                         } catch (Exception e) {
-                            remoteViews.setTextViewText(R.id.txtWGHumid,
+                            remoteViews.setTextViewText(R.id.txtWGTemp,
                                     context.getString(R.string.no_data));
                         }
                         String longDateString = prefs.getString(
@@ -248,7 +248,7 @@ public class MyHomeWidgetProvider extends AppWidgetProvider {
                 enqueue(new Callback<Events>() {
                     @Override
                     public void onResponse(Call<Events> call, Response<Events> response) {
-                        Utils.handleOnResponse(OurContract.SENSOR_ID_HUMIDITY, response, prefs);
+                        Utils.handleOnResponse(OurContract.SENSOR_ID_LUMINANCE, response, prefs);
 
                         String strLight = prefs.getString(
                                 OurContract.PREF_LIGHT_LATEST_VALUE, " ");
