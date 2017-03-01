@@ -24,11 +24,6 @@ ext {
     // variable that can be referenced to keep support libs consistent
 }
 
-
-
-
-
-
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
@@ -43,19 +38,18 @@ dependencies {
     compile "com.android.support:support-v4:${supportLibVersion}"
 
     // Retrofit
-
-    // JSON Parsing
-
-    //Google Map Api v2
-
-    //Glide for loading Images
-
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.google.code.gson:gson:2.6.1'
+
+    // JSON Parsing
     compile 'com.squareup.okhttp3:logging-interceptor:3.3.1'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
-    compile 'com.google.android.gms:play-services-maps:10.2.0'
-    compile 'com.android.support:support-v4:25.2.0'
+
+    //Google Map Api v2
+    compile 'com.google.android.gms:play-services-maps:10.0.1'
+
+    //Glide for loading Images
     compile 'com.github.bumptech.glide:glide:3.7.0'
+
     testCompile 'junit:junit:4.12'
 }
