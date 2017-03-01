@@ -80,7 +80,7 @@ public class EnvironmentSensorFragment extends Fragment {
                 new NotificationCompat.Builder(context)
                         .setSmallIcon((sensorType == OurContract.NOTIFICATION_ID_HUMIDITY)
                                 ? R.drawable.nature
-                                : R.drawable.ic_lightbulb_outline_24dp)
+                                : R.drawable.light)
                         .setContentTitle(context.getString(R.string.myhome_option))
                         .setContentText(strContent)
                         .setContentIntent(pendingIntent)
@@ -351,7 +351,7 @@ public class EnvironmentSensorFragment extends Fragment {
 
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
         dialogBuilder.setTitle(getString(R.string.myhome_dialog_title_light));
-        dialogBuilder.setIcon(R.drawable.ic_lightbulb_outline_24dp);
+        dialogBuilder.setIcon(R.drawable.light);
 
         View dialogView = View.inflate(getContext(), R.layout.listview_spinner_dialog, null);
         dialogBuilder.setView(dialogView);

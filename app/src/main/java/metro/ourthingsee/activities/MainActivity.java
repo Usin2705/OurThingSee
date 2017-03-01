@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
                         new AlertDialog.Builder(MainActivity.this)
                                 .setTitle(getString(R.string.log_out))
                                 .setMessage(R.string.log_out_message)
-                                .setIcon(R.drawable.ic_warning_24dp)
+                                .setIcon(R.drawable.warn)
                                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {

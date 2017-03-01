@@ -39,7 +39,7 @@
     <string name="myhome_notification_turnon_desc">Notify user whenever humidity and/or light level fall below a minimum level.\nOnly notify outside quiet time.</string>
 
     <!-- The default string value for display texts in MyHome activity [CHAR LIMIT=50] -->
-    <string name="myhome_default_novalue">No value found, waiting for update from server.</string>
+    <string name="myhome_default_novalue">No value found</string>
 
     <!-- Dialog title for minimum humidity number picker [CHAR LIMIT=NONE] -->
     <string name="myhome_dialog_title_humidity">Select your minimum humidity level (%)</string>
