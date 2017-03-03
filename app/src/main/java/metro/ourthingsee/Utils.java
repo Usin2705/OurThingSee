@@ -10,6 +10,7 @@ import android.widget.Toast;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 import metro.ourthingsee.RESTObjects.Events;
 import metro.ourthingsee.fragments.EnvironmentSensorFragment;
@@ -25,9 +26,12 @@ import retrofit2.Response;
 
 public class Utils {
 
-    public static SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
-    public static SimpleDateFormat shortDateFormat = new SimpleDateFormat("dd-MMM HH:mm");
-    public static SimpleDateFormat shortTimeFormat = new SimpleDateFormat("HH:mm");
+    public static SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy HH:mm:ss",
+            Locale.getDefault());
+    public static SimpleDateFormat shortDateFormat = new SimpleDateFormat("dd-MMM HH:mm",
+            Locale.getDefault());
+    public static SimpleDateFormat shortTimeFormat = new SimpleDateFormat("HH:mm",
+            Locale.getDefault());
     public static final int TIMEPICKER_CODE_NO_RECORD = 0;
     public static final int TIMEPICKER_CODE_RECORD_END = 1;
 
