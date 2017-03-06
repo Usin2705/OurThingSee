@@ -96,42 +96,47 @@ public class Utils {
         switch (response.code()) {
             case 200:
                 if (response.body().getEvents().size() > 0) {
-                    Long longTimestamp = response.body().getEvents().
-                            get(0).getCause().getSenses().get(0).getTs();
+                    for(int i = 0; i < response.body().getEvents().size();i++) {
+                        for(int j=0;j<response.body().getEvents().get(i).getCause().getSenses().size();j++) {
+                            String sId = response.body().getEvents().get(i).getCause().getSenses().get(j).getSId();
+                            Long longTimestamp = response.body().getEvents().
+                                    get(i).getCause().getSenses().get(j).getTs();
 
-                    Double dbValue = response.body().getEvents().
-                            get(0).getCause().getSenses().get(0).getVal();
+                            Double dbValue = response.body().getEvents().
+                                    get(i).getCause().getSenses().get(j).getVal();
 
-                    dbValue = dbValue*100;
-                    dbValue = (double) Math.round(dbValue);
-                    dbValue = dbValue/100;
+                            dbValue = dbValue * 100;
+                            dbValue = (double) Math.round(dbValue);
+                            dbValue = dbValue / 100;
 
-                    Date eventDate = new Date(longTimestamp);
+                            Date eventDate = new Date(longTimestamp);
 
-                    switch (sensorID) {
-                        case OurContract.SENSOR_ID_HUMIDITY:
-                            prefs.edit().putString(OurContract.PREF_HUMID_LATEST_TIME,
-                                    String.valueOf(dateFormat.format(eventDate))).apply();
-                            prefs.edit().putString(OurContract.PREF_HUMID_LATEST_VALUE,
-                                    String.valueOf(dbValue) + " %").apply();
-                            break;
+                            switch (sId) {
+                                case OurContract.SENSOR_ID_HUMIDITY:
+                                    prefs.edit().putString(OurContract.PREF_HUMID_LATEST_TIME,
+                                            String.valueOf(dateFormat.format(eventDate))).apply();
+                                    prefs.edit().putString(OurContract.PREF_HUMID_LATEST_VALUE,
+                                            String.valueOf(dbValue) + " %").apply();
+                                    break;
 
-                        case OurContract.SENSOR_ID_TEMPERATURE:
-                            prefs.edit().putString(OurContract.PREF_TEMP_LATEST_TIME,
-                                    String.valueOf(dateFormat.format(eventDate))).apply();
-                            prefs.edit().putString(OurContract.PREF_TEMP_LATEST_VALUE,
-                                    String.valueOf(dbValue) + " \u2103").apply();
-                            break;
+                                case OurContract.SENSOR_ID_TEMPERATURE:
+                                    prefs.edit().putString(OurContract.PREF_TEMP_LATEST_TIME,
+                                            String.valueOf(dateFormat.format(eventDate))).apply();
+                                    prefs.edit().putString(OurContract.PREF_TEMP_LATEST_VALUE,
+                                            String.valueOf(dbValue) + " \u2103").apply();
+                                    break;
 
-                        case OurContract.SENSOR_ID_LUMINANCE:
-                            prefs.edit().putString(OurContract.PREF_LIGHT_LATEST_TIME,
-                                    String.valueOf(dateFormat.format(eventDate))).apply();
-                            prefs.edit().putString(OurContract.PREF_LIGHT_LATEST_VALUE,
-                                    String.valueOf(dbValue) + " lux").apply();
-                            break;
+                                case OurContract.SENSOR_ID_LUMINANCE:
+                                    prefs.edit().putString(OurContract.PREF_LIGHT_LATEST_TIME,
+                                            String.valueOf(dateFormat.format(eventDate))).apply();
+                                    prefs.edit().putString(OurContract.PREF_LIGHT_LATEST_VALUE,
+                                            String.valueOf(dbValue) + " lux").apply();
+                                    break;
 
-                        default:
-                            break;
+                                default:
+                                    break;
+                            }
+                        }
                     }
                 }
                 break;

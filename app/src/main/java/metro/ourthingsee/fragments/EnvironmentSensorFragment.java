@@ -16,6 +16,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -170,18 +171,35 @@ public class EnvironmentSensorFragment extends Fragment {
 
                 txtHumidityTime.setText(prefs.getString(OurContract.PREF_HUMID_LATEST_TIME,
                         context.getString(R.string.myhome_default_novalue)));
+                Log.e("Giang", OurContract.PREF_HUMID_LATEST_TIME +" "+
+                        prefs.getString(OurContract.PREF_HUMID_LATEST_TIME,
+                        context.getString(R.string.myhome_default_novalue)));
                 txtHumidityValue.setText(prefs.getString(OurContract.PREF_HUMID_LATEST_VALUE,
                         context.getString(R.string.myhome_default_novalue)));
-
+                Log.e("Giang", OurContract.PREF_HUMID_LATEST_VALUE +" "+
+                        prefs.getString(OurContract.PREF_HUMID_LATEST_VALUE,
+                                context.getString(R.string.myhome_default_novalue)));
                 txtTemperatureTime.setText(prefs.getString(OurContract.PREF_TEMP_LATEST_TIME,
                         context.getString(R.string.myhome_default_novalue)));
+                Log.e("Giang", OurContract.PREF_TEMP_LATEST_TIME +" "+
+                        prefs.getString(OurContract.PREF_TEMP_LATEST_TIME,
+                                context.getString(R.string.myhome_default_novalue)));
                 txtTemperatureValue.setText(prefs.getString(OurContract.PREF_TEMP_LATEST_VALUE,
                         context.getString(R.string.myhome_default_novalue)));
+                Log.e("Giang", OurContract.PREF_TEMP_LATEST_VALUE +" "+
+                        prefs.getString(OurContract.PREF_TEMP_LATEST_VALUE,
+                                context.getString(R.string.myhome_default_novalue)));
 
                 txtLightTime.setText(prefs.getString(OurContract.PREF_LIGHT_LATEST_TIME,
                         context.getString(R.string.myhome_default_novalue)));
+                Log.e("Giang", OurContract.PREF_LIGHT_LATEST_TIME +" "+
+                        prefs.getString(OurContract.PREF_LIGHT_LATEST_TIME,
+                                context.getString(R.string.myhome_default_novalue)));
                 txtLightValue.setText(prefs.getString(OurContract.PREF_LIGHT_LATEST_VALUE,
                         context.getString(R.string.myhome_default_novalue)));
+                Log.e("Giang", OurContract.PREF_LIGHT_LATEST_VALUE +" "+
+                        prefs.getString(OurContract.PREF_LIGHT_LATEST_VALUE,
+                                context.getString(R.string.myhome_default_novalue)));
 
             } catch (NullPointerException e) {
                 e.printStackTrace();
@@ -192,16 +210,17 @@ public class EnvironmentSensorFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        //Get the latest humidity, temperature and luminance
-        Utils.fetchDataFromThingSee(OurContract.SENSOR_ID_HUMIDITY, getContext());
-        Utils.fetchDataFromThingSee(OurContract.SENSOR_ID_TEMPERATURE, getContext());
-        Utils.fetchDataFromThingSee(OurContract.SENSOR_ID_LUMINANCE, getContext());
         view = inflater.inflate(R.layout.fragment_environment, container, false);
         // Inflate the layout for this fragment
         prefs = getContext().getSharedPreferences(OurContract.SHARED_PREF, MODE_PRIVATE);
 
         // Cast all the display texts
         castDisplayTV();
+        //Get the latest humidity, temperature and luminance
+        Utils.fetchDataFromThingSee(OurContract.SENSOR_ID_HUMIDITY, getContext());
+        Utils.fetchDataFromThingSee(OurContract.SENSOR_ID_TEMPERATURE, getContext());
+        Utils.fetchDataFromThingSee(OurContract.SENSOR_ID_LUMINANCE, getContext());
+
 
         // Update all the display texts with latest value. Call after prefs since we will update
         // from prefs.
