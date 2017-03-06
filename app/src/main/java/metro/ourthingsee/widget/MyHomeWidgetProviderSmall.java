@@ -116,7 +116,7 @@ public class MyHomeWidgetProviderSmall extends AppWidgetProvider {
                 enqueue(new Callback<Events>() {
                     @Override
                     public void onResponse(Call<Events> call, Response<Events> response) {
-                        Utils.handleOnResponse(OurContract.SENSOR_ID_HUMIDITY, response, prefs);
+                        Utils.handleOnResponse(response, prefs);
                         String strHumid = prefs.getString(
                                 OurContract.PREF_HUMID_LATEST_VALUE, " ");
 
@@ -184,7 +184,7 @@ public class MyHomeWidgetProviderSmall extends AppWidgetProvider {
                 enqueue(new Callback<Events>() {
                     @Override
                     public void onResponse(Call<Events> call, Response<Events> response) {
-                        Utils.handleOnResponse(OurContract.SENSOR_ID_TEMPERATURE, response, prefs);
+                        Utils.handleOnResponse(response, prefs);
 
                         String strTemp = prefs.getString(
                                 OurContract.PREF_TEMP_LATEST_VALUE, " ");
@@ -247,7 +247,7 @@ public class MyHomeWidgetProviderSmall extends AppWidgetProvider {
                 enqueue(new Callback<Events>() {
                     @Override
                     public void onResponse(Call<Events> call, Response<Events> response) {
-                        Utils.handleOnResponse(OurContract.SENSOR_ID_LUMINANCE, response, prefs);
+                        Utils.handleOnResponse(response, prefs);
 
                         String strLight = prefs.getString(
                                 OurContract.PREF_LIGHT_LATEST_VALUE, " ");

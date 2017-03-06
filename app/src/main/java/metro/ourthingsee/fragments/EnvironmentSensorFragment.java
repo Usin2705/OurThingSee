@@ -171,35 +171,17 @@ public class EnvironmentSensorFragment extends Fragment {
 
                 txtHumidityTime.setText(prefs.getString(OurContract.PREF_HUMID_LATEST_TIME,
                         context.getString(R.string.myhome_default_novalue)));
-                Log.e("Giang", OurContract.PREF_HUMID_LATEST_TIME +" "+
-                        prefs.getString(OurContract.PREF_HUMID_LATEST_TIME,
-                        context.getString(R.string.myhome_default_novalue)));
                 txtHumidityValue.setText(prefs.getString(OurContract.PREF_HUMID_LATEST_VALUE,
                         context.getString(R.string.myhome_default_novalue)));
-                Log.e("Giang", OurContract.PREF_HUMID_LATEST_VALUE +" "+
-                        prefs.getString(OurContract.PREF_HUMID_LATEST_VALUE,
-                                context.getString(R.string.myhome_default_novalue)));
                 txtTemperatureTime.setText(prefs.getString(OurContract.PREF_TEMP_LATEST_TIME,
                         context.getString(R.string.myhome_default_novalue)));
-                Log.e("Giang", OurContract.PREF_TEMP_LATEST_TIME +" "+
-                        prefs.getString(OurContract.PREF_TEMP_LATEST_TIME,
-                                context.getString(R.string.myhome_default_novalue)));
                 txtTemperatureValue.setText(prefs.getString(OurContract.PREF_TEMP_LATEST_VALUE,
                         context.getString(R.string.myhome_default_novalue)));
-                Log.e("Giang", OurContract.PREF_TEMP_LATEST_VALUE +" "+
-                        prefs.getString(OurContract.PREF_TEMP_LATEST_VALUE,
-                                context.getString(R.string.myhome_default_novalue)));
 
                 txtLightTime.setText(prefs.getString(OurContract.PREF_LIGHT_LATEST_TIME,
                         context.getString(R.string.myhome_default_novalue)));
-                Log.e("Giang", OurContract.PREF_LIGHT_LATEST_TIME +" "+
-                        prefs.getString(OurContract.PREF_LIGHT_LATEST_TIME,
-                                context.getString(R.string.myhome_default_novalue)));
                 txtLightValue.setText(prefs.getString(OurContract.PREF_LIGHT_LATEST_VALUE,
                         context.getString(R.string.myhome_default_novalue)));
-                Log.e("Giang", OurContract.PREF_LIGHT_LATEST_VALUE +" "+
-                        prefs.getString(OurContract.PREF_LIGHT_LATEST_VALUE,
-                                context.getString(R.string.myhome_default_novalue)));
 
             } catch (NullPointerException e) {
                 e.printStackTrace();
