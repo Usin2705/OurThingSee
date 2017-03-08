@@ -164,6 +164,7 @@ public class GraphActivity extends AppCompatActivity {
                         Toast.makeText(GraphActivity.this,
                                 getString(R.string.login_toast_login_failed_nointernet),
                                 Toast.LENGTH_SHORT).show();
+                        findViewById(R.id.labels).setVisibility(View.GONE);
                         progressDialog.dismiss();
                     }
                 });
@@ -174,6 +175,7 @@ public class GraphActivity extends AppCompatActivity {
         Collections.reverse(pointValues);
         //continue processing the graph
         if (pointValues.size() > 0) {
+            findViewById(R.id.labels).setVisibility(View.VISIBLE);
             //minX and maxX are used for better-looking graph
             float minX = pointValues.get(0).getX() - 0.25f;
             if (minX < 0)
@@ -228,10 +230,12 @@ public class GraphActivity extends AppCompatActivity {
                     case 1:
                         minVal.add(new PointValue(v.left, prefs.getInt(OurContract.PREF_MYHOME_MIN_HUMIDITY_VALUE, OurContract.DEFAULT_MIN_HUMIDITY_VALUE)));
                         minVal.add(new PointValue(v.right, prefs.getInt(OurContract.PREF_MYHOME_MIN_HUMIDITY_VALUE, OurContract.DEFAULT_MIN_HUMIDITY_VALUE)));
+                        findViewById(R.id.min).setVisibility(View.VISIBLE);
                         break;
                     case 2:
                         minVal.add(new PointValue(v.left, prefs.getInt(OurContract.PREF_MYHOME_MIN_HUMIDITY_VALUE, OurContract.DEFAULT_MIN_LIGHT_VALUE)));
                         minVal.add(new PointValue(v.right, prefs.getInt(OurContract.PREF_MYHOME_MIN_HUMIDITY_VALUE, OurContract.DEFAULT_MIN_LIGHT_VALUE)));
+                        findViewById(R.id.min).setVisibility(View.VISIBLE);
                         break;
                 }
                 lines.add(new Line(minVal).setColor(Color.RED)
@@ -239,7 +243,7 @@ public class GraphActivity extends AppCompatActivity {
                 data.setLines(lines);
                 line.setLineChartData(data);
                 setViewportTopBot(v, line);
-            }
+            } else findViewById(R.id.min).setVisibility(View.GONE);
         } else {
             Axis axisX = new Axis().setHasLines(true).setName("Hours of Day")
                     .setTextColor(Color.parseColor("#5D4037")).setMaxLabelChars(4);
@@ -250,9 +254,13 @@ public class GraphActivity extends AppCompatActivity {
             data.setAxisXBottom(axisX);
             data.setAxisYLeft(axisY);
             line.setLineChartData(data);
+            findViewById(R.id.labels).setVisibility(View.GONE);
         }
-        tvGraphName.setText("Graph of " + datas[spData.getSelectedItemPosition()]+" in "+
-                simpleDateFormat.format(calendar.getTime()));
+        tvGraphName.setText("Graph of " + datas[spData.getSelectedItemPosition()].toLowerCase()
+                + " in " + simpleDateFormat.format(calendar.getTime()));
+
+        ((TextView)findViewById(R.id.tvLineName)).setText
+                (datas[spData.getSelectedItemPosition()]+ " graph");
     }
 
     private void setViewportTopBot(Viewport v, LineChartView line) {
