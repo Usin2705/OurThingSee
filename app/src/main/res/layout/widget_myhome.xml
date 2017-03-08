@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:layout_margin="@dimen/activity_margin"
     android:orientation="vertical"
-    android:background="@color/colorPrimaryLight_Tr">
+    android:background="@color/colorAccent2_Tr">
 
     <LinearLayout
         android:layout_width="match_parent"

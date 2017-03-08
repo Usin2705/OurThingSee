@@ -57,7 +57,7 @@ public class Utils {
     /**
      * Fetch the data from ThingSee device by calling the {@link APIService} method's
      * {@link APIService
-     * The response is then handle in {@link #handleOnResponse(String, Response, SharedPreferences)}
+     * The response is then handle in {@link #handleOnResponse(Response, SharedPreferences)}
      * <p>
      * <p>
      * If we call all data at the same time, ThingSee may return only one data, which may
@@ -78,7 +78,7 @@ public class Utils {
                 enqueue(new Callback<Events>() {
                     @Override
                     public void onResponse(Call<Events> call, Response<Events> response) {
-                        handleOnResponse(sensorID, response, prefs);
+                        handleOnResponse(response, prefs);
                         EnvironmentSensorFragment.updateDisplayTV(context);
                     }
 
@@ -92,12 +92,11 @@ public class Utils {
     /**
      * Handle the onResponse from apiService request
      * {@link APIService#getUserEvents(String, String, String, String, Integer, Long, Long)}
-     *
-     * @param sensorID the sensorID used to send the request
+
      * @param response the response return from the request. This is a success response.
      * @param prefs    the sharedprefs used to record data
      */
-    public static void handleOnResponse(String sensorID, Response<Events> response,
+    public static void handleOnResponse(Response<Events> response,
                                         SharedPreferences prefs) {
         switch (response.code()) {
             case 200:

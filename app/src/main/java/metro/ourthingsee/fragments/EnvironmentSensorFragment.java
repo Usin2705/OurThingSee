@@ -175,10 +175,12 @@ public class EnvironmentSensorFragment extends Fragment {
                         context.getString(R.string.myhome_default_novalue)));
                 txtTemperatureValue.setText(prefs.getString(OurContract.PREF_TEMP_LATEST_VALUE,
                         context.getString(R.string.myhome_default_novalue)));
+
                 txtLightTime.setText(prefs.getString(OurContract.PREF_LIGHT_LATEST_TIME,
                         context.getString(R.string.myhome_default_novalue)));
                 txtLightValue.setText(prefs.getString(OurContract.PREF_LIGHT_LATEST_VALUE,
                         context.getString(R.string.myhome_default_novalue)));
+
             } catch (NullPointerException e) {
                 e.printStackTrace();
             }
