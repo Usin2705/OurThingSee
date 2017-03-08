@@ -233,8 +233,8 @@ public class GraphActivity extends AppCompatActivity {
                         findViewById(R.id.min).setVisibility(View.VISIBLE);
                         break;
                     case 2:
-                        minVal.add(new PointValue(v.left, prefs.getInt(OurContract.PREF_MYHOME_MIN_HUMIDITY_VALUE, OurContract.DEFAULT_MIN_LIGHT_VALUE)));
-                        minVal.add(new PointValue(v.right, prefs.getInt(OurContract.PREF_MYHOME_MIN_HUMIDITY_VALUE, OurContract.DEFAULT_MIN_LIGHT_VALUE)));
+                        minVal.add(new PointValue(v.left, prefs.getInt(OurContract.PREF_MYHOME_MIN_LIGHT_VALUE, OurContract.DEFAULT_MIN_LIGHT_VALUE)));
+                        minVal.add(new PointValue(v.right, prefs.getInt(OurContract.PREF_MYHOME_MIN_LIGHT_VALUE, OurContract.DEFAULT_MIN_LIGHT_VALUE)));
                         findViewById(R.id.min).setVisibility(View.VISIBLE);
                         break;
                 }
