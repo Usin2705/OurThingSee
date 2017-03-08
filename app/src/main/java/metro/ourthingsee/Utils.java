@@ -1,8 +1,10 @@
 package metro.ourthingsee;
 
+import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -20,6 +22,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static metro.ourthingsee.fragments.LocationFragment.sdfDate;
+
 /**
  * Utils class for handle some shared tasks of activities
  */
@@ -27,6 +31,8 @@ import retrofit2.Response;
 public class Utils {
 
     public static SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy HH:mm:ss",
+            Locale.getDefault());
+    public static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy",
             Locale.getDefault());
     public static SimpleDateFormat shortDateFormat = new SimpleDateFormat("dd-MMM HH:mm",
             Locale.getDefault());
@@ -192,5 +198,25 @@ public class Utils {
                 true);
         timePickerDialog.setCanceledOnTouchOutside(false);
         timePickerDialog.show();
+    }
+
+    public static void setUpDatePicker(final TextView tv, final Calendar calendar, final Context context) {
+        DatePickerDialog.OnDateSetListener callback = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                calendar.set(Calendar.YEAR, year);
+                calendar.set(Calendar.MONTH, month);
+                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                tv.setText(sdfDate.format(calendar.getTime()));
+            }
+        };
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                context,
+                callback,
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH));
+        datePickerDialog.setCanceledOnTouchOutside(false);
+        datePickerDialog.show();
     }
 }

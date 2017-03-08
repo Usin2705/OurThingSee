@@ -18,6 +18,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -171,11 +172,7 @@ public class MainActivity extends AppCompatActivity {
                 fragmentTransaction.commitAllowingStateLoss();
             }
         };
-
-        // If mPendingRunnable is not null, then add to the message queue
-        if (mPendingRunnable != null) {
             mHandler.post(mPendingRunnable);
-        }
         // refresh toolbar menu
         invalidateOptionsMenu();
     }
@@ -194,6 +191,28 @@ public class MainActivity extends AppCompatActivity {
 
     private void selectNavMenu() {
         nav_view.getMenu().getItem(navItemIndex).setChecked(true);
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (navItemIndex == 0) {
+            getMenuInflater().inflate(R.menu.environment_menu, menu);
+        }
+        return true;
+    }
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.mnuShowStats) {
+            Intent intent = new Intent(MainActivity.this,GraphActivity.class);
+            startActivity(intent);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 
@@ -289,7 +308,7 @@ public class MainActivity extends AppCompatActivity {
     public void delLoginData() {
         //delete all shared preferences
         prefs = getSharedPreferences(OurContract.SHARED_PREF, Context.MODE_PRIVATE);
-        prefs.edit().clear().commit();
+        prefs.edit().clear().apply();
         updateAllWidgets();
         //move back to log in screen
         Intent intent2 = new Intent(this, LoginActivity.class);

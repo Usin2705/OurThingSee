@@ -4,7 +4,6 @@ package metro.ourthingsee.activities;
  * Created by Jingxuaw on 17.2.2017.
  */
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -16,7 +15,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import metro.ourthingsee.R;
 
-;
 
 public class AboutUs extends AppCompatActivity implements View.OnClickListener {
     Button btn_Back;
@@ -38,8 +36,6 @@ public class AboutUs extends AppCompatActivity implements View.OnClickListener {
     // If click "back" , it will turn to "MainActivity" layout.
     public void onClick(View v) {
         if (btn_Back.isClickable()) {
-            Intent intentAboutUs = new Intent(AboutUs.this, MainActivity.class);
-            startActivity(intentAboutUs);
             finish();
         }
     }

@@ -16,7 +16,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -168,39 +167,18 @@ public class EnvironmentSensorFragment extends Fragment {
     public static void updateDisplayTV(Context context) {
         if (context != null && txtHumidityTime != null) {
             try {
-
                 txtHumidityTime.setText(prefs.getString(OurContract.PREF_HUMID_LATEST_TIME,
-                        context.getString(R.string.myhome_default_novalue)));
-                Log.e("Giang", OurContract.PREF_HUMID_LATEST_TIME +" "+
-                        prefs.getString(OurContract.PREF_HUMID_LATEST_TIME,
                         context.getString(R.string.myhome_default_novalue)));
                 txtHumidityValue.setText(prefs.getString(OurContract.PREF_HUMID_LATEST_VALUE,
                         context.getString(R.string.myhome_default_novalue)));
-                Log.e("Giang", OurContract.PREF_HUMID_LATEST_VALUE +" "+
-                        prefs.getString(OurContract.PREF_HUMID_LATEST_VALUE,
-                                context.getString(R.string.myhome_default_novalue)));
                 txtTemperatureTime.setText(prefs.getString(OurContract.PREF_TEMP_LATEST_TIME,
                         context.getString(R.string.myhome_default_novalue)));
-                Log.e("Giang", OurContract.PREF_TEMP_LATEST_TIME +" "+
-                        prefs.getString(OurContract.PREF_TEMP_LATEST_TIME,
-                                context.getString(R.string.myhome_default_novalue)));
                 txtTemperatureValue.setText(prefs.getString(OurContract.PREF_TEMP_LATEST_VALUE,
                         context.getString(R.string.myhome_default_novalue)));
-                Log.e("Giang", OurContract.PREF_TEMP_LATEST_VALUE +" "+
-                        prefs.getString(OurContract.PREF_TEMP_LATEST_VALUE,
-                                context.getString(R.string.myhome_default_novalue)));
-
                 txtLightTime.setText(prefs.getString(OurContract.PREF_LIGHT_LATEST_TIME,
                         context.getString(R.string.myhome_default_novalue)));
-                Log.e("Giang", OurContract.PREF_LIGHT_LATEST_TIME +" "+
-                        prefs.getString(OurContract.PREF_LIGHT_LATEST_TIME,
-                                context.getString(R.string.myhome_default_novalue)));
                 txtLightValue.setText(prefs.getString(OurContract.PREF_LIGHT_LATEST_VALUE,
                         context.getString(R.string.myhome_default_novalue)));
-                Log.e("Giang", OurContract.PREF_LIGHT_LATEST_VALUE +" "+
-                        prefs.getString(OurContract.PREF_LIGHT_LATEST_VALUE,
-                                context.getString(R.string.myhome_default_novalue)));
-
             } catch (NullPointerException e) {
                 e.printStackTrace();
             }
@@ -226,7 +204,7 @@ public class EnvironmentSensorFragment extends Fragment {
         // from prefs.
         updateDisplayTV(getContext());
 
-        ((MainActivity)getActivity()).progressDialog.dismiss();
+        ((MainActivity) getActivity()).progressDialog.dismiss();
 
         final LinearLayout lnlMyHomeOpt = (LinearLayout) view.findViewById(R.id.lnlMyHomeOption);
 

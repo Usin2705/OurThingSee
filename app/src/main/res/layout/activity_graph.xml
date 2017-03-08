@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_graph"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="metro.ourthingsee.activities.GraphActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/tb_stats"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:minHeight="56dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="@dimen/material_design_item_guide_padding"
+                    android:textColor="#ffffff"
+                    android:textSize="20sp"
+                    tools:text="16 Th2 2016" />
+
+                <Spinner
+                    android:id="@+id/spData"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnGo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:text="@string/go"
+                android:textColor="#ffffff"
+                android:theme="@style/MyButton" />
+        </LinearLayout>
+    </android.support.v7.widget.Toolbar>
+
+    <lecho.lib.hellocharts.view.LineChartView
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/tb_stats"
+        android:padding="@dimen/material_design_guide_padding"
+        android:layout_above="@+id/tvGraphName"/>
+    <TextView
+        android:id="@+id/tvGraphName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimaryDark"
+        android:paddingBottom="@dimen/material_design_guide_padding"
+        android:paddingLeft="@dimen/material_design_guide_padding"
+        android:paddingRight="@dimen/material_design_guide_padding"/>
+</RelativeLayout>

@@ -6,6 +6,8 @@
     <color name="colorPrimaryDark">#3E2723</color>
     <color name="colorAccent">#795548</color>
     <color name="colorAccent2">#EFEBE9</color>
-
+    <color name="colorgraphdomain">#ecffd043</color>
+    <color name="colorgraphval">#daf7171b</color>
+    <color name="bgGraph">#9afa0400</color>
     <color name="colorTransparent">#00ffffff</color>
 </resources>

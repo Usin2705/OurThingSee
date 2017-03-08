@@ -132,6 +132,13 @@
     <string name="other">Other</string>
     <string name="getting_data">Getting data...</string>
     <string name="logging_in">Logging in...</string>
+    <string name="temp">Temperature</string>
+    <string name="humid">Humidity</string>
+    <string name="lumi">Luminance</string>
+    <string name="nodatafound">No data found in given time interval</string>
+    <string name="graphing">Graphing data...</string>
+    <string name="oneValFound">Only one value found!</string>
+    <string name="show_statistics">Show statistics</string>
     <string-array name="nav_item_activity_titles">
         <item>Location</item>
         <item>Environment Sensors</item>

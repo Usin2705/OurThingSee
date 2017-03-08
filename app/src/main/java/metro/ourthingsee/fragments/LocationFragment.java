@@ -1,6 +1,5 @@
 package metro.ourthingsee.fragments;
 
-import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -14,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +49,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static android.content.Context.MODE_PRIVATE;
+import static metro.ourthingsee.Utils.setUpDatePicker;
 
 public class LocationFragment extends Fragment {
     private View view;
@@ -212,13 +211,13 @@ public class LocationFragment extends Fragment {
         tv_startDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setUpDatePicker(tv_startDate, calendar);
+                setUpDatePicker(tv_startDate, calendar, getContext());
             }
         });
         tv_endDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setUpDatePicker(tv_endDate, calendarEnd);
+                setUpDatePicker(tv_endDate, calendarEnd, getContext());
             }
         });
         tv_startTime.setOnClickListener(new View.OnClickListener() {
@@ -514,25 +513,7 @@ public class LocationFragment extends Fragment {
         }
     }
 
-    private void setUpDatePicker(final TextView tv, final Calendar calendar) {
-        DatePickerDialog.OnDateSetListener callback = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                calendar.set(Calendar.YEAR, year);
-                calendar.set(Calendar.MONTH, month);
-                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                tv.setText(sdfDate.format(calendar.getTime()));
-            }
-        };
-        DatePickerDialog datePickerDialog = new DatePickerDialog(
-                getContext(),
-                callback,
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH));
-        datePickerDialog.setCanceledOnTouchOutside(false);
-        datePickerDialog.show();
-    }
+
 
     private double calculateArcLengthBaseOnLatLng(LatLng start, LatLng end) {
         double arc = 2 * Math.asin(Math.sqrt((1 - Math.sin(Math.toRadians(start.latitude))
