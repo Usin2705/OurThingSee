@@ -14,6 +14,7 @@
 
     <item android:title="@string/other">
         <menu>
+            <group android:checkableBehavior="all">
             <item
                 android:id="@+id/log_out"
                 android:icon="@drawable/arrow"
@@ -22,6 +23,7 @@
                 android:id="@+id/about_us"
                 android:icon="@drawable/aboutus"
                 android:title="@string/about_us" />
+            </group>
         </menu>
     </item>
 </menu>

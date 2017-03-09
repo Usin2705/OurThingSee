@@ -130,15 +130,20 @@
     <string name="starttime">StartTime</string>
     <string name="startdate">StartDate</string>
     <string name="other">Other</string>
-    <string name="getting_data">Getting data...</string>
-    <string name="logging_in">Logging in...</string>
+    <string name="getting_data">Getting data&#8230;</string>
+    <string name="logging_in">Logging in&#8230;</string>
     <string name="temp">Temperature</string>
     <string name="humid">Humidity</string>
     <string name="lumi">Luminance</string>
     <string name="nodatafound">No data found in given time interval</string>
-    <string name="graphing">Graphing data...</string>
+    <string name="graphing">Graphing data&#8230;</string>
     <string name="oneValFound">Only one value found!</string>
     <string name="show_statistics">Show statistics</string>
+    <string name="hours_of_day">Hours of Day</string>
+    <string name="line">" line"</string>
+    <string name="graph_of">"Graph of "</string>
+    <string name="in">" in "</string>
+    <string name="minimum_allowed_value">Minimum allowed value</string>
     <string-array name="nav_item_activity_titles">
         <item>Location</item>
         <item>Environment Sensors</item>

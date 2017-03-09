@@ -53,9 +53,9 @@ public class GraphActivity extends AppCompatActivity {
     private long startTime;
     private long endTime;
     //graph properties
-    LineChartView line;
+    LineChartView lineChartView;
     List<PointValue> pointValues;
-
+    LineChartData data;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,23 +73,35 @@ public class GraphActivity extends AppCompatActivity {
 
     private void addControls() {
         tvDate = (TextView) findViewById(R.id.tvDate);
-        tvGraphName = (TextView) findViewById(R.id.tvGraphName);
         tvDate.setText(sdfDate.format(calendar.getTime()));
+        tvGraphName = (TextView) findViewById(R.id.tvGraphName);
         btnGo = (Button) findViewById(R.id.btnGo);
+        //init spinner
         spData = (Spinner) findViewById(R.id.spData);
         arrayAdapter = new ArrayAdapter<>(GraphActivity.this,
                 R.layout.support_simple_spinner_dropdown_item, datas);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
         spData.setAdapter(arrayAdapter);
+        //init progress dialog
         progressDialog = new ProgressDialog(this);
         progressDialog.setIndeterminate(true);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.setCancelable(false);
         progressDialog.setMessage(getString(R.string.graphing));
-        line = (LineChartView) findViewById(R.id.line);
-        line.setZoomType(ZoomType.HORIZONTAL);
+        //init graph
+        lineChartView = (LineChartView) findViewById(R.id.line);
+        lineChartView.setZoomType(ZoomType.HORIZONTAL);
         pointValues = new ArrayList<>();
+        data = new LineChartData();
+        Axis axisX = new Axis().setHasLines(true).setName(getString(R.string.hours_of_day))
+                .setTextColor(Color.parseColor("#5D4037")).setMaxLabelChars(4);
+        Axis axisY = new Axis().setHasLines(true).setName(datas
+                [spData.getSelectedItemPosition()] + units[spData.getSelectedItemPosition()])
+                .setTextColor(Color.parseColor("#daf7171b")).setMaxLabelChars(4);
+        data.setAxisXBottom(axisX);
+        data.setAxisYLeft(axisY);
+        lineChartView.setLineChartData(data);
     }
 
     private void addEvents() {
@@ -200,7 +212,7 @@ public class GraphActivity extends AppCompatActivity {
             //LINE OF VALUES TAKEN FROM SERVER HERE
             Line lineGraph = new Line(pointValues).setColor(Color.parseColor("#5D4037"))
                     .setStrokeWidth(1);
-            // if there is only one point gotten then show the point, else show the line of points
+            // if there is only one point gotten then show the point, else show the lineChartView of points
             if (pointValues.size() > 1)
                 lineGraph.setHasPoints(false);
             else if (pointValues.size() == 1) {
@@ -208,7 +220,7 @@ public class GraphActivity extends AppCompatActivity {
                 Toast.makeText(this, R.string.oneValFound, Toast.LENGTH_SHORT).show();
             }
             lines.add(lineGraph);
-            //minX and maxX are used for better-looking graph and create line of min value
+            //minX and maxX are used for better-looking graph and create lineChartView of min value
             float minX = pointValues.get(0).getX() - 0.25f;
             if (minX < 0) minX = 0;
             float maxX = pointValues.get(pointValues.size() - 1).getX() + 0.25f;
@@ -221,10 +233,12 @@ public class GraphActivity extends AppCompatActivity {
                 float minY = 0;
                 switch (spData.getSelectedItemPosition()) {
                     case 1:
-                        minY = prefs.getInt(OurContract.PREF_MYHOME_MIN_HUMIDITY_VALUE, OurContract.DEFAULT_MIN_HUMIDITY_VALUE);
+                        minY = prefs.getInt(OurContract.PREF_MYHOME_MIN_HUMIDITY_VALUE
+                                , OurContract.DEFAULT_MIN_HUMIDITY_VALUE);
                         break;
                     case 2:
-                        minY = prefs.getInt(OurContract.PREF_MYHOME_MIN_LIGHT_VALUE, OurContract.DEFAULT_MIN_LIGHT_VALUE);
+                        minY = prefs.getInt(OurContract.PREF_MYHOME_MIN_LIGHT_VALUE
+                                , OurContract.DEFAULT_MIN_LIGHT_VALUE);
                         break;
                 }
                 minVal.add(new PointValue(minX, minY));
@@ -239,40 +253,30 @@ public class GraphActivity extends AppCompatActivity {
             for (float i = minX; i < maxX; i += 0.25f) {
                 axisValuesX.add(new AxisValue(i).setLabel(formatTimes(i)));
             }
-            Axis axisX = new Axis(axisValuesX).setHasLines(true).setName("Hours of Day")
+            Axis axisX = new Axis(axisValuesX).setHasLines(true).setName(getString(R.string.hours_of_day))
                     .setMaxLabelChars(4).setTextColor(Color.parseColor("#5D4037"));
             Axis axisY = new Axis().setHasLines(true).setName(datas
                     [spData.getSelectedItemPosition()] + units[spData.getSelectedItemPosition()])
                     .setMaxLabelChars(4).setTextColor(Color.parseColor("#daf7171b"));
             //================================DATA OF GRAPH HERE
-            LineChartData data = new LineChartData();
             data.setLines(lines);
             data.setAxisXBottom(axisX);
             data.setAxisYLeft(axisY);
             //draw graph
-            line.setLineChartData(data);
+            lineChartView.setLineChartData(data);
             //custom Viewport for better look
-            setViewportTopBot(line.getMaximumViewport(), line, minX, maxX);
+            setViewportTopBot(lineChartView.getMaximumViewport(), lineChartView, minX, maxX);
         } else {
             //No data found
-            Axis axisX = new Axis().setHasLines(true).setName("Hours of Day")
-                    .setTextColor(Color.parseColor("#5D4037")).setMaxLabelChars(4);
-            Axis axisY = new Axis().setHasLines(true).setName(datas
-                    [spData.getSelectedItemPosition()] + units[spData.getSelectedItemPosition()])
-                    .setTextColor(Color.parseColor("#daf7171b")).setMaxLabelChars(4);
-            LineChartData data = new LineChartData();
-            data.setAxisXBottom(axisX);
-            data.setAxisYLeft(axisY);
-            line.setLineChartData(data);
             Toast.makeText(GraphActivity.this, R.string.nodatafound,
                     Toast.LENGTH_SHORT).show();
             findViewById(R.id.labels).setVisibility(View.GONE);
         }
         //================================GRAPH NAME HERE
-        tvGraphName.setText("Graph of " + datas[spData.getSelectedItemPosition()].toLowerCase()
-                + " in " + simpleDateFormat.format(calendar.getTime()));
+        tvGraphName.setText(getString(R.string.graph_of) + datas[spData.getSelectedItemPosition()]
+                .toLowerCase() + getString(R.string.in) + simpleDateFormat.format(calendar.getTime()));
         ((TextView) findViewById(R.id.tvLineName)).setText
-                (datas[spData.getSelectedItemPosition()] + " line");
+                (datas[spData.getSelectedItemPosition()] + getString(R.string.line));
     }
 
     private void setViewportTopBot(Viewport v, LineChartView line, float minX, float maxX) {

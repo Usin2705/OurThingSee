@@ -26,10 +26,10 @@
                 <TextView
                     android:id="@+id/tvDate"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:paddingLeft="@dimen/material_design_item_guide_padding"
+                    android:paddingStart="@dimen/material_design_item_guide_padding"
+                    android:paddingEnd="@dimen/material_design_item_guide_padding"
                     android:textColor="#ffffff"
                     android:textSize="20sp"
                     tools:text="16 Th2 2016" />
@@ -37,8 +37,7 @@
                 <Spinner
                     android:id="@+id/spData"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
             <Button
@@ -64,12 +63,12 @@
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center">
+        android:gravity="center"
+        android:visibility="gone">
         <RelativeLayout
             android:id="@+id/min"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone">
+            android:layout_height="wrap_content">
             <TextView
                 android:id="@+id/tvRedLine"
                 android:layout_width="50dp"
@@ -77,11 +76,11 @@
                 android:background="#FFFF0000"
                 android:layout_centerVertical="true"/>
             <TextView
-                android:layout_toRightOf="@+id/tvRedLine"
+                android:layout_toEndOf="@+id/tvRedLine"
                 android:padding="4dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Minimum allowed value"/>
+                android:text="@string/minimum_allowed_value"/>
         </RelativeLayout>
 
         <RelativeLayout
@@ -96,11 +95,11 @@
                 android:layout_centerVertical="true"/>
             <TextView
                 android:id="@+id/tvLineName"
-                android:layout_toRightOf="@+id/tvLine"
+                android:layout_toEndOf="@+id/tvLine"
                 android:padding="4dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Temperature graph"/>
+                android:text=""/>
         </RelativeLayout>
     </RelativeLayout>
     <TextView
