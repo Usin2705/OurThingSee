@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import metro.ourthingsee.RESTObjects.Events;
 import metro.ourthingsee.remote.APIService;
@@ -78,6 +79,7 @@ public class TCCloudRequestService extends IntentService {
      * @param response the response return from the request. This is a success response.
      */
     private void handleOnResponse(String sensorID, Response<Events> response) {
+        Log.e("Request sent", sensorID);
         switch (response.code()) {
             case 200:
                 if (response.body().getEvents().size() > 0) {

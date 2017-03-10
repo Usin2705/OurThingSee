@@ -26,7 +26,8 @@
             android:name=".TCCloudRequestService"
             android:exported="false" />
 
-        <receiver android:name=".fragments.EnvironmentSensorFragment$TCCLoudRequestReceiver"/>
+        <receiver android:name=".fragments.EnvironmentSensorFragment$TCCLoudRequestReceiver"
+            android:enabled="true"/>
         <receiver android:name=".widget.MyHomeWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

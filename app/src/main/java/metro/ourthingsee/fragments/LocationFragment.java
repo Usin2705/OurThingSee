@@ -12,7 +12,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -66,7 +66,7 @@ public class LocationFragment extends Fragment {
     View query_view;
     FloatingActionButton fab_show_path, fab_current_location;
     TextView tv_startDate, tv_startTime, tv_endDate, tv_endTime, tv_distance;
-    Button btn_showPath;
+    ImageButton btn_showPath;
 
     public LocationFragment() {
         // Required empty public constructor
@@ -163,7 +163,7 @@ public class LocationFragment extends Fragment {
         tv_endTime = (TextView) view.findViewById(R.id.tv_endTime);
         tv_endTime.setText(Utils.shortTimeFormat.format(calendar.getTime()));
         tv_distance = (TextView) view.findViewById(R.id.tv_distance);
-        btn_showPath = (Button) view.findViewById(R.id.btn_showPath);
+        btn_showPath = (ImageButton) view.findViewById(R.id.btn_showPath);
         //load map when first enter
     }
 

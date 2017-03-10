@@ -16,6 +16,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,7 +69,7 @@ public class EnvironmentSensorFragment extends Fragment {
      * @param strContent    the content of the notification to be send
      * @param sensorType    the notification id
      */
-    public static void sendNotification(Context context, Long longTimestamp, String strContent,
+    private static void sendNotification(Context context, Long longTimestamp, String strContent,
                                         int sensorType) {
         Intent ntfIntent = new Intent(context, MainActivity.class);
         ntfIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -522,6 +523,7 @@ public class EnvironmentSensorFragment extends Fragment {
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            Log.e("Request", intent.getLongExtra(OurContract.BROADCAST_RESPONSE_TIMESTAMP,0)+"");
             handleOnReceive(intent, context, OurContract.BROADCAST_RESPONSE_TIMESTAMP,
                     OurContract.BROADCAST_RESPONSE_VALUE);
 
