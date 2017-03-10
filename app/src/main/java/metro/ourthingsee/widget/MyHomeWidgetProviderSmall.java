@@ -6,11 +6,9 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
-import java.text.ParseException;
 import java.util.Date;
 import java.util.Locale;
 
@@ -138,17 +136,16 @@ public class MyHomeWidgetProviderSmall extends AppWidgetProvider {
                                     context.getString(R.string.no_data));
                         }
 
-                        String longDateString = prefs.getString(
-                                OurContract.PREF_HUMID_LATEST_TIME, " ");
                         // Convert long date stored in prefs to short day
-                        try {
-                            Date date = Utils.dateFormat.parse(longDateString);
+                        Long updateTime = prefs.getLong(OurContract.UPDATE_TIME,-1l);
+                        if(updateTime==-1l){
+                            remoteViews.setTextViewText(R.id.txtWGTime,
+                                    context.getString(R.string.no_data));
+                        }else {
+                            Date date = new Date(updateTime);
                             remoteViews.setTextViewText(R.id.txtWGTime,
                                     Utils.shortDateFormat.format(date));
-                        } catch (ParseException e) {
-                            e.printStackTrace();
                         }
-
                         appWidgetManager.updateAppWidget(widgetId, remoteViews);
 
                         fetchTemp(context, remoteViews, appWidgetManager, widgetId);
@@ -199,17 +196,15 @@ public class MyHomeWidgetProviderSmall extends AppWidgetProvider {
                             remoteViews.setTextViewText(R.id.txtWGTemp,
                                     context.getString(R.string.no_data));
                         }
-                        String longDateString = prefs.getString(
-                                OurContract.PREF_TEMP_LATEST_TIME, " ");
-                        // Convert long date stored in prefs to short day
-                        try {
-                            Date date = Utils.dateFormat.parse(longDateString);
+                        Long updateTime = prefs.getLong(OurContract.UPDATE_TIME,-1l);
+                        if(updateTime==-1l){
+                            remoteViews.setTextViewText(R.id.txtWGTime,
+                                    context.getString(R.string.no_data));
+                        }else {
+                            Date date = new Date(updateTime);
                             remoteViews.setTextViewText(R.id.txtWGTime,
                                     Utils.shortDateFormat.format(date));
-                        } catch (ParseException e) {
-                            e.printStackTrace();
                         }
-
                         appWidgetManager.updateAppWidget(widgetId, remoteViews);
 
                         fetchLight(context, remoteViews, appWidgetManager, widgetId);
@@ -262,18 +257,16 @@ public class MyHomeWidgetProviderSmall extends AppWidgetProvider {
                             remoteViews.setTextViewText(R.id.txtWGLight,
                                     context.getString(R.string.no_data));
                         }
-                        String longDateString = prefs.getString(
-                                OurContract.PREF_LIGHT_LATEST_TIME, " ");
                         // Convert long date stored in prefs to short day
-                        try {
-                            Date date = Utils.dateFormat.parse(longDateString);
+                        Long updateTime = prefs.getLong(OurContract.UPDATE_TIME,-1l);
+                        if(updateTime==-1l){
+                            remoteViews.setTextViewText(R.id.txtWGTime,
+                                    context.getString(R.string.no_data));
+                        }else {
+                            Date date = new Date(updateTime);
                             remoteViews.setTextViewText(R.id.txtWGTime,
                                     Utils.shortDateFormat.format(date));
-                        } catch (ParseException e) {
-                            e.printStackTrace();
                         }
-
-
                         remoteViews.setViewVisibility(R.id.imgRefresh, View.VISIBLE);
                         remoteViews.setViewVisibility(R.id.pgbWidget, View.GONE);
                         appWidgetManager.updateAppWidget(widgetId, remoteViews);

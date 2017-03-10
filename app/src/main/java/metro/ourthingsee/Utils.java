@@ -34,7 +34,7 @@ public class Utils {
             Locale.getDefault());
     public static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy",
             Locale.getDefault());
-    public static SimpleDateFormat shortDateFormat = new SimpleDateFormat("dd-MMM HH:mm",
+    public static SimpleDateFormat shortDateFormat = new SimpleDateFormat("dd MMM HH:mm",
             Locale.getDefault());
     public static SimpleDateFormat shortTimeFormat = new SimpleDateFormat("HH:mm",
             Locale.getDefault());
@@ -115,7 +115,10 @@ public class Utils {
                             dbValue = dbValue / 100;
 
                             Date eventDate = new Date(longTimestamp);
-
+                            if((prefs.getLong(OurContract.UPDATE_TIME,-1l)==-1l)||
+                                    (longTimestamp>prefs.getLong(OurContract.UPDATE_TIME,-1l))){
+                                prefs.edit().putLong(OurContract.UPDATE_TIME,longTimestamp).apply();
+                            }
                             switch (sId) {
                                 case OurContract.SENSOR_ID_HUMIDITY:
                                     prefs.edit().putString(OurContract.PREF_HUMID_LATEST_TIME,
