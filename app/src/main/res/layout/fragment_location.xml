@@ -129,7 +129,6 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_alignParentEnd="true"
-                android:elevation="12dp"
                 android:src="@drawable/go"
                 android:textColor="#ffffff"
                 android:scaleType="centerInside"

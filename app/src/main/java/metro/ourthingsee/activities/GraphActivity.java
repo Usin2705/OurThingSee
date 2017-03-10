@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,8 +30,8 @@ import lecho.lib.hellocharts.view.LineChartView;
 import metro.ourthingsee.OurContract;
 import metro.ourthingsee.R;
 import metro.ourthingsee.RESTObjects.Events;
+import metro.ourthingsee.Utils;
 import metro.ourthingsee.remote.APIService;
-import metro.ourthingsee.remote.AppUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -47,7 +47,7 @@ public class GraphActivity extends AppCompatActivity {
     String[] datas, units;
     String[] sensorIds;
     ArrayAdapter<String> arrayAdapter;
-    Button btnGo;
+    ImageButton btnGo;
     Calendar calendar = Calendar.getInstance();
     ProgressDialog progressDialog;
     private long startTime;
@@ -75,7 +75,7 @@ public class GraphActivity extends AppCompatActivity {
         tvDate = (TextView) findViewById(R.id.tvDate);
         tvDate.setText(sdfDate.format(calendar.getTime()));
         tvGraphName = (TextView) findViewById(R.id.tvGraphName);
-        btnGo = (Button) findViewById(R.id.btnGo);
+        btnGo = (ImageButton) findViewById(R.id.btnGo);
         //init spinner
         spData = (Spinner) findViewById(R.id.spData);
         arrayAdapter = new ArrayAdapter<>(GraphActivity.this,
@@ -136,7 +136,7 @@ public class GraphActivity extends AppCompatActivity {
         endTime = calendar.getTimeInMillis();
         String authToken = "Bearer " + prefs.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, "");
         String authId = prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, "");
-        APIService apiService = AppUtils.getAPIService();
+        APIService apiService = Utils.getAPIService();
         fetchData(authToken, authId, sensorID, startTime, endTime, apiService);
     }
 

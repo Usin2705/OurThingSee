@@ -20,7 +20,7 @@ import metro.ourthingsee.R;
 import metro.ourthingsee.RESTObjects.Authentication;
 import metro.ourthingsee.RESTObjects.Devices;
 import metro.ourthingsee.remote.APIService;
-import metro.ourthingsee.remote.AppUtils;
+import metro.ourthingsee.Utils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -57,7 +57,7 @@ public class LoginActivity extends AppCompatActivity {
         edtEmail = (EditText) findViewById(R.id.edtEmail);
         edtPassword = (EditText) findViewById(R.id.edtPassword);
         btnLogin = (Button) findViewById(R.id.btnLogin);
-        apiService = AppUtils.getAPIService();
+        apiService = Utils.getAPIService();
     }
 
     /**

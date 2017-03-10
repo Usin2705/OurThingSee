@@ -34,7 +34,6 @@ import metro.ourthingsee.Utils;
 import metro.ourthingsee.fragments.EnvironmentSensorFragment;
 import metro.ourthingsee.fragments.LocationFragment;
 import metro.ourthingsee.remote.APIService;
-import metro.ourthingsee.remote.AppUtils;
 import metro.ourthingsee.widget.MyHomeWidgetProvider;
 import metro.ourthingsee.widget.MyHomeWidgetProviderSmall;
 import retrofit2.Call;
@@ -75,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
             finish();
         } else {
             //Update the name of device on UI
-            APIService apiService = AppUtils.getAPIService();
+            APIService apiService = Utils.getAPIService();
             apiService.getDeviceName("Bearer " + prefs.getString(PREF_USER_AUTH_TOKEN_NAME, "")
                     , prefs.getString(PREF_DEVICE_AUTH_ID_NAME, "")).enqueue(new Callback<DeviceConfig>() {
                 @Override

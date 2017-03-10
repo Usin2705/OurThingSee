@@ -43,7 +43,6 @@ import metro.ourthingsee.RESTObjects.Events;
 import metro.ourthingsee.Utils;
 import metro.ourthingsee.activities.MainActivity;
 import metro.ourthingsee.remote.APIService;
-import metro.ourthingsee.remote.AppUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -247,7 +246,7 @@ public class LocationFragment extends Fragment {
                 SharedPreferences sharedPreferences = getContext().getSharedPreferences(OurContract.SHARED_PREF, MODE_PRIVATE);
                 String authen = "Bearer " + sharedPreferences.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, "");
                 String deviceAuthen = sharedPreferences.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, "");
-                APIService apiService = AppUtils.getAPIService();
+                APIService apiService = Utils.getAPIService();
                 progressDialog.setMessage(getString(R.string.drawing_path));
                 progressDialog.show();
                 getPathInTimeInterval(calendar.getTimeInMillis(),
@@ -311,7 +310,7 @@ public class LocationFragment extends Fragment {
      */
     private void getDeviceCurrentLocation() {
         SharedPreferences sharedPreferences = getContext().getSharedPreferences(OurContract.SHARED_PREF, MODE_PRIVATE);
-        APIService apiService = AppUtils.getAPIService();
+        APIService apiService = Utils.getAPIService();
         progressDialog.setMessage(getString(R.string.getting_current_location));
         progressDialog.show();
         requestDeviceCurrentLocation(apiService, "Bearer " + sharedPreferences.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, "")

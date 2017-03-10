@@ -19,7 +19,6 @@ import metro.ourthingsee.RESTObjects.Events;
 import metro.ourthingsee.activities.MainActivity;
 import metro.ourthingsee.fragments.EnvironmentSensorFragment;
 import metro.ourthingsee.remote.APIService;
-import metro.ourthingsee.remote.AppUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -69,7 +68,7 @@ public class TCCloudRequestService extends IntentService {
     private void fetchDataFromThingSee(final String sensorID) {
         SharedPreferences prefs = getSharedPreferences(OurContract.SHARED_PREF,
                 Context.MODE_PRIVATE);
-        APIService apiService = AppUtils.getAPIService();
+        APIService apiService = Utils.getAPIService();
         apiService.getUserEvents(
                 "Bearer " + prefs.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, ""),
                 prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, ""),

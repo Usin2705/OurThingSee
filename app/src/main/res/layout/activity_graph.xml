@@ -12,103 +12,108 @@
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
         android:minHeight="56dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="2"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tvDate"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:paddingStart="@dimen/material_design_item_guide_padding"
-                    android:paddingEnd="@dimen/material_design_item_guide_padding"
-                    android:textColor="#ffffff"
-                    android:textSize="20sp"
-                    tools:text="16 Th2 2016" />
-
-                <Spinner
-                    android:id="@+id/spData"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <Button
-                android:id="@+id/btnGo"
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/tvDate"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="@string/go"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/material_design_item_guide_padding"
+                android:paddingEnd="@dimen/material_design_item_guide_padding"
                 android:textColor="#ffffff"
-                android:theme="@style/MyButton" />
-        </LinearLayout>
-    </android.support.v7.widget.Toolbar>
+                android:textSize="20sp"
+                tools:text="16 Th2 2016" />
 
+            <Spinner
+                android:id="@+id/spData"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btnGo"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/go"
+            android:textColor="#ffffff" />
+    </LinearLayout>
+    </android.support.v7.widget.Toolbar>
     <lecho.lib.hellocharts.view.LineChartView
         android:id="@+id/line"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@+id/labels"
         android:layout_below="@+id/tvGraphName"
-        android:padding="@dimen/material_design_guide_padding"
-        android:layout_above="@+id/labels"/>
+        android:padding="@dimen/material_design_guide_padding" />
+
     <RelativeLayout
         android:id="@+id/labels"
-        android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:gravity="center"
         android:visibility="gone">
+
         <RelativeLayout
             android:id="@+id/min"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
+
             <TextView
                 android:id="@+id/tvRedLine"
                 android:layout_width="50dp"
                 android:layout_height="3dp"
-                android:background="#FFFF0000"
-                android:layout_centerVertical="true"/>
+                android:layout_centerVertical="true"
+                android:background="#FFFF0000" />
+
             <TextView
-                android:layout_toEndOf="@+id/tvRedLine"
-                android:padding="4dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/minimum_allowed_value"/>
+                android:layout_toEndOf="@+id/tvRedLine"
+                android:padding="4dp"
+                android:text="@string/minimum_allowed_value" />
         </RelativeLayout>
 
         <RelativeLayout
-            android:layout_below="@+id/min"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/min">
+
             <TextView
                 android:id="@+id/tvLine"
                 android:layout_width="50dp"
                 android:layout_height="1dp"
-                android:background="@color/colorPrimary"
-                android:layout_centerVertical="true"/>
+                android:layout_centerVertical="true"
+                android:background="@color/colorPrimary" />
+
             <TextView
                 android:id="@+id/tvLineName"
-                android:layout_toEndOf="@+id/tvLine"
-                android:padding="4dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""/>
+                android:layout_toEndOf="@+id/tvLine"
+                android:padding="4dp"
+                android:text="" />
         </RelativeLayout>
     </RelativeLayout>
+
     <TextView
         android:id="@+id/tvGraphName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tb_stats"
         android:gravity="center"
-        android:textStyle="bold"
+        android:padding="@dimen/material_design_guide_padding"
         android:textColor="@color/colorPrimaryDark"
-        android:padding="@dimen/material_design_guide_padding"/>
+        android:textStyle="bold" />
 </RelativeLayout>

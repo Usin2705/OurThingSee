@@ -17,7 +17,7 @@ import java.util.Locale;
 import metro.ourthingsee.RESTObjects.Events;
 import metro.ourthingsee.fragments.EnvironmentSensorFragment;
 import metro.ourthingsee.remote.APIService;
-import metro.ourthingsee.remote.AppUtils;
+import metro.ourthingsee.remote.RetrofitClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -29,7 +29,7 @@ import static metro.ourthingsee.fragments.LocationFragment.sdfDate;
  */
 
 public class Utils {
-
+    public static final String BASE_URL = "http://api.thingsee.com/";
     public static SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy HH:mm:ss",
             Locale.getDefault());
     public static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy",
@@ -40,6 +40,11 @@ public class Utils {
             Locale.getDefault());
     public static final int TIMEPICKER_CODE_NO_RECORD = 0;
     public static final int TIMEPICKER_CODE_RECORD_END = 1;
+
+    public static APIService getAPIService() {
+
+        return RetrofitClient.getClient(BASE_URL).create(APIService.class);
+    }
 
     /**
      * Handle the failure from apiService request
@@ -70,7 +75,7 @@ public class Utils {
     public static void fetchDataFromThingSee(final String sensorID, final Context context) {
         final SharedPreferences prefs = context.getSharedPreferences(OurContract.SHARED_PREF,
                 Context.MODE_PRIVATE);
-        APIService apiService = AppUtils.getAPIService();
+        APIService apiService = Utils.getAPIService();
         apiService.getUserEvents(
                 "Bearer " + prefs.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, ""),
                 prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, ""),
