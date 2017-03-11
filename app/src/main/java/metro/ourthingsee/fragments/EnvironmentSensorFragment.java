@@ -260,7 +260,7 @@ public class EnvironmentSensorFragment extends Fragment {
                     @Override
                     public void onResponse(Call<Events> call, Response<Events> response) {
                         Utils.handleOnResponse(response, prefs);
-                        updateDisplayTV(getContext());
+                        updateDisplayTV(context);
                     }
 
                     @Override
