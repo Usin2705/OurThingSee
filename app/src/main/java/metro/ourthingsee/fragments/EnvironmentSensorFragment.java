@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -322,7 +323,7 @@ public class EnvironmentSensorFragment extends Fragment {
         if (isOn)
             updateNotification();
         else
-            cancelAlarm();
+            cancelAlarm(getContext());
     }
 
     /**
@@ -385,7 +386,7 @@ public class EnvironmentSensorFragment extends Fragment {
      * is the notification option is off then cancel all alarm
      */
     private void updateNotification() {
-        cancelAlarm();
+        cancelAlarm(getContext());
         /*
         * Creates a new Intent to start the TCCloudRequestService
         * IntentService.
@@ -408,11 +409,12 @@ public class EnvironmentSensorFragment extends Fragment {
                         OurContract.DEFAULT_NOTIFICATION_INTERVAL_VALUE) * 60 * 1000, pendingIntent);
     }
 
-    public void cancelAlarm() {
-        Intent intent = new Intent(getContext().getApplicationContext(), TCCLoudRequestReceiver.class);
-        final PendingIntent pIntent = PendingIntent.getBroadcast(getContext(),
+    public static void cancelAlarm(Context context) {
+        Log.e("Giang","canceled");
+        Intent intent = new Intent(context.getApplicationContext(), TCCLoudRequestReceiver.class);
+        final PendingIntent pIntent = PendingIntent.getBroadcast(context,
                 OurContract.INTENT_REQUEST_CODE_MYHOMESERVICE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager alarm = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+        AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarm.cancel(pIntent);
     }
 

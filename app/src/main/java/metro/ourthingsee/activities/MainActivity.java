@@ -259,6 +259,7 @@ public class MainActivity extends AppCompatActivity {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
                                         delLoginData();
+                                        EnvironmentSensorFragment.cancelAlarm(MainActivity.this);
                                     }
                                 })
                                 .setNegativeButton(android.R.string.no, null)
