@@ -135,11 +135,11 @@ public class MyHomeWidgetProvider extends AppWidgetProvider {
                                     context.getString(R.string.no_data));
                         }
                         // Convert long date stored in prefs to short day
-                        Long updateTime = prefs.getLong(OurContract.UPDATE_TIME,-1);
-                        if(updateTime==-1){
+                        Long updateTime = prefs.getLong(OurContract.UPDATE_TIME, -1);
+                        if (updateTime == -1) {
                             remoteViews.setTextViewText(R.id.txtWGTime,
                                     context.getString(R.string.no_data));
-                        }else {
+                        } else {
                             Date date = new Date(updateTime);
                             remoteViews.setTextViewText(R.id.txtWGTime,
                                     Utils.shortDateFormat.format(date));
@@ -195,11 +195,11 @@ public class MyHomeWidgetProvider extends AppWidgetProvider {
                                     context.getString(R.string.no_data));
                         }
                         // Convert long date stored in prefs to short day
-                        Long updateTime = prefs.getLong(OurContract.UPDATE_TIME,-1);
-                        if(updateTime==-1){
+                        Long updateTime = prefs.getLong(OurContract.UPDATE_TIME, -1);
+                        if (updateTime == -1) {
                             remoteViews.setTextViewText(R.id.txtWGTime,
                                     context.getString(R.string.no_data));
-                        }else {
+                        } else {
                             Date date = new Date(updateTime);
                             remoteViews.setTextViewText(R.id.txtWGTime,
                                     Utils.shortDateFormat.format(date));
@@ -258,11 +258,11 @@ public class MyHomeWidgetProvider extends AppWidgetProvider {
                                     context.getString(R.string.no_data));
                         }
                         // Convert long date stored in prefs to short day
-                        Long updateTime = prefs.getLong(OurContract.UPDATE_TIME,-1);
-                        if(updateTime==-1){
+                        Long updateTime = prefs.getLong(OurContract.UPDATE_TIME, -1);
+                        if (updateTime == -1) {
                             remoteViews.setTextViewText(R.id.txtWGTime,
                                     context.getString(R.string.no_data));
-                        }else {
+                        } else {
                             Date date = new Date(updateTime);
                             remoteViews.setTextViewText(R.id.txtWGTime,
                                     Utils.shortDateFormat.format(date));

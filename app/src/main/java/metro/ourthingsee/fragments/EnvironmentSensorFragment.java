@@ -198,9 +198,9 @@ public class EnvironmentSensorFragment extends Fragment {
     public void onResume() {
         super.onResume();
         // Call the updateDisplayTV() again in case of new data
-        fetchDataFromThingSee(OurContract.SENSOR_ID_HUMIDITY,getContext());
-        fetchDataFromThingSee(OurContract.SENSOR_ID_TEMPERATURE,getContext());
-        fetchDataFromThingSee(OurContract.SENSOR_ID_LUMINANCE,getContext());
+        fetchDataFromThingSee(OurContract.SENSOR_ID_HUMIDITY, getContext());
+        fetchDataFromThingSee(OurContract.SENSOR_ID_TEMPERATURE, getContext());
+        fetchDataFromThingSee(OurContract.SENSOR_ID_LUMINANCE, getContext());
     }
 
     /**
@@ -219,7 +219,6 @@ public class EnvironmentSensorFragment extends Fragment {
     /**
      * Update the textview with data fetched from thingsee cloud.
      * Only update if the context is not null (it still valid)
-     *
      */
     private void updateDisplayTV(Context context) {
         txtHumidityTime.setText(prefs.getString(OurContract.PREF_HUMID_LATEST_TIME,
@@ -408,6 +407,7 @@ public class EnvironmentSensorFragment extends Fragment {
                 prefs.getInt(OurContract.PREF_MYHOME_NOTIFICATION_INTERVAL,
                         OurContract.DEFAULT_NOTIFICATION_INTERVAL_VALUE) * 60 * 1000, pendingIntent);
     }
+
     public void cancelAlarm() {
         Intent intent = new Intent(getContext().getApplicationContext(), TCCLoudRequestReceiver.class);
         final PendingIntent pIntent = PendingIntent.getBroadcast(getContext(),
@@ -415,6 +415,7 @@ public class EnvironmentSensorFragment extends Fragment {
         AlarmManager alarm = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
         alarm.cancel(pIntent);
     }
+
     /**
      * Need to put it to static and put on AndroidManifest for it to run after app closed
      */
@@ -424,6 +425,5 @@ public class EnvironmentSensorFragment extends Fragment {
             Intent i = new Intent(context, TCCloudRequestService.class);
             context.startService(i);
         }
-
     }
 }

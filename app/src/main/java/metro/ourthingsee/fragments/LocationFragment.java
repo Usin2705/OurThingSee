@@ -103,7 +103,7 @@ public class LocationFragment extends Fragment {
                 mGoogleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
                     @Override
                     public void onMapLoaded() {
-                        ((MainActivity)getActivity()).progressDialog.dismiss();
+                        ((MainActivity) getActivity()).progressDialog.dismiss();
                         mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                         mGoogleMap.getUiSettings().setZoomGesturesEnabled(true);
                         //Simple way to custom info window of markers
@@ -515,7 +515,6 @@ public class LocationFragment extends Fragment {
             tv_distance.setText("0 m");
         }
     }
-
 
 
     private double calculateArcLengthBaseOnLatLng(LatLng start, LatLng end) {

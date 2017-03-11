@@ -172,10 +172,11 @@ public class MainActivity extends AppCompatActivity {
                 fragmentTransaction.commitAllowingStateLoss();
             }
         };
-            mHandler.post(mPendingRunnable);
+        mHandler.post(mPendingRunnable);
         // refresh toolbar menu
         invalidateOptionsMenu();
     }
+
     private Fragment getHomeFragment() {
         switch (navItemIndex) {
             case 1:
@@ -192,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
     private void selectNavMenu() {
         nav_view.getMenu().getItem(navItemIndex).setChecked(true);
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (navItemIndex == 0) {
@@ -199,6 +201,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     }
+
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -207,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.mnuShowStats) {
-            Intent intent = new Intent(MainActivity.this,GraphActivity.class);
+            Intent intent = new Intent(MainActivity.this, GraphActivity.class);
             startActivity(intent);
             return true;
         }
@@ -241,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
                         progressDialog.show();
                         break;
                     case R.id.nav_environment:
-                        navItemIndex =0;
+                        navItemIndex = 0;
                         CURRENT_TAG = TAG_ENVIRONMENT;
                         progressDialog.show();
                         break;
@@ -262,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
                                 .show();
                         break;
                     case R.id.about_us:
-                        Intent aboutUs = new Intent(MainActivity.this, AboutUs.class);
+                        Intent aboutUs = new Intent(MainActivity.this, AboutUsActivity.class);
                         startActivityForResult(aboutUs, 1);
                         break;
                 }
@@ -317,18 +320,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateAllWidgets() {
-        Intent intent = new Intent(this,MyHomeWidgetProvider.class);
+        Intent intent = new Intent(this, MyHomeWidgetProvider.class);
         intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
         int[] ids = AppWidgetManager.getInstance(getApplication())
                 .getAppWidgetIds(new ComponentName(getApplication(), MyHomeWidgetProvider.class));
-        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,ids);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
         sendBroadcast(intent);
 
-        Intent intent1 = new Intent(this,MyHomeWidgetProviderSmall.class);
+        Intent intent1 = new Intent(this, MyHomeWidgetProviderSmall.class);
         intent1.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
         int[] ids1 = AppWidgetManager.getInstance(getApplication())
                 .getAppWidgetIds(new ComponentName(getApplication(), MyHomeWidgetProviderSmall.class));
-        intent1.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,ids1);
+        intent1.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids1);
         sendBroadcast(intent1);
     }
 }
