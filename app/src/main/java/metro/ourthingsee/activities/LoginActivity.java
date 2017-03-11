@@ -30,7 +30,6 @@ import retrofit2.Response;
  * Then accountAuthUuid and accountAuthToken is recorded and store in sharedpref.
  */
 public class LoginActivity extends AppCompatActivity {
-    private static final String LOG_TAG = LoginActivity.class.getSimpleName();
     EditText edtEmail, edtPassword;
     Button btnLogin;
     APIService apiService;
@@ -202,7 +201,7 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      * Get all user's devices based on information from user authentication
-     * Connect Thingsee device with App
+     * Connect Thingsee device with app
      */
     private void getUserDevices() {
         String auth = "Bearer ";

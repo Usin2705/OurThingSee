@@ -14,10 +14,6 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
-/**
- * Created by giang on 8.2.2017.
- */
-
 public interface APIService {
     // For user login
     @Headers("Content-Type: application/x-www-form-urlencoded")

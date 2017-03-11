@@ -36,9 +36,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static metro.ourthingsee.Utils.sdfDate;
 import static metro.ourthingsee.Utils.setUpDatePicker;
 import static metro.ourthingsee.Utils.simpleDateFormat;
-import static metro.ourthingsee.fragments.LocationFragment.sdfDate;
 
 public class GraphActivity extends AppCompatActivity {
 
@@ -50,8 +50,6 @@ public class GraphActivity extends AppCompatActivity {
     ImageButton btnGo;
     Calendar calendar = Calendar.getInstance();
     ProgressDialog progressDialog;
-    private long startTime;
-    private long endTime;
     //graph properties
     LineChartView lineChartView;
     List<PointValue> pointValues;
@@ -128,12 +126,12 @@ public class GraphActivity extends AppCompatActivity {
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
-        startTime = calendar.getTimeInMillis();
+        long startTime = calendar.getTimeInMillis();
         calendar.set(Calendar.HOUR_OF_DAY, 23);
         calendar.set(Calendar.MINUTE, 59);
         calendar.set(Calendar.SECOND, 59);
         calendar.set(Calendar.MILLISECOND, 999);
-        endTime = calendar.getTimeInMillis();
+        long endTime = calendar.getTimeInMillis();
         String authToken = "Bearer " + prefs.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, "");
         String authId = prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, "");
         APIService apiService = Utils.getAPIService();

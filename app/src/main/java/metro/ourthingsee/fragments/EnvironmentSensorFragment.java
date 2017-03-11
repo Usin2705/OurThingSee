@@ -26,54 +26,35 @@ import java.util.TimeZone;
 
 import metro.ourthingsee.OurContract;
 import metro.ourthingsee.R;
+import metro.ourthingsee.RESTObjects.Events;
 import metro.ourthingsee.TCCloudRequestService;
 import metro.ourthingsee.Utils;
 import metro.ourthingsee.activities.MainActivity;
+import metro.ourthingsee.remote.APIService;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static android.content.Context.MODE_PRIVATE;
 
 
 public class EnvironmentSensorFragment extends Fragment {
     private static final int MIN_VALUE = 1;
-    static SharedPreferences prefs;
-    static TextView txtTemperatureTime, txtTemperatureValue, txtHumidityTime, txtHumidityValue,
+    private SharedPreferences prefs;
+    private TextView txtTemperatureTime, txtTemperatureValue, txtHumidityTime, txtHumidityValue,
             txtLightTime, txtLightValue;
     Switch swtMyHome;
     View view;
-    EnvironmentSensorFragment.TCCLoudRequestReceiver receiver;
     AlarmManager alarmManager;
+    TextView txtMyHomeEndTime;
 
     public EnvironmentSensorFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Update the textview with data fetched from thingsee cloud.
-     * Only update if the context is not null (it still valid)
-     *
-     * @param context the context of the activity
-     */
-    public static void updateDisplayTV(Context context) {
-        if (context != null && txtHumidityTime != null) {
-            try {
-                txtHumidityTime.setText(prefs.getString(OurContract.PREF_HUMID_LATEST_TIME,
-                        context.getString(R.string.myhome_default_novalue)));
-                txtHumidityValue.setText(prefs.getString(OurContract.PREF_HUMID_LATEST_VALUE,
-                        context.getString(R.string.myhome_default_novalue)));
-                txtTemperatureTime.setText(prefs.getString(OurContract.PREF_TEMP_LATEST_TIME,
-                        context.getString(R.string.myhome_default_novalue)));
-                txtTemperatureValue.setText(prefs.getString(OurContract.PREF_TEMP_LATEST_VALUE,
-                        context.getString(R.string.myhome_default_novalue)));
-
-                txtLightTime.setText(prefs.getString(OurContract.PREF_LIGHT_LATEST_TIME,
-                        context.getString(R.string.myhome_default_novalue)));
-                txtLightValue.setText(prefs.getString(OurContract.PREF_LIGHT_LATEST_VALUE,
-                        context.getString(R.string.myhome_default_novalue)));
-
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            }
-        }
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -85,15 +66,7 @@ public class EnvironmentSensorFragment extends Fragment {
 
         // Cast all the display texts
         castDisplayTV();
-        //Get the latest humidity, temperature and luminance
-        Utils.fetchDataFromThingSee(OurContract.SENSOR_ID_HUMIDITY, getContext());
-        Utils.fetchDataFromThingSee(OurContract.SENSOR_ID_TEMPERATURE, getContext());
-        Utils.fetchDataFromThingSee(OurContract.SENSOR_ID_LUMINANCE, getContext());
 
-
-        // Update all the display texts with latest value. Call after prefs since we will update
-        // from prefs.
-        updateDisplayTV(getContext());
 
         ((MainActivity) getActivity()).progressDialog.dismiss();
 
@@ -133,7 +106,7 @@ public class EnvironmentSensorFragment extends Fragment {
         calendarEnd.set(Calendar.HOUR_OF_DAY, 19);
         calendarEnd.set(Calendar.MINUTE, 0);
 
-        final TextView txtMyHomeEndTime = (TextView) view.findViewById(R.id.txtMyHomeEndTime);
+        txtMyHomeEndTime = (TextView) view.findViewById(R.id.txtMyHomeEndTime);
         txtMyHomeEndTime.setText(
                 (Utils.shortTimeFormat.format(prefs.getLong(OurContract.PREF_MYHOME_END_TIME,
                         calendarEnd.getTimeInMillis()))));
@@ -222,8 +195,80 @@ public class EnvironmentSensorFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onResume() {
+        super.onResume();
+        // Call the updateDisplayTV() again in case of new data
+        fetchDataFromThingSee(OurContract.SENSOR_ID_HUMIDITY,getContext());
+        fetchDataFromThingSee(OurContract.SENSOR_ID_TEMPERATURE,getContext());
+        fetchDataFromThingSee(OurContract.SENSOR_ID_LUMINANCE,getContext());
+    }
+
+    /**
+     * Cast all the display text, including temp, humid, light.
+     * Each sensor have both time update and value
+     */
+    private void castDisplayTV() {
+        txtTemperatureTime = (TextView) view.findViewById(R.id.txtTemperatureTime);
+        txtTemperatureValue = (TextView) view.findViewById(R.id.txtTemperatureValue);
+        txtHumidityTime = (TextView) view.findViewById(R.id.txtHumidityTime);
+        txtHumidityValue = (TextView) view.findViewById(R.id.txtHumidityValue);
+        txtLightTime = (TextView) view.findViewById(R.id.txtLightTime);
+        txtLightValue = (TextView) view.findViewById(R.id.txtLightValue);
+    }
+
+    /**
+     * Update the textview with data fetched from thingsee cloud.
+     * Only update if the context is not null (it still valid)
+     *
+     */
+    private void updateDisplayTV(Context context) {
+        txtHumidityTime.setText(prefs.getString(OurContract.PREF_HUMID_LATEST_TIME,
+                context.getString(R.string.myhome_default_novalue)));
+        txtHumidityValue.setText(prefs.getString(OurContract.PREF_HUMID_LATEST_VALUE,
+                context.getString(R.string.myhome_default_novalue)));
+        txtTemperatureTime.setText(prefs.getString(OurContract.PREF_TEMP_LATEST_TIME,
+                context.getString(R.string.myhome_default_novalue)));
+        txtTemperatureValue.setText(prefs.getString(OurContract.PREF_TEMP_LATEST_VALUE,
+                context.getString(R.string.myhome_default_novalue)));
+
+        txtLightTime.setText(prefs.getString(OurContract.PREF_LIGHT_LATEST_TIME,
+                context.getString(R.string.myhome_default_novalue)));
+        txtLightValue.setText(prefs.getString(OurContract.PREF_LIGHT_LATEST_VALUE,
+                context.getString(R.string.myhome_default_novalue)));
+    }
+
+    /**
+     * Fetch the data from ThingSee device by calling the {@link APIService} method's
+     * {@link APIService
+     * <p>
+     * <p>
+     * If we call all data at the same time, ThingSee may return only one data, which may
+     * make it complicate to get all require data. That why we need to fetch each data separately.
+     *
+     * @param sensorID the SensorID of the data we need. Refer to
+     *                 <a href="https://thingsee.zendesk.com/hc/en-us/articles/205133092-How-can-I-understand-the-info-displayed-in-senses-view-sensor-s-ID-">ThingSee documentation</a>
+     * @param prefs    the intent used to pass data to this service
+     */
+    private void fetchDataFromThingSee(final String sensorID, final Context context) {
+        final SharedPreferences prefs = context.getSharedPreferences(OurContract.SHARED_PREF,
+                Context.MODE_PRIVATE);
+        APIService apiService = Utils.getAPIService();
+        apiService.getUserEvents(
+                "Bearer " + prefs.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, ""),
+                prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, ""),
+                null, sensorID, OurContract.MIN_FETCH_ITEM_TC, null, null).
+                enqueue(new Callback<Events>() {
+                    @Override
+                    public void onResponse(Call<Events> call, Response<Events> response) {
+                        Utils.handleOnResponse(response, prefs);
+                        updateDisplayTV(getContext());
+                    }
+
+                    @Override
+                    public void onFailure(Call<Events> call, Throwable t) {
+                        Utils.handleFailure(context);
+                    }
+                });
     }
 
     /**
@@ -260,32 +305,6 @@ public class EnvironmentSensorFragment extends Fragment {
             }
         });
         alertDialog.show();
-    }
-
-    /**
-     * Cast all the display text, including temp, humid, light.
-     * Each sensor have both time update and value
-     */
-    private void castDisplayTV() {
-        txtTemperatureTime = (TextView) view.findViewById(R.id.txtTemperatureTime);
-        txtTemperatureValue = (TextView) view.findViewById(R.id.txtTemperatureValue);
-        txtHumidityTime = (TextView) view.findViewById(R.id.txtHumidityTime);
-        txtHumidityValue = (TextView) view.findViewById(R.id.txtHumidityValue);
-        txtLightTime = (TextView) view.findViewById(R.id.txtLightTime);
-        txtLightValue = (TextView) view.findViewById(R.id.txtLightValue);
-    }
-
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        // Call the updateDisplayTV() again in case of new data
-        updateDisplayTV(getContext());
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
     }
 
     /**
@@ -389,24 +408,22 @@ public class EnvironmentSensorFragment extends Fragment {
                 prefs.getInt(OurContract.PREF_MYHOME_NOTIFICATION_INTERVAL,
                         OurContract.DEFAULT_NOTIFICATION_INTERVAL_VALUE) * 60 * 1000, pendingIntent);
     }
-
-    /**
-     * Need to put it to static and put on AndroidManifest for it to run after app closed
-     */
-    public static class TCCLoudRequestReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Intent i = new Intent(context, TCCloudRequestService.class);
-            context.startService(i);
-        }
-    }
-
     public void cancelAlarm() {
         Intent intent = new Intent(getContext().getApplicationContext(), TCCLoudRequestReceiver.class);
         final PendingIntent pIntent = PendingIntent.getBroadcast(getContext(),
                 OurContract.INTENT_REQUEST_CODE_MYHOMESERVICE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarm = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
         alarm.cancel(pIntent);
+    }
+    /**
+     * Need to put it to static and put on AndroidManifest for it to run after app closed
+     */
+    public static class TCCLoudRequestReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Intent i = new Intent(context, TCCloudRequestService.class);
+            context.startService(i);
+        }
+
     }
 }

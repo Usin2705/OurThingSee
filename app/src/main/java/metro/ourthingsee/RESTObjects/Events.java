@@ -5,10 +5,6 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-/**
- * Created by giang on 2/12/17.
- */
-
 public class Events {
     @SerializedName("events")
     @Expose

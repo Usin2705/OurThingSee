@@ -3,10 +3,6 @@ package metro.ourthingsee.RESTObjects;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Created by giang on 8.2.2017.
- */
-
 public class Authentication {
     @SerializedName("timestamp")
     @Expose

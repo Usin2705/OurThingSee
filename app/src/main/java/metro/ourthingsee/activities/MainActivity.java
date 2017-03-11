@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -97,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<DeviceConfig> call, Throwable t) {
-                    Utils.handleFailure(MainActivity.this, t);
+                    Utils.handleFailure(MainActivity.this);
                     tv_name.setText(R.string.unknown_device);
                 }
             });
@@ -230,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
 
             // This method will trigger on item Click of navigation menu
             @Override
-            public boolean onNavigationItemSelected(MenuItem menuItem) {
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
                 //Check to see which item was being clicked and perform appropriate action
                 switch (menuItem.getItemId()) {

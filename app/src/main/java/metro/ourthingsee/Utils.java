@@ -15,28 +15,25 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import metro.ourthingsee.RESTObjects.Events;
-import metro.ourthingsee.fragments.EnvironmentSensorFragment;
 import metro.ourthingsee.remote.APIService;
 import metro.ourthingsee.remote.RetrofitClient;
-import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
-
-import static metro.ourthingsee.fragments.LocationFragment.sdfDate;
 
 /**
  * Utils class for handle some shared tasks of activities
  */
 
 public class Utils {
-    public static final String BASE_URL = "http://api.thingsee.com/";
-    public static SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy HH:mm:ss",
+    private static final String BASE_URL = "http://api.thingsee.com/";
+    public static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy HH:mm:ss",
             Locale.getDefault());
-    public static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy",
+    public static SimpleDateFormat sdfDate = new SimpleDateFormat("dd MMM yyyy",
             Locale.getDefault());
-    public static SimpleDateFormat shortDateFormat = new SimpleDateFormat("dd MMM HH:mm",
+    public static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy",
             Locale.getDefault());
-    public static SimpleDateFormat shortTimeFormat = new SimpleDateFormat("HH:mm",
+    public static final SimpleDateFormat shortDateFormat = new SimpleDateFormat("dd MMM HH:mm",
+            Locale.getDefault());
+    public static final SimpleDateFormat shortTimeFormat = new SimpleDateFormat("HH:mm",
             Locale.getDefault());
     public static final int TIMEPICKER_CODE_NO_RECORD = 0;
     public static final int TIMEPICKER_CODE_RECORD_END = 1;
@@ -53,45 +50,10 @@ public class Utils {
      * @param context Context of the app, used for showing toast
      * @param t       Throwable t in the onFailure
      */
-    public static void handleFailure(Context context, Throwable t) {
+    public static void handleFailure(Context context) {
         Toast.makeText(context,
                 context.getString(R.string.fetch_toast_response_failed_general),
                 Toast.LENGTH_SHORT).show();
-    }
-
-    /**
-     * Fetch the data from ThingSee device by calling the {@link APIService} method's
-     * {@link APIService
-     * The response is then handle in {@link #handleOnResponse(Response, SharedPreferences)}
-     * <p>
-     * <p>
-     * If we call all data at the same time, ThingSee may return only one data, which may
-     * make it complicate to get all require data. That why we need to fetch each data separately.
-     *
-     * @param sensorID the SensorID of the data we need. Refer to
-     *                 <a href="https://thingsee.zendesk.com/hc/en-us/articles/205133092-How-can-I-understand-the-info-displayed-in-senses-view-sensor-s-ID-">ThingSee documentation</a>
-     * @param prefs    the intent used to pass data to this service
-     */
-    public static void fetchDataFromThingSee(final String sensorID, final Context context) {
-        final SharedPreferences prefs = context.getSharedPreferences(OurContract.SHARED_PREF,
-                Context.MODE_PRIVATE);
-        APIService apiService = Utils.getAPIService();
-        apiService.getUserEvents(
-                "Bearer " + prefs.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, ""),
-                prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, ""),
-                null, sensorID, OurContract.MIN_FETCH_ITEM_TC, null, null).
-                enqueue(new Callback<Events>() {
-                    @Override
-                    public void onResponse(Call<Events> call, Response<Events> response) {
-                        handleOnResponse(response, prefs);
-                        EnvironmentSensorFragment.updateDisplayTV(context);
-                    }
-
-                    @Override
-                    public void onFailure(Call<Events> call, Throwable t) {
-                        handleFailure(context, t);
-                    }
-                });
     }
 
     /**
@@ -120,28 +82,28 @@ public class Utils {
                             dbValue = dbValue / 100;
 
                             Date eventDate = new Date(longTimestamp);
-                            if((prefs.getLong(OurContract.UPDATE_TIME,-1l)==-1l)||
-                                    (longTimestamp>prefs.getLong(OurContract.UPDATE_TIME,-1l))){
+                            if((prefs.getLong(OurContract.UPDATE_TIME,-1)==-1)||
+                                    (longTimestamp>prefs.getLong(OurContract.UPDATE_TIME,-1))){
                                 prefs.edit().putLong(OurContract.UPDATE_TIME,longTimestamp).apply();
                             }
                             switch (sId) {
                                 case OurContract.SENSOR_ID_HUMIDITY:
                                     prefs.edit().putString(OurContract.PREF_HUMID_LATEST_TIME,
-                                            String.valueOf(dateFormat.format(eventDate))).apply();
+                                            dateFormat.format(eventDate)).apply();
                                     prefs.edit().putString(OurContract.PREF_HUMID_LATEST_VALUE,
                                             String.valueOf(dbValue) + " %").apply();
                                     break;
 
                                 case OurContract.SENSOR_ID_TEMPERATURE:
                                     prefs.edit().putString(OurContract.PREF_TEMP_LATEST_TIME,
-                                            String.valueOf(dateFormat.format(eventDate))).apply();
+                                            dateFormat.format(eventDate)).apply();
                                     prefs.edit().putString(OurContract.PREF_TEMP_LATEST_VALUE,
                                             String.valueOf(dbValue) + " \u2103").apply();
                                     break;
 
                                 case OurContract.SENSOR_ID_LUMINANCE:
                                     prefs.edit().putString(OurContract.PREF_LIGHT_LATEST_TIME,
-                                            String.valueOf(dateFormat.format(eventDate))).apply();
+                                            dateFormat.format(eventDate)).apply();
                                     prefs.edit().putString(OurContract.PREF_LIGHT_LATEST_VALUE,
                                             String.valueOf(dbValue) + " lux").apply();
                                     break;

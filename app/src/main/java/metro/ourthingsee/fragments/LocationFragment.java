@@ -32,7 +32,6 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -48,6 +47,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static android.content.Context.MODE_PRIVATE;
+import static metro.ourthingsee.Utils.sdfDate;
 import static metro.ourthingsee.Utils.setUpDatePicker;
 
 public class LocationFragment extends Fragment {
@@ -58,7 +58,6 @@ public class LocationFragment extends Fragment {
     List<Events.Event> eventList = new ArrayList<>();
     List<LatLng> listLatLng = new ArrayList<>();
     DecimalFormat df = new DecimalFormat("0.#");
-    public static SimpleDateFormat sdfDate = new SimpleDateFormat("dd MMM yyyy");
     GoogleMap mGoogleMap;
     MapView mMapView;
     ProgressDialog progressDialog;
@@ -305,9 +304,14 @@ public class LocationFragment extends Fragment {
                 });
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
     /*
-    Method for getting current location
-     */
+        Method for getting current location
+         */
     private void getDeviceCurrentLocation() {
         SharedPreferences sharedPreferences = getContext().getSharedPreferences(OurContract.SHARED_PREF, MODE_PRIVATE);
         APIService apiService = Utils.getAPIService();

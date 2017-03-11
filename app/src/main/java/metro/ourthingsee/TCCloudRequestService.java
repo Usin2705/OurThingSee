@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 
 import java.sql.Date;
 import java.util.Calendar;
@@ -22,10 +21,6 @@ import metro.ourthingsee.remote.APIService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-/**
- * Created by Usin on 15-Feb-17.
- */
 
 public class TCCloudRequestService extends IntentService {
     /**
@@ -81,7 +76,7 @@ public class TCCloudRequestService extends IntentService {
 
                     @Override
                     public void onFailure(Call<Events> call, Throwable t) {
-                        Utils.handleFailure(getApplicationContext(), t);
+                        Utils.handleFailure(getApplicationContext());
                     }
                 });
     }
@@ -94,7 +89,6 @@ public class TCCloudRequestService extends IntentService {
      * @param response the response return from the request. This is a success response.
      */
     private void handleOnResponse(String sensorID, Response<Events> response) {
-        Log.e("Request sent", sensorID);
         switch (response.code()) {
             case 200:
                 if (response.body().getEvents().size() > 0) {
@@ -127,8 +121,6 @@ public class TCCloudRequestService extends IntentService {
                         handleOnReceive(broadcastIntent, getApplicationContext(), OurContract.BROADCAST_RESPONSE_TIMESTAMP,
                                 OurContract.BROADCAST_RESPONSE_VALUE);
                     }
-                    // Call the updateDisplayTV() again in case of new data
-                    EnvironmentSensorFragment.updateDisplayTV(getApplicationContext());
                 }
                 break;
             // To handle error 503  - Service unavailable. Which mean sometime
@@ -169,7 +161,7 @@ public class TCCloudRequestService extends IntentService {
             switch (sensorID) {
                 case OurContract.SENSOR_ID_HUMIDITY:
                     prefsGiang.edit().putString(OurContract.PREF_HUMID_LATEST_TIME,
-                            String.valueOf(Utils.dateFormat.format(eventDate))).apply();
+                            Utils.dateFormat.format(eventDate)).apply();
                     prefsGiang.edit().putString(OurContract.PREF_HUMID_LATEST_VALUE,
                             String.valueOf(dbResponse) + " %").apply();
 
@@ -190,14 +182,14 @@ public class TCCloudRequestService extends IntentService {
 
                 case OurContract.SENSOR_ID_TEMPERATURE:
                     prefsGiang.edit().putString(OurContract.PREF_TEMP_LATEST_TIME,
-                            String.valueOf(Utils.dateFormat.format(eventDate))).apply();
+                            Utils.dateFormat.format(eventDate)).apply();
                     prefsGiang.edit().putString(OurContract.PREF_TEMP_LATEST_VALUE,
                             String.valueOf(dbResponse) + " \u2103").apply();
                     break;
 
                 case OurContract.SENSOR_ID_LUMINANCE:
                     prefsGiang.edit().putString(OurContract.PREF_LIGHT_LATEST_TIME,
-                            String.valueOf(Utils.dateFormat.format(eventDate))).apply();
+                            Utils.dateFormat.format(eventDate)).apply();
                     prefsGiang.edit().putString(OurContract.PREF_LIGHT_LATEST_VALUE,
                             String.valueOf(dbResponse) + "lux").apply();
 
@@ -228,7 +220,7 @@ public class TCCloudRequestService extends IntentService {
      * @param strContent    the content of the notification to be send
      * @param sensorType    the notification id
      */
-    private static void sendNotification(Context context, Long longTimestamp, String strContent,
+    private void sendNotification(Context context, Long longTimestamp, String strContent,
                                          int sensorType) {
         Intent ntfIntent = new Intent(context, MainActivity.class);
         ntfIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -294,7 +286,7 @@ public class TCCloudRequestService extends IntentService {
      * @return Boolean value whether the current time is not quiet time period or not
      * @see <a href="http://stackoverflow.com/a/7676307/3623497">Stackoverflow Link</a>
      */
-    private static boolean isNotQuietTime(Context context) {
+    private boolean isNotQuietTime(Context context) {
         Boolean isNotQuiet = false;
 
         // Named the prefs after the glory Giang

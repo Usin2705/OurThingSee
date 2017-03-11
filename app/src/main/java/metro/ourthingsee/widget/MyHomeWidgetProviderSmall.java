@@ -136,8 +136,8 @@ public class MyHomeWidgetProviderSmall extends AppWidgetProvider {
                         }
 
                         // Convert long date stored in prefs to short day
-                        Long updateTime = prefs.getLong(OurContract.UPDATE_TIME,-1l);
-                        if(updateTime==-1l){
+                        Long updateTime = prefs.getLong(OurContract.UPDATE_TIME,-1);
+                        if(updateTime==-1){
                             remoteViews.setTextViewText(R.id.txtWGTime,
                                     context.getString(R.string.no_data));
                         }else {
@@ -152,7 +152,7 @@ public class MyHomeWidgetProviderSmall extends AppWidgetProvider {
 
                     @Override
                     public void onFailure(Call<Events> call, Throwable t) {
-                        Utils.handleFailure(context, t);
+                        Utils.handleFailure(context);
                         remoteViews.setViewVisibility(R.id.imgRefresh, View.VISIBLE);
                         remoteViews.setViewVisibility(R.id.pgbWidget, View.GONE);
                         appWidgetManager.updateAppWidget(widgetId, remoteViews);
@@ -195,8 +195,8 @@ public class MyHomeWidgetProviderSmall extends AppWidgetProvider {
                             remoteViews.setTextViewText(R.id.txtWGTemp,
                                     context.getString(R.string.no_data));
                         }
-                        Long updateTime = prefs.getLong(OurContract.UPDATE_TIME,-1l);
-                        if(updateTime==-1l){
+                        Long updateTime = prefs.getLong(OurContract.UPDATE_TIME,-1);
+                        if(updateTime==-1){
                             remoteViews.setTextViewText(R.id.txtWGTime,
                                     context.getString(R.string.no_data));
                         }else {
@@ -211,7 +211,7 @@ public class MyHomeWidgetProviderSmall extends AppWidgetProvider {
 
                     @Override
                     public void onFailure(Call<Events> call, Throwable t) {
-                        Utils.handleFailure(context, t);
+                        Utils.handleFailure(context);
                         remoteViews.setViewVisibility(R.id.imgRefresh, View.VISIBLE);
                         remoteViews.setViewVisibility(R.id.pgbWidget, View.GONE);
                         appWidgetManager.updateAppWidget(widgetId, remoteViews);
@@ -257,8 +257,8 @@ public class MyHomeWidgetProviderSmall extends AppWidgetProvider {
                                     context.getString(R.string.no_data));
                         }
                         // Convert long date stored in prefs to short day
-                        Long updateTime = prefs.getLong(OurContract.UPDATE_TIME,-1l);
-                        if(updateTime==-1l){
+                        Long updateTime = prefs.getLong(OurContract.UPDATE_TIME,-1);
+                        if(updateTime==-1){
                             remoteViews.setTextViewText(R.id.txtWGTime,
                                     context.getString(R.string.no_data));
                         }else {
@@ -273,7 +273,7 @@ public class MyHomeWidgetProviderSmall extends AppWidgetProvider {
 
                     @Override
                     public void onFailure(Call<Events> call, Throwable t) {
-                        Utils.handleFailure(context, t);
+                        Utils.handleFailure(context);
                         remoteViews.setViewVisibility(R.id.imgRefresh, View.VISIBLE);
                         remoteViews.setViewVisibility(R.id.pgbWidget, View.GONE);
                         appWidgetManager.updateAppWidget(widgetId, remoteViews);
