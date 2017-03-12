@@ -241,7 +241,7 @@ public class EnvironmentSensorFragment extends Fragment {
 
         //Set the default time
         final Calendar calendarEnd = Calendar.getInstance(TimeZone.getDefault());
-        calendarEnd.set(Calendar.HOUR_OF_DAY, 19);
+        calendarEnd.set(Calendar.HOUR_OF_DAY, 3);
         calendarEnd.set(Calendar.MINUTE, 0);
 
         final TextView txtMyHomeEndTime = (TextView) view.findViewById(R.id.txtMyHomeEndTime);

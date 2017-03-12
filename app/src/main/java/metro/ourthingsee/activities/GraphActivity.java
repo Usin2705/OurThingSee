@@ -17,7 +17,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import lecho.lib.hellocharts.gesture.ZoomType;
 import lecho.lib.hellocharts.model.Axis;
@@ -42,7 +44,13 @@ import static metro.ourthingsee.fragments.LocationFragment.sdfDate;
 
 public class GraphActivity extends AppCompatActivity {
 
-    TextView tvDate, tvGraphName;
+    private static final int SMA_PERIOD = 5;
+    /**
+     * 1 hour they have 4 value (15 min each).
+     * So the default value is 4 * 24  = 96
+     */
+    private static final int DEFAULT_POINTVALUES_SIZE = 96;
+    TextView tvDate, tvGraphName, tvGraphSMA;
     Spinner spData;
     String[] datas, units;
     String[] sensorIds;
@@ -50,12 +58,11 @@ public class GraphActivity extends AppCompatActivity {
     Button btnGo;
     Calendar calendar = Calendar.getInstance();
     ProgressDialog progressDialog;
-    private long startTime;
-    private long endTime;
     //graph properties
     LineChartView line;
     List<PointValue> pointValues;
-
+    private long startTime;
+    private long endTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,6 +182,12 @@ public class GraphActivity extends AppCompatActivity {
         Collections.reverse(pointValues);
         //continue processing the graph
         if (pointValues.size() > 0) {
+
+            // Smooth the graph by using SMA
+            if (pointValues.size() > SMA_PERIOD) {
+                smoothGraphBySMA();
+            }
+
             findViewById(R.id.labels).setVisibility(View.VISIBLE);
             //minX and maxX are used for better-looking graph
             float minX = pointValues.get(0).getX() - 0.25f;
@@ -259,9 +272,59 @@ public class GraphActivity extends AppCompatActivity {
         tvGraphName.setText("Graph of " + datas[spData.getSelectedItemPosition()].toLowerCase()
                 + " in " + simpleDateFormat.format(calendar.getTime()));
 
-        ((TextView)findViewById(R.id.tvLineName)).setText
-                (datas[spData.getSelectedItemPosition()]+ " graph");
+        ((TextView) findViewById(R.id.tvLineName)).setText
+                (datas[spData.getSelectedItemPosition()] + " graph");
     }
+
+    /**
+     * Smooth the map by using simple moving average method.
+     * The period of the SMA is decided by {@link #SMA_PERIOD}
+     * <p>
+     * NOTICE: the data type here is float just so it can be the same as {@link PointValue}     *
+     */
+    private void smoothGraphBySMA() {
+        Queue<Float> window = new LinkedList<>();
+        float sum = 0;
+        int smaPeriod = SMA_PERIOD;
+
+        // If the user measure time is not 15 min but shorter (for example 1min)
+        // then we increase the SMA PERIOD
+        // - 1 as if the sample size just 49 time, it should not increase SMA period
+        if (pointValues.size() > DEFAULT_POINTVALUES_SIZE) {
+            smaPeriod = (pointValues.size() % DEFAULT_POINTVALUES_SIZE) + SMA_PERIOD - 1;
+        }
+
+
+        // Loop through all data
+        for (PointValue pointValue : pointValues) {
+
+
+            // Sum += new number in the queue
+            sum += pointValue.getY();
+
+            // Add that number to the queue
+            window.add(pointValue.getY());
+
+            // If by adding that number, the window size > SMA_PERIOD
+            // then remove the old one in the queue.
+            // Also sum -= the old one. So the new sum is just like the formula (SMA_PERIOD = 5):
+            // Sum(old) = n1 + n2 + n3 + n4 + n5
+            // Sum (new) = n1 + n2 + n3 + n4 + n5 + n6 - n1
+            // Sum (new) = n2 + n3 + n4 + n5 + n6
+            if (window.size() > smaPeriod) {
+                sum -= window.remove();
+            }
+
+            // Also, since we have the five value for average, replace the raw value with
+            //  the average result
+            // (If the windows size is less than smaPeriod, it still be averaged with the total
+            // current size (if they have 3 values then it will average by 3)
+            pointValue.set(pointValue.getX(), sum / window.size());
+        }
+
+        tvGraphSMA.setText(getString(R.string.graph_sma_des, String.valueOf(smaPeriod)));
+    }
+
 
     private void setViewportTopBot(Viewport v, LineChartView line) {
         switch (spData.getSelectedItemPosition()) {
@@ -300,6 +363,7 @@ public class GraphActivity extends AppCompatActivity {
     private void addControls() {
         tvDate = (TextView) findViewById(R.id.tvDate);
         tvGraphName = (TextView) findViewById(R.id.tvGraphName);
+        tvGraphSMA = (TextView) findViewById(R.id.tvGraphSMA);
         tvDate.setText(sdfDate.format(calendar.getTime()));
         btnGo = (Button) findViewById(R.id.btnGo);
         spData = (Spinner) findViewById(R.id.spData);

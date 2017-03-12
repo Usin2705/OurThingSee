@@ -38,8 +38,8 @@ public class Utils {
             Locale.getDefault());
     public static SimpleDateFormat shortTimeFormat = new SimpleDateFormat("HH:mm",
             Locale.getDefault());
-    public static final int TIMEPICKER_CODE_NO_RECORD = 0;
-    public static final int TIMEPICKER_CODE_RECORD_END = 1;
+    public static final boolean TIMEPICKER_CODE_NO_RECORD = false;
+    public static final boolean TIMEPICKER_CODE_RECORD_END = true;
 
     /**
      * Handle the failure from apiService request
@@ -163,11 +163,13 @@ public class Utils {
      * @param textView    The textview to display the results
      * @param calendar    The calendar the get the time results
      * @param context     The context of the activity
-     * @param requestCode The request code for the time picker, to know if we need to record in
-     *                    prefs or not
+     * @param isSavePref  Will we save the result in {@link OurContract#PREF_MYHOME_END_TIME}
+     *
      */
-    public static void setUpTimePicker(final TextView textView, final Calendar calendar, final Context context, final int requestCode) {
-        final TimePickerDialog.OnTimeSetListener callback = new TimePickerDialog.OnTimeSetListener() {
+    public static void setUpTimePicker(final TextView textView, final Calendar calendar,
+                                       final Context context, final boolean isSavePref) {
+
+        TimePickerDialog.OnTimeSetListener callback = new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 final SharedPreferences prefs = context.getSharedPreferences(OurContract.SHARED_PREF,
@@ -176,17 +178,12 @@ public class Utils {
                 calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
                 calendar.set(Calendar.MINUTE, minute);
                 textView.setText(shortTimeFormat.format(calendar.getTime()));
-                switch (requestCode) {
 
-                    case TIMEPICKER_CODE_NO_RECORD:
-                        break;
-
-                    case TIMEPICKER_CODE_RECORD_END:
-                        prefs.edit().putLong(OurContract.PREF_MYHOME_END_TIME,
-                                calendar.getTimeInMillis()).apply();
-                        break;
-                    default:
-                        break;
+                // if this one is save prefs, we will save the time picker result
+                // (true): save to PREF_MYHOME_END_TIME
+                if (isSavePref) {
+                    prefs.edit().putLong(OurContract.PREF_MYHOME_END_TIME,
+                            calendar.getTimeInMillis()).apply();
                 }
             }
         };

@@ -1,11 +1,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/lnlWGMainLayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="@dimen/activity_margin"
-    android:orientation="vertical"
-    android:background="@color/colorAccent2_Tr">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/lnlWGMainLayout"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_margin="@dimen/activity_margin"
+              android:background="@color/colorPrimaryDark_Tr"
+              android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -21,16 +21,17 @@
             android:layout_gravity="center"
             android:layout_weight="2"
             android:textAlignment="center"
+            android:textColor="@color/colorAccent2"
             android:textSize="18sp"
             android:textStyle="bold"
-            tools:text="20%" />
+            tools:text="20%"/>
 
         <ImageView
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:scaleType="centerInside"
-            android:src="@drawable/nature" />
+            android:src="@drawable/nature"/>
 
         <TextView
             android:id="@+id/txtWGTemp"
@@ -39,9 +40,10 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="2"
             android:textAlignment="center"
+            android:textColor="@color/colorAccent2"
             android:textSize="18sp"
             android:textStyle="bold"
-            tools:text="27℃" />
+            tools:text="27℃"/>
 
         <ImageView
             android:id="@+id/imageView1"
@@ -49,7 +51,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:scaleType="centerInside"
-            android:src="@drawable/temperature" />
+            android:src="@drawable/temperature"/>
 
     </LinearLayout>
 
@@ -67,16 +69,17 @@
             android:layout_weight="2"
             android:gravity="center_vertical"
             android:textAlignment="center"
+            android:textColor="@color/colorAccent2"
             android:textSize="18sp"
             android:textStyle="bold"
-            tools:text="27lx" />
+            tools:text="27lx"/>
 
         <ImageView
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:scaleType="centerInside"
-            android:src="@drawable/light" />
+            android:src="@drawable/light"/>
 
         <TextView
             android:id="@+id/txtWGTime"
@@ -85,7 +88,8 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="2.5"
             android:textAlignment="center"
-            tools:text="21 Feb 22:50" />
+            android:textColor="@color/colorAccent2"
+            tools:text="21 Feb 22:50"/>
 
         <FrameLayout
             android:layout_width="0dp"
@@ -97,14 +101,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
-                android:visibility="gone" />
+                android:visibility="gone"/>
 
             <ImageView
                 android:id="@+id/imgRefresh"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_refresh_white_24dp" />
+                android:src="@drawable/ic_refresh_white_24dp"/>
         </FrameLayout>
 
     </LinearLayout>

@@ -73,6 +73,10 @@
         <item>2000</item>
     </string-array>
 
+    <!-- Strings for graph SMA describe [CHAR LIMIT=30] -->
+    <string name="graph_sma_des">Smoothed by SMA (%1$s)</string>
+
+
     <!-- Notification for humidity [CHAR LIMIT=30] -->
     <string name="notification_humidity">"Current humidity level: %1$.0f"</string>
 

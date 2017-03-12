@@ -108,26 +108,6 @@ public class OurContract {
     public static final int DEFAULT_NOTIFICATION_INTERVAL_VALUE = 60;
 
     /**
-     * The index option for location
-     */
-    public static final int INDEX_OPTION_LOCATION = 0;
-
-    /**
-     * The index option for Temperature
-     */
-    public static final int INDEX_OPTION_TEMPERATURE = 1;
-
-    /**
-     * The index option for location
-     */
-    public static final int INDEX_OPTION_HUMIDITY = 2;
-
-    /**
-     * The index option for My Thingsee
-     */
-    public static final int INDEX_OPTION_MYTHINGSEE = 3;
-
-    /**
      * Defines a custom Intent action. This will be used for filter the broadcast.
      */
     public static final String BROADCAST_ACTION = "com.metro.ourthingsee.BROADCAST";

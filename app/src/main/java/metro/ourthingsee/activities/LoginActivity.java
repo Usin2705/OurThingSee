@@ -136,7 +136,7 @@ public class LoginActivity extends AppCompatActivity {
      * After successfully login, we wil continously get our devices
      *
      * @param email    User's email taken from editText
-     * @param password User's passoword taken from editText
+     * @param password User's password taken from editText
      */
     public void sendPostAuth(final String email, final String password) {
         apiService.savePostAuth(email, password).enqueue(new Callback<Authentication>() {

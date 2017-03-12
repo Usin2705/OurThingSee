@@ -46,7 +46,7 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
 
     //Google Map Api v2
-    compile 'com.google.android.gms:play-services-maps:10.2.0'
+    compile 'com.google.android.gms:play-services-maps:10.0.1'
 
     //Glide for loading Images
     compile 'com.github.bumptech.glide:glide:3.7.0'
