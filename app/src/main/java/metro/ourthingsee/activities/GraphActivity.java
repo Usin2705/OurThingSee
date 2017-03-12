@@ -81,6 +81,7 @@ public class GraphActivity extends AppCompatActivity {
         tvDate = (TextView) findViewById(R.id.tvDate);
         tvDate.setText(sdfDate.format(calendar.getTime()));
         tvGraphName = (TextView) findViewById(R.id.tvGraphName);
+        tvGraphSMA = (TextView) findViewById(R.id.tvGraphSMA);
         btnGo = (ImageButton) findViewById(R.id.btnGo);
         //init spinner
         spData = (Spinner) findViewById(R.id.spData);
@@ -185,9 +186,6 @@ public class GraphActivity extends AppCompatActivity {
                                             .getEvents().get(49).getTimestamp() - 1, apiService);
                                 }
                                 if (response.body().getEvents().size() < 50) {
-                                    if (pointValues.size() == 0)
-                                        Toast.makeText(GraphActivity.this, R.string.nodatafound,
-                                                Toast.LENGTH_SHORT).show();
                                     showGraph();
                                     progressDialog.dismiss();
                                 }
@@ -214,13 +212,11 @@ public class GraphActivity extends AppCompatActivity {
         Collections.reverse(pointValues);
         //continue processing the graph base on the number of points
         if (pointValues.size() > 0) {
-            //===============================LABELS HERE
-
-            // Smooth the graph by using SMA
+            //===============================Smooth the graph by using SMA
             if (pointValues.size() > SMA_PERIOD) {
                 smoothGraphBySMA();
             }
-
+            //===============================LABELS HERE
             findViewById(R.id.labels).setVisibility(View.VISIBLE);
             //===============================LINES HERE
             List<Line> lines = new ArrayList<>();
@@ -294,7 +290,6 @@ public class GraphActivity extends AppCompatActivity {
                 (datas[spData.getSelectedItemPosition()] + getString(R.string.line));
     }
 
-    private void setViewportTopBot(Viewport v, LineChartView line, float minX, float maxX) {
     /**
      * Smooth the map by using simple moving average method.
      * The period of the SMA is decided by {@link #SMA_PERIOD}
@@ -345,7 +340,7 @@ public class GraphActivity extends AppCompatActivity {
     }
 
 
-    private void setViewportTopBot(Viewport v, LineChartView line) {
+    private void setViewportTopBot(Viewport v, LineChartView line, float minX, float maxX) {
         switch (spData.getSelectedItemPosition()) {
             case 0:
                 v.top = v.top + 1;
