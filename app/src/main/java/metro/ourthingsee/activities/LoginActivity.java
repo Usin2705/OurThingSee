@@ -19,8 +19,8 @@ import metro.ourthingsee.OurContract;
 import metro.ourthingsee.R;
 import metro.ourthingsee.RESTObjects.Authentication;
 import metro.ourthingsee.RESTObjects.Devices;
-import metro.ourthingsee.remote.APIService;
 import metro.ourthingsee.Utils;
+import metro.ourthingsee.remote.APIService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -253,5 +253,9 @@ public class LoginActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }

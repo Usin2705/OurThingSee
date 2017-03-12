@@ -417,7 +417,10 @@ public class EnvironmentSensorFragment extends Fragment {
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarm.cancel(pIntent);
     }
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
     /**
      * Need to put it to static and put on AndroidManifest for it to run after app closed
      */

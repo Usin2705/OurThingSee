@@ -77,6 +77,11 @@ public class GraphActivity extends AppCompatActivity {
         drawGraph(spData.getSelectedItemPosition());
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
     private void addControls() {
         tvDate = (TextView) findViewById(R.id.tvDate);
         tvDate.setText(sdfDate.format(calendar.getTime()));

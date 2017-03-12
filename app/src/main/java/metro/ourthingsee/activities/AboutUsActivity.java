@@ -24,7 +24,10 @@ public class AboutUsActivity extends AppCompatActivity implements View.OnClickLi
                 .skipMemoryCache(true).animate(android.R.anim.fade_in).approximate()
                 .into((ImageView) findViewById(R.id.imgAboutUs));
     }
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
     @Override
     // If click "back" , it will turn to "MainActivity" layout.
     public void onClick(View v) {

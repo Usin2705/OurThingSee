@@ -19,6 +19,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -129,8 +130,6 @@ public class MainActivity extends AppCompatActivity {
         Glide.with(this).load(R.drawable.navheader).asBitmap().diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true).centerCrop().animate(android.R.anim.fade_in).approximate().into(imgv);
 
-        // initializing navigation menu
-        setUpNavigationView();
 
         if (savedInstanceState == null) {
             navItemIndex = 0;
@@ -139,60 +138,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /***
-     * Returns respected fragment that user
-     * selected from navigation menu
-     */
-    private void loadHomeFragment() {
-        // selecting appropriate nav menu item
-        selectNavMenu();
-
-        // if user select the current navigation menu again, don't do anything
-        // just close the navigation drawer
-        if (getSupportFragmentManager().findFragmentByTag(CURRENT_TAG) != null) {
-            drawer.closeDrawers();
-            progressDialog.dismiss();
-            return;
-        }
-
-
-        // Sometimes, when fragment has huge data, screen seems hanging
-        // when switching between navigation menus
-        // So using runnable, the fragment is loaded with cross fade effect
-        // This effect can be seen in GMail app
-        Runnable mPendingRunnable = new Runnable() {
-            @Override
-            public void run() {
-                // update the main content by replacing fragments
-                Fragment fragment = getHomeFragment();
-                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.setCustomAnimations(android.R.anim.fade_in,
-                        android.R.anim.fade_out);
-                fragmentTransaction.replace(R.id.frame, fragment, CURRENT_TAG);
-                fragmentTransaction.commitAllowingStateLoss();
-            }
-        };
-        mHandler.post(mPendingRunnable);
-        // refresh toolbar menu
-        invalidateOptionsMenu();
-    }
-
-    private Fragment getHomeFragment() {
-        switch (navItemIndex) {
-            case 1:
-                // location
-                return new LocationFragment();
-            case 0:
-                // environment sensors
-                return new EnvironmentSensorFragment();
-            default:
-                return new LocationFragment();
-        }
-    }
-
-    private void selectNavMenu() {
-        nav_view.getMenu().getItem(navItemIndex).setChecked(true);
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -218,7 +163,6 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
     @Override
     public void onBackPressed() {
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -226,6 +170,11 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     private void setUpNavigationView() {
@@ -267,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.about_us:
                         Intent aboutUs = new Intent(MainActivity.this, AboutUsActivity.class);
-                        startActivityForResult(aboutUs, 1);
+                        startActivity(aboutUs);
                         break;
                 }
 
@@ -284,14 +233,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawer, tb_main,
                 R.string.openDrawer, R.string.closeDrawer) {
 
             @Override
             public void onDrawerClosed(View drawerView) {
-                // Code here will be triggered once the drawer closes as we dont want anything to happen so we leave this blank
                 super.onDrawerClosed(drawerView);
+                Log.e("leak","closed");
                 loadHomeFragment();
             }
 
@@ -307,6 +255,48 @@ public class MainActivity extends AppCompatActivity {
 
         //calling sync state is necessary or else your hamburger icon wont show up
         actionBarDrawerToggle.syncState();
+    }
+
+    /***
+     * Returns respected fragment that user
+     * selected from navigation menu
+     */
+    private void loadHomeFragment() {
+        // selecting appropriate nav menu item
+        selectNavMenu();
+        // if user select the current navigation menu again, don't do anything
+        // just close the navigation drawer
+        if (getSupportFragmentManager().findFragmentByTag(CURRENT_TAG) != null) {
+            Log.e("leak", "no");
+            progressDialog.dismiss();
+        } else {
+            Log.e("leak", "yes");
+            // update the main content by replacing fragments
+            Fragment fragment = getHomeFragment();
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.setCustomAnimations(android.R.anim.fade_in,
+                    android.R.anim.fade_out);
+            fragmentTransaction.replace(R.id.frame, fragment, CURRENT_TAG);
+            fragmentTransaction.commit();
+            // refresh toolbar menu
+            invalidateOptionsMenu();
+        }
+    }
+    private Fragment getHomeFragment() {
+        switch (navItemIndex) {
+            case 1:
+                // location
+                return new LocationFragment();
+            case 0:
+                // environment sensors
+                return new EnvironmentSensorFragment();
+            default:
+                return new LocationFragment();
+        }
+    }
+
+    private void selectNavMenu() {
+        nav_view.getMenu().getItem(navItemIndex).setChecked(true);
     }
 
     public void delLoginData() {
