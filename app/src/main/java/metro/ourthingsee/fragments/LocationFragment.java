@@ -12,7 +12,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,7 +32,6 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -43,12 +42,12 @@ import metro.ourthingsee.RESTObjects.Events;
 import metro.ourthingsee.Utils;
 import metro.ourthingsee.activities.MainActivity;
 import metro.ourthingsee.remote.APIService;
-import metro.ourthingsee.remote.AppUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 import static android.content.Context.MODE_PRIVATE;
+import static metro.ourthingsee.Utils.sdfDate;
 import static metro.ourthingsee.Utils.setUpDatePicker;
 
 public class LocationFragment extends Fragment {
@@ -59,14 +58,13 @@ public class LocationFragment extends Fragment {
     List<Events.Event> eventList = new ArrayList<>();
     List<LatLng> listLatLng = new ArrayList<>();
     DecimalFormat df = new DecimalFormat("0.#");
-    public static SimpleDateFormat sdfDate = new SimpleDateFormat("dd MMM yyyy");
     GoogleMap mGoogleMap;
     MapView mMapView;
     ProgressDialog progressDialog;
     View query_view;
     FloatingActionButton fab_show_path, fab_current_location;
     TextView tv_startDate, tv_startTime, tv_endDate, tv_endTime, tv_distance;
-    Button btn_showPath;
+    ImageButton btn_showPath;
 
     public LocationFragment() {
         // Required empty public constructor
@@ -105,7 +103,7 @@ public class LocationFragment extends Fragment {
                 mGoogleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
                     @Override
                     public void onMapLoaded() {
-                        ((MainActivity)getActivity()).progressDialog.dismiss();
+                        ((MainActivity) getActivity()).progressDialog.dismiss();
                         mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                         mGoogleMap.getUiSettings().setZoomGesturesEnabled(true);
                         //Simple way to custom info window of markers
@@ -163,7 +161,7 @@ public class LocationFragment extends Fragment {
         tv_endTime = (TextView) view.findViewById(R.id.tv_endTime);
         tv_endTime.setText(Utils.shortTimeFormat.format(calendar.getTime()));
         tv_distance = (TextView) view.findViewById(R.id.tv_distance);
-        btn_showPath = (Button) view.findViewById(R.id.btn_showPath);
+        btn_showPath = (ImageButton) view.findViewById(R.id.btn_showPath);
         //load map when first enter
     }
 
@@ -247,7 +245,7 @@ public class LocationFragment extends Fragment {
                 SharedPreferences sharedPreferences = getContext().getSharedPreferences(OurContract.SHARED_PREF, MODE_PRIVATE);
                 String authen = "Bearer " + sharedPreferences.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, "");
                 String deviceAuthen = sharedPreferences.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, "");
-                APIService apiService = AppUtils.getAPIService();
+                APIService apiService = Utils.getAPIService();
                 progressDialog.setMessage(getString(R.string.drawing_path));
                 progressDialog.show();
                 getPathInTimeInterval(calendar.getTimeInMillis(),
@@ -306,12 +304,17 @@ public class LocationFragment extends Fragment {
                 });
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
     /*
-    Method for getting current location
-     */
+        Method for getting current location
+         */
     private void getDeviceCurrentLocation() {
         SharedPreferences sharedPreferences = getContext().getSharedPreferences(OurContract.SHARED_PREF, MODE_PRIVATE);
-        APIService apiService = AppUtils.getAPIService();
+        APIService apiService = Utils.getAPIService();
         progressDialog.setMessage(getString(R.string.getting_current_location));
         progressDialog.show();
         requestDeviceCurrentLocation(apiService, "Bearer " + sharedPreferences.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, "")
@@ -512,7 +515,6 @@ public class LocationFragment extends Fragment {
             tv_distance.setText("0 m");
         }
     }
-
 
 
     private double calculateArcLengthBaseOnLatLng(LatLng start, LatLng end) {

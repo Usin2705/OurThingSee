@@ -52,6 +52,5 @@ dependencies {
     compile 'com.github.bumptech.glide:glide:3.7.0'
     //GraphView lib
     compile 'com.github.lecho:hellocharts-library:1.5.8@aar'
-
     testCompile 'junit:junit:4.12'
 }

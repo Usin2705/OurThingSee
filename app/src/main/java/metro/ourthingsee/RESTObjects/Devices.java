@@ -6,9 +6,6 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 /**
- * Created by giang on 10.2.2017.
- */
-/**
  * Class to store the List of devices taken from devices
  * The most important one is "uuid", which store the device's unique id. We must use this
  * id to get the event from devices
@@ -81,7 +78,7 @@ public class Devices {
             this.state = state;
         }
     }
-    public class State {
+    private class State {
 
         @SerializedName("ts")
         @Expose

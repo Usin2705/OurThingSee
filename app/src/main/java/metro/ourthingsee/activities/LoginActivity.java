@@ -20,7 +20,7 @@ import metro.ourthingsee.R;
 import metro.ourthingsee.RESTObjects.Authentication;
 import metro.ourthingsee.RESTObjects.Devices;
 import metro.ourthingsee.remote.APIService;
-import metro.ourthingsee.remote.AppUtils;
+import metro.ourthingsee.Utils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -30,7 +30,6 @@ import retrofit2.Response;
  * Then accountAuthUuid and accountAuthToken is recorded and store in sharedpref.
  */
 public class LoginActivity extends AppCompatActivity {
-    private static final String LOG_TAG = LoginActivity.class.getSimpleName();
     EditText edtEmail, edtPassword;
     Button btnLogin;
     APIService apiService;
@@ -57,7 +56,7 @@ public class LoginActivity extends AppCompatActivity {
         edtEmail = (EditText) findViewById(R.id.edtEmail);
         edtPassword = (EditText) findViewById(R.id.edtPassword);
         btnLogin = (Button) findViewById(R.id.btnLogin);
-        apiService = AppUtils.getAPIService();
+        apiService = Utils.getAPIService();
     }
 
     /**
@@ -202,7 +201,7 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      * Get all user's devices based on information from user authentication
-     * Connect Thingsee device with App
+     * Connect Thingsee device with app
      */
     private void getUserDevices() {
         String auth = "Bearer ";

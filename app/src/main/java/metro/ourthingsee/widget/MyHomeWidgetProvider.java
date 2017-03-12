@@ -6,11 +6,9 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
-import java.text.ParseException;
 import java.util.Date;
 import java.util.Locale;
 
@@ -20,7 +18,6 @@ import metro.ourthingsee.RESTObjects.Events;
 import metro.ourthingsee.Utils;
 import metro.ourthingsee.activities.MainActivity;
 import metro.ourthingsee.remote.APIService;
-import metro.ourthingsee.remote.AppUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -108,7 +105,7 @@ public class MyHomeWidgetProvider extends AppWidgetProvider {
                             final AppWidgetManager appWidgetManager, final int widgetId) {
         final SharedPreferences prefs = context.getSharedPreferences(OurContract.SHARED_PREF,
                 Context.MODE_PRIVATE);
-        APIService apiService = AppUtils.getAPIService();
+        APIService apiService = Utils.getAPIService();
         apiService.getUserEvents(
                 "Bearer " + prefs.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, ""),
                 prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, ""),
@@ -137,18 +134,16 @@ public class MyHomeWidgetProvider extends AppWidgetProvider {
                             remoteViews.setTextViewText(R.id.txtWGHumid,
                                     context.getString(R.string.no_data));
                         }
-
-                        String longDateString = prefs.getString(
-                                OurContract.PREF_HUMID_LATEST_TIME, " ");
                         // Convert long date stored in prefs to short day
-                        try {
-                            Date date = Utils.dateFormat.parse(longDateString);
+                        Long updateTime = prefs.getLong(OurContract.UPDATE_TIME, -1);
+                        if (updateTime == -1) {
+                            remoteViews.setTextViewText(R.id.txtWGTime,
+                                    context.getString(R.string.no_data));
+                        } else {
+                            Date date = new Date(updateTime);
                             remoteViews.setTextViewText(R.id.txtWGTime,
                                     Utils.shortDateFormat.format(date));
-                        } catch (ParseException e) {
-                            e.printStackTrace();
                         }
-
                         appWidgetManager.updateAppWidget(widgetId, remoteViews);
 
                         fetchTemp(context, remoteViews, appWidgetManager, widgetId);
@@ -156,7 +151,7 @@ public class MyHomeWidgetProvider extends AppWidgetProvider {
 
                     @Override
                     public void onFailure(Call<Events> call, Throwable t) {
-                        Utils.handleFailure(context, t);
+                        Utils.handleFailure(context);
                         remoteViews.setViewVisibility(R.id.imgRefresh, View.VISIBLE);
                         remoteViews.setViewVisibility(R.id.pgbWidget, View.GONE);
                         appWidgetManager.updateAppWidget(widgetId, remoteViews);
@@ -176,7 +171,7 @@ public class MyHomeWidgetProvider extends AppWidgetProvider {
                            final AppWidgetManager appWidgetManager, final int widgetId) {
         final SharedPreferences prefs = context.getSharedPreferences(OurContract.SHARED_PREF,
                 Context.MODE_PRIVATE);
-        APIService apiService = AppUtils.getAPIService();
+        APIService apiService = Utils.getAPIService();
         apiService.getUserEvents(
                 "Bearer " + prefs.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, ""),
                 prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, ""),
@@ -199,15 +194,15 @@ public class MyHomeWidgetProvider extends AppWidgetProvider {
                             remoteViews.setTextViewText(R.id.txtWGTemp,
                                     context.getString(R.string.no_data));
                         }
-                        String longDateString = prefs.getString(
-                                OurContract.PREF_TEMP_LATEST_TIME, " ");
                         // Convert long date stored in prefs to short day
-                        try {
-                            Date date = Utils.dateFormat.parse(longDateString);
+                        Long updateTime = prefs.getLong(OurContract.UPDATE_TIME, -1);
+                        if (updateTime == -1) {
+                            remoteViews.setTextViewText(R.id.txtWGTime,
+                                    context.getString(R.string.no_data));
+                        } else {
+                            Date date = new Date(updateTime);
                             remoteViews.setTextViewText(R.id.txtWGTime,
                                     Utils.shortDateFormat.format(date));
-                        } catch (ParseException e) {
-                            e.printStackTrace();
                         }
 
                         appWidgetManager.updateAppWidget(widgetId, remoteViews);
@@ -217,7 +212,7 @@ public class MyHomeWidgetProvider extends AppWidgetProvider {
 
                     @Override
                     public void onFailure(Call<Events> call, Throwable t) {
-                        Utils.handleFailure(context, t);
+                        Utils.handleFailure(context);
                         remoteViews.setViewVisibility(R.id.imgRefresh, View.VISIBLE);
                         remoteViews.setViewVisibility(R.id.pgbWidget, View.GONE);
                         appWidgetManager.updateAppWidget(widgetId, remoteViews);
@@ -239,7 +234,7 @@ public class MyHomeWidgetProvider extends AppWidgetProvider {
                             final AppWidgetManager appWidgetManager, final int widgetId) {
         final SharedPreferences prefs = context.getSharedPreferences(OurContract.SHARED_PREF,
                 Context.MODE_PRIVATE);
-        APIService apiService = AppUtils.getAPIService();
+        APIService apiService = Utils.getAPIService();
         apiService.getUserEvents(
                 "Bearer " + prefs.getString(OurContract.PREF_USER_AUTH_TOKEN_NAME, ""),
                 prefs.getString(OurContract.PREF_DEVICE_AUTH_ID_NAME, ""),
@@ -262,18 +257,16 @@ public class MyHomeWidgetProvider extends AppWidgetProvider {
                             remoteViews.setTextViewText(R.id.txtWGLight,
                                     context.getString(R.string.no_data));
                         }
-                        String longDateString = prefs.getString(
-                                OurContract.PREF_LIGHT_LATEST_TIME, " ");
                         // Convert long date stored in prefs to short day
-                        try {
-                            Date date = Utils.dateFormat.parse(longDateString);
+                        Long updateTime = prefs.getLong(OurContract.UPDATE_TIME, -1);
+                        if (updateTime == -1) {
+                            remoteViews.setTextViewText(R.id.txtWGTime,
+                                    context.getString(R.string.no_data));
+                        } else {
+                            Date date = new Date(updateTime);
                             remoteViews.setTextViewText(R.id.txtWGTime,
                                     Utils.shortDateFormat.format(date));
-                        } catch (ParseException e) {
-                            e.printStackTrace();
                         }
-
-
                         remoteViews.setViewVisibility(R.id.imgRefresh, View.VISIBLE);
                         remoteViews.setViewVisibility(R.id.pgbWidget, View.GONE);
                         appWidgetManager.updateAppWidget(widgetId, remoteViews);
@@ -281,7 +274,7 @@ public class MyHomeWidgetProvider extends AppWidgetProvider {
 
                     @Override
                     public void onFailure(Call<Events> call, Throwable t) {
-                        Utils.handleFailure(context, t);
+                        Utils.handleFailure(context);
                         remoteViews.setViewVisibility(R.id.imgRefresh, View.VISIBLE);
                         remoteViews.setViewVisibility(R.id.pgbWidget, View.GONE);
                         appWidgetManager.updateAppWidget(widgetId, remoteViews);

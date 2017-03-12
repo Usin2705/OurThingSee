@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -34,7 +35,6 @@ import metro.ourthingsee.Utils;
 import metro.ourthingsee.fragments.EnvironmentSensorFragment;
 import metro.ourthingsee.fragments.LocationFragment;
 import metro.ourthingsee.remote.APIService;
-import metro.ourthingsee.remote.AppUtils;
 import metro.ourthingsee.widget.MyHomeWidgetProvider;
 import metro.ourthingsee.widget.MyHomeWidgetProviderSmall;
 import retrofit2.Call;
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
             finish();
         } else {
             //Update the name of device on UI
-            APIService apiService = AppUtils.getAPIService();
+            APIService apiService = Utils.getAPIService();
             apiService.getDeviceName("Bearer " + prefs.getString(PREF_USER_AUTH_TOKEN_NAME, "")
                     , prefs.getString(PREF_DEVICE_AUTH_ID_NAME, "")).enqueue(new Callback<DeviceConfig>() {
                 @Override
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<DeviceConfig> call, Throwable t) {
-                    Utils.handleFailure(MainActivity.this, t);
+                    Utils.handleFailure(MainActivity.this);
                     tv_name.setText(R.string.unknown_device);
                 }
             });
@@ -172,10 +172,11 @@ public class MainActivity extends AppCompatActivity {
                 fragmentTransaction.commitAllowingStateLoss();
             }
         };
-            mHandler.post(mPendingRunnable);
+        mHandler.post(mPendingRunnable);
         // refresh toolbar menu
         invalidateOptionsMenu();
     }
+
     private Fragment getHomeFragment() {
         switch (navItemIndex) {
             case 1:
@@ -192,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
     private void selectNavMenu() {
         nav_view.getMenu().getItem(navItemIndex).setChecked(true);
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (navItemIndex == 0) {
@@ -199,6 +201,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     }
+
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -207,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.mnuShowStats) {
-            Intent intent = new Intent(MainActivity.this,GraphActivity.class);
+            Intent intent = new Intent(MainActivity.this, GraphActivity.class);
             startActivity(intent);
             return true;
         }
@@ -231,7 +234,7 @@ public class MainActivity extends AppCompatActivity {
 
             // This method will trigger on item Click of navigation menu
             @Override
-            public boolean onNavigationItemSelected(MenuItem menuItem) {
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
                 //Check to see which item was being clicked and perform appropriate action
                 switch (menuItem.getItemId()) {
@@ -241,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
                         progressDialog.show();
                         break;
                     case R.id.nav_environment:
-                        navItemIndex =0;
+                        navItemIndex = 0;
                         CURRENT_TAG = TAG_ENVIRONMENT;
                         progressDialog.show();
                         break;
@@ -256,13 +259,14 @@ public class MainActivity extends AppCompatActivity {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
                                         delLoginData();
+                                        EnvironmentSensorFragment.cancelAlarm(MainActivity.this);
                                     }
                                 })
                                 .setNegativeButton(android.R.string.no, null)
                                 .show();
                         break;
                     case R.id.about_us:
-                        Intent aboutUs = new Intent(MainActivity.this, AboutUs.class);
+                        Intent aboutUs = new Intent(MainActivity.this, AboutUsActivity.class);
                         startActivityForResult(aboutUs, 1);
                         break;
                 }
@@ -317,18 +321,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateAllWidgets() {
-        Intent intent = new Intent(this,MyHomeWidgetProvider.class);
+        Intent intent = new Intent(this, MyHomeWidgetProvider.class);
         intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
         int[] ids = AppWidgetManager.getInstance(getApplication())
                 .getAppWidgetIds(new ComponentName(getApplication(), MyHomeWidgetProvider.class));
-        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,ids);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
         sendBroadcast(intent);
 
-        Intent intent1 = new Intent(this,MyHomeWidgetProviderSmall.class);
+        Intent intent1 = new Intent(this, MyHomeWidgetProviderSmall.class);
         intent1.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
         int[] ids1 = AppWidgetManager.getInstance(getApplication())
                 .getAppWidgetIds(new ComponentName(getApplication(), MyHomeWidgetProviderSmall.class));
-        intent1.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,ids1);
+        intent1.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids1);
         sendBroadcast(intent1);
     }
 }

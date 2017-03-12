@@ -1,9 +1,5 @@
 package metro.ourthingsee.activities;
 
-/**
- * Created by Jingxuaw on 17.2.2017.
- */
-
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -15,10 +11,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import metro.ourthingsee.R;
 
-
-public class AboutUs extends AppCompatActivity implements View.OnClickListener {
+public class AboutUsActivity extends AppCompatActivity implements View.OnClickListener {
     Button btn_Back;
-
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,11 +22,10 @@ public class AboutUs extends AppCompatActivity implements View.OnClickListener {
 
         Glide.with(this).load(R.drawable.about).asBitmap().diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true).animate(android.R.anim.fade_in).approximate()
-                .into((ImageView)findViewById(R.id.imgAboutUs));
+                .into((ImageView) findViewById(R.id.imgAboutUs));
     }
 
     @Override
-
     // If click "back" , it will turn to "MainActivity" layout.
     public void onClick(View v) {
         if (btn_Back.isClickable()) {
