@@ -104,8 +104,11 @@ public class EnvironmentSensorFragment extends Fragment {
 
         //Set the default time
         final Calendar calendarEnd = Calendar.getInstance(TimeZone.getDefault());
-        calendarEnd.set(Calendar.HOUR_OF_DAY, 3);
+        calendarEnd.set(Calendar.HOUR_OF_DAY, 16);
         calendarEnd.set(Calendar.MINUTE, 0);
+
+        calendarEnd.setTimeInMillis(prefs.getLong(OurContract.PREF_MYHOME_END_TIME,
+                calendarEnd.getTimeInMillis()));
 
         txtMyHomeEndTime = (TextView) view.findViewById(R.id.txtMyHomeEndTime);
         txtMyHomeEndTime.setText(
@@ -410,7 +413,6 @@ public class EnvironmentSensorFragment extends Fragment {
     }
 
     public static void cancelAlarm(Context context) {
-        Log.e("Giang","canceled");
         Intent intent = new Intent(context.getApplicationContext(), TCCLoudRequestReceiver.class);
         final PendingIntent pIntent = PendingIntent.getBroadcast(context,
                 OurContract.INTENT_REQUEST_CODE_MYHOMESERVICE, intent, PendingIntent.FLAG_UPDATE_CURRENT);

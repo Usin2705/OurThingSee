@@ -239,7 +239,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
-                Log.e("leak","closed");
                 loadHomeFragment();
             }
 
@@ -267,10 +266,8 @@ public class MainActivity extends AppCompatActivity {
         // if user select the current navigation menu again, don't do anything
         // just close the navigation drawer
         if (getSupportFragmentManager().findFragmentByTag(CURRENT_TAG) != null) {
-            Log.e("leak", "no");
             progressDialog.dismiss();
         } else {
-            Log.e("leak", "yes");
             // update the main content by replacing fragments
             Fragment fragment = getHomeFragment();
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
