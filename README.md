@@ -16,7 +16,7 @@ We also use the app to monitoring our own room environment, checking the ideal h
 For the app to work, you need to set up your own Thingsee device, and allow it to measure Location (for map), Humidity, Temperature, Luminance (Light).
 The app was tested location sensor interval at 10 second, and other measurement at 15 minutes.
 
-#License
+# License
 
 Copyright 2017 Giang Pham and Jingxuan Wu and Nhan Phan
 
