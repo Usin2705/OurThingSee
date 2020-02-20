@@ -6,6 +6,8 @@ Metropolia, class TXL16S1-A 2016.
 Team members: Giang Pham, JingXuan Wu, Nhan Phan.
 <p>
 This app is used with a Thingsee Device: https://thingsee.com/
+   
+You can see the app UI here in [Google Play](https://play.google.com/store/apps/details?id=metro.ourthingsee)
 <p>
 This application is used for storing wine and delivering wine.
 We use Thingsee to monitor the temperature, pressure and humidity in the wine cellar to keep the environment being the most suitable for wine.
